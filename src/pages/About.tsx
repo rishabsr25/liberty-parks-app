@@ -113,48 +113,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Park Highlights */}
-      <section className="py-16 bg-muted/30">
-        <div className="container">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
-              Featured Parks
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore some of our most popular parks and discover what makes each one special.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {parkHighlights.map((park) => (
-              <Card key={park.name} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-gradient-to-br from-primary/20 via-accent/10 to-earth-light/20 flex items-center justify-center">
-                  <TreePine className="h-12 w-12 text-primary/30" />
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="font-heading text-xl font-semibold text-foreground mb-2">
-                    {park.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {park.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {park.features.map((feature) => (
-                      <span
-                        key={feature}
-                        className="inline-block px-2 py-1 text-xs bg-primary/10 text-primary rounded-md"
-                      >
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Contact Section */}
       <section className="py-16 md:py-24">
         <div className="container">
