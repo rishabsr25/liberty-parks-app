@@ -37,7 +37,7 @@ export default function MapPage() {
   const [loadError, setLoadError] = useState(false);
 
   // API key (for development only - remove before production)
-  const apiKey = 'AIzaSyBYg1QaTQeBQAbYR_zFgdaRS7HveehDkE8';
+  const apiKey = '';
 
   useEffect(() => {
     const key = apiKey;
