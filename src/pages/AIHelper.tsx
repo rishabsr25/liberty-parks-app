@@ -350,7 +350,7 @@ export default function AIParkHelperPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-2 flex items-center gap-2">
             <Sparkles className="h-8 w-8" />
-            AI Park Helper
+            Park Selector
           </h1>
           <p className="text-muted-foreground">
             Discover the perfect park for your needs. Tell us what you want to do, and we'll recommend the best parks in Liberty Township.
@@ -503,7 +503,7 @@ export default function AIParkHelperPage() {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2">
                 <p>
-                  Our AI Park Helper analyzes your interests and matches them against Liberty Township's 7 parks. Each park is scored based on its amenities and suitability for your activities.
+                  Our Park Selector analyzes your interests and matches them against Liberty Township's 7 parks. Each park is scored based on its amenities and suitability for your activities.
                 </p>
                 <p>
                   We consider factors like running trails, dog-friendliness, picnic areas, sports fields, water access, and more to give you personalized recommendations.

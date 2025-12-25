@@ -15,7 +15,7 @@
 **Changes:**
 - Updated `navLinks` array to include:
   - `/voting` - "Voting"
-  - `/ai-helper` - "AI Helper"
+  - `/ai-helper` - "Park Selector"
   
 **Impact:** Navigation menu now shows all features
 
@@ -286,7 +286,7 @@ App (Routes)
 - **Maps**: Amenity filtering is instant with client-side filtering
 - **Voting**: Vote updates are instant, no network calls
 - **Reports**: Report list filtered/sorted client-side
-- **AI Helper**: Match calculation happens on-demand after user clicks button
+- **Park Selector**: Match calculation happens on-demand after user clicks button
 
 ---
 

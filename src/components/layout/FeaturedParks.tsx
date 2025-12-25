@@ -25,7 +25,7 @@ const features = [
   },
   {
     icon: Sparkles,
-    title: 'AI Park Helper',
+    title: 'Park Selector',
     description: 'Get personalized park recommendations based on your preferences and interests. Discover the perfect park for you.',
     color: 'bg-accent/20 text-accent',
     href: '/ai-helper',

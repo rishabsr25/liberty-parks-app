@@ -105,8 +105,8 @@ Your Liberty Township Parks App is now fully functional with all five major feat
 
 ---
 
-## ✨ AI Park Helper
-**Access:** Click "AI Helper" in the navigation or visit `/ai-helper`
+## ✨ Park Selector
+**Access:** Click "Park Selector" in the navigation or visit `/ai-helper`
 
 ### How It Works:
 1. **Describe Your Ideal Visit**: Type what you want to do, for example:
@@ -156,7 +156,7 @@ The app has 7 main sections:
 | Interactive Map | `/map` | Explore park amenities |
 | Event Calendar | `/calendar` | View and add events |
 | Community Voting | `/voting` | Vote on park improvements |
-| AI Park Helper | `/ai-helper` | Get personalized recommendations |
+| Park Selector | `/ai-helper` | Get personalized recommendations |
 | Park Watch | `/report` | Report issues and track status |
 | About | `/about` | App information |
 
@@ -165,7 +165,7 @@ The app has 7 main sections:
 ## 💡 Tips for Getting the Most Out of the App
 
 ### Planning a Park Visit:
-1. Use **AI Park Helper** to find the best park for your needs
+1. Use **Park Selector** to find the best park for your needs
 2. Check the **Interactive Map** to see available amenities
 3. Browse the **Event Calendar** to see what's happening
 4. Select a specific date to see events that day

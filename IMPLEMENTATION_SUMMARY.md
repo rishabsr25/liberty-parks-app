@@ -122,7 +122,7 @@ All five major features of the Liberty Township Parks App have been successfully
 
 ---
 
-## ✅ Feature 5: AI Park Helper
+## ✅ Feature 5: Park Selector
 **Location:** `/ai-helper`
 
 ### What Was Implemented:
@@ -187,7 +187,7 @@ All five major features of the Liberty Township Parks App have been successfully
 
 ### Navigation Updates:
 - Updated header with new page routes
-- Added links to Voting and AI Helper
+- Added links to Voting and Park Selector
 - Reordered navigation for better flow
 
 ### Home Page Enhancements:
@@ -235,7 +235,7 @@ All five major features of the Liberty Township Parks App have been successfully
 | Community Voting | ✅ Active | `/voting` | Vote on park improvements |
 | Interactive Maps | ✅ Active | `/map` | Explore park amenities |
 | Park Watch | ✅ Active | `/report` | Report and track issues |
-| AI Park Helper | ✅ Active | `/ai-helper` | Get personalized recommendations |
+| Park Selector | ✅ Active | `/ai-helper` | Get personalized recommendations |
 
 ---
 
@@ -254,7 +254,7 @@ All five major features of the Liberty Township Parks App have been successfully
 - **Voting**: Click yes/no buttons to vote on polls
 - **Map**: Select different parks and filter amenities
 - **Report**: Submit an issue report with all details
-- **AI Helper**: Try searching with different activity descriptions
+- **Park Selector**: Try searching with different activity descriptions
 
 ---
 

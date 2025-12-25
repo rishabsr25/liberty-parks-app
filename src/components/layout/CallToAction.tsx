@@ -21,7 +21,7 @@ const CallToAction = () => {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to="/ai-helper">Get AI Recommendations</Link>
+              <Link to="/ai-helper">Get Park Recommendations</Link>
             </Button>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import heroPark from "@/assets/hero-park.jpg";
 
 const stats = [
-  { icon: TreePine, value: '8', label: 'Parks' },
+  { icon: TreePine, value: '7', label: 'Parks' },
   { icon: Users, value: '35K+', label: 'Residents' },
   { icon: Heart, value: '100+', label: 'Events/Year' },
 ];

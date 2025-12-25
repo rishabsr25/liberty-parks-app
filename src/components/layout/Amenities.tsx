@@ -13,7 +13,7 @@ const amenities = [
   },
   {
     emoji: '✨',
-    title: 'AI Park Helper',
+    title: 'Park Selector',
     description: "Tell us what you want to do, and our AI will recommend the perfect park! Whether you want to run with your dog, have a family picnic, or explore nature, get personalized recommendations with match percentages.",
     href: '/ai-helper',
     buttonText: 'Get Recommendations',

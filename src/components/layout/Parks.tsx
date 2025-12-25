@@ -12,7 +12,7 @@ const parks = [
     name: "Liberty Park",
     description: "The largest park in Liberty Township with over 2 miles of wooded and open trails, 3 playgrounds (one fully accessible), and restroom facilities. Features 12 soccer fields, 4 baseball/softball fields, basketball courts, tennis courts, handball courts, sand volleyball courts, a stocked fishing pond, and a Tranquility Garden for quiet relaxation.",
     image: libertyPark,
-    acres: 118,
+    acres: 169,
     features: ["12 Soccer Fields", "3 Playgrounds", "Fishing Pond", "Tennis Courts", "Basketball Courts", "Tranquility Garden"]
   },
   {
@@ -28,7 +28,7 @@ const parks = [
     name: "Hyatts Park",
     description: "A dedicated off-leash dog park with separate areas for large and small dogs. Also features sports facilities including a baseball field and basketball court.",
     image: hyattsPark,
-    acres: 22,
+    acres: 4.5,
     features: ["Dog Park", "Basketball Court", "Baseball Field", "Playground"]
   }
 ];
