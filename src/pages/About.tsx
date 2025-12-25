@@ -21,8 +21,8 @@ const parkHighlights = [
     features: ['Lake Access', 'Picnic Areas', 'Nature Trails', 'Bird Watching'],
   },
   {
-    name: 'Big Bear Park',
-    description: 'Dedicated off-leash areas for dogs of all sizes to play and socialize.',
+    name: 'Hyatts Park',
+    description: 'A dedicated off-leash dog park with separate areas for large and small dogs.',
     features: ['Large Dog Area', 'Small Dog Area', 'Water Stations', 'Shaded Seating'],
   },
 ];
@@ -42,8 +42,8 @@ export default function AboutPage() {
               About Liberty Township Parks
             </h1>
             <p className="text-lg text-muted-foreground">
-              For over 15 years, we've been dedicated to providing beautiful, safe, and accessible 
-              parks for the residents of Liberty Township, Ohio. Our mission is to enhance the 
+              For over 15 years, we've been dedicated to providing beautiful, safe, and accessible
+              parks for the residents of Liberty Township, Ohio. Our mission is to enhance the
               quality of life in our community through exceptional outdoor spaces.
             </p>
           </div>
@@ -77,16 +77,16 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Liberty Township Parks is committed to creating and maintaining vibrant outdoor 
-                  spaces that bring our community together. We believe every resident deserves 
+                  Liberty Township Parks is committed to creating and maintaining vibrant outdoor
+                  spaces that bring our community together. We believe every resident deserves
                   access to quality parks, trails, and recreational facilities.
                 </p>
                 <p>
-                  Our team works year-round to ensure our parks are safe, clean, and welcoming 
+                  Our team works year-round to ensure our parks are safe, clean, and welcoming
                   for families, athletes, nature enthusiasts, and everyone in between.
                 </p>
                 <p>
-                  Through community engagement and thoughtful planning, we continuously improve 
+                  Through community engagement and thoughtful planning, we continuously improve
                   our parks based on resident feedback and evolving needs.
                 </p>
               </div>
@@ -128,8 +128,8 @@ export default function AboutPage() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <a 
-                      href="mailto:rishabsr25@gmail.com" 
+                    <a
+                      href="mailto:rishabsr25@gmail.com"
                       className="text-primary hover:underline"
                     >
                       rishabsr25@gmail.com

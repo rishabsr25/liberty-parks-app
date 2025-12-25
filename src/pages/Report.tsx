@@ -44,7 +44,7 @@ export default function ReportPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.park || !formData.category || !formData.title || !formData.description) {
       toast({
         title: 'Missing Information',
@@ -53,6 +53,30 @@ export default function ReportPage() {
       });
       return;
     }
+
+    // Construct Mailto Link
+    const parkName = getParkName(formData.park);
+    const categoryName = reportCategories.find(c => c.id === formData.category)?.name || formData.category;
+
+    const subject = encodeURIComponent(`Park Issue Report: ${categoryName} at ${parkName}`);
+    const body = encodeURIComponent(
+      `New Issue Report
+
+Park: ${parkName}
+Category: ${categoryName}
+Issue: ${formData.title}
+
+Description:
+${formData.description}
+
+Reporter Email: ${formData.email || 'Not provided'}
+
+--
+Sent from Liberty Township Parks App`
+    );
+
+    const recipients = 'rishabsr25@gmail.com,nelthejan@gmail.com';
+    window.location.href = `mailto:${recipients}?subject=${subject}&body=${body}`;
 
     const newReport: ParkReport = {
       id: `rpt-${Date.now()}`,
@@ -67,10 +91,10 @@ export default function ReportPage() {
 
     setReports([newReport, ...reports]);
     setIsSubmitted(true);
-    
+
     toast({
       title: 'Report Submitted',
-      description: 'Thank you for helping improve our parks!',
+      description: 'Your email client has been opened to send the report.',
     });
   };
 
@@ -243,7 +267,7 @@ export default function ReportPage() {
             {reports.map((report) => {
               const categoryInfo = reportCategories.find(c => c.id === report.category);
               const Icon = categoryInfo ? iconMap[categoryInfo.icon] : HelpCircle;
-              
+
               return (
                 <Card key={report.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">

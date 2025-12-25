@@ -3,6 +3,7 @@ import libertyPark from "@/assets/liberty-park.jpg";
 import havenerPark from "@/assets/havener-park.jpg";
 import bigBearPark from "@/assets/big-bear-park.jpg";
 import heroPark from "@/assets/hero-park.jpg";
+import hyattsPark from "@/assets/hyatts-park.jpg";
 
 export interface Park {
   id: string;
@@ -12,11 +13,12 @@ export interface Park {
   coordinates: { lat: number; lng: number };
   amenities: Amenity[];
   image?: string;
+  zoom?: number;
 }
 
 export interface Amenity {
   id: string;
-  type: 'bathroom' | 'bench' | 'trail' | 'parking' | 'playground' | 'picnic' | 'dog-park' | 'sports';
+  type: 'bathroom' | 'bench' | 'trail' | 'parking' | 'playground' | 'picnic' | 'dog-park' | 'sports' | 'visitor-center' | 'greenspace';
   name: string;
   coordinates: { lat: number; lng: number };
 }
@@ -89,12 +91,16 @@ export const parks: Park[] = [
     description: 'Our flagship community park featuring sports fields, playgrounds, and walking trails.',
     address: '2845 Home Rd, Powell, OH 43065',
     coordinates: { lat: 40.192972, lng: -83.081639 },
+    zoom: 16.5,
     image: libertyPark,
     amenities: [
       { id: 'lp-bathroom-1', type: 'bathroom', name: 'Main Restrooms', coordinates: { lat: 40.191132, lng: -83.085027 } },
       { id: 'lp-playground-1', type: 'playground', name: 'Kids Playground', coordinates: { lat: 40.191721, lng: -83.081695 } },
       { id: 'lp-trail-1', type: 'trail', name: 'Nature Trail', coordinates: { lat: 40.190629, lng: -83.084203 } },
       { id: 'lp-sports-1', type: 'sports', name: 'Soccer Fields', coordinates: { lat: 40.194506, lng: -83.082400 } },
+      { id: 'lp-sports-2', type: 'sports', name: 'Tennis Courts', coordinates: { lat: 40.192359, lng: -83.085972 } },
+      { id: 'lp-sports-3', type: 'sports', name: 'Basketball Courts', coordinates: { lat: 40.191977, lng: -83.085905 } },
+      { id: 'lp-sports-4', type: 'sports', name: 'Volleyball Courts', coordinates: { lat: 40.191595, lng: -83.085856 } },
     ],
   },
   {
@@ -102,13 +108,11 @@ export const parks: Park[] = [
     name: 'Big Bear Park',
     description: 'A peaceful park perfect for picnics and family gatherings with beautiful natural scenery.',
     address: '8794 Big Bear Ave, Powell, OH 43065',
-    coordinates: { lat: 39.4612, lng: -84.4023 },
+    coordinates: { lat: 40.163407, lng: -83.086126 },
+    zoom: 18,
     image: bigBearPark,
     amenities: [
-      { id: 'wp-bathroom-1', type: 'bathroom', name: 'Park Restrooms', coordinates: { lat: 39.4610, lng: -84.4020 } },
-      { id: 'wp-picnic-1', type: 'picnic', name: 'Picnic Pavilion', coordinates: { lat: 39.4615, lng: -84.4025 } },
-      { id: 'wp-bench-1', type: 'bench', name: 'Lakeside Benches', coordinates: { lat: 39.4608, lng: -84.4018 } },
-      { id: 'wp-parking-1', type: 'parking', name: 'Visitor Parking', coordinates: { lat: 39.4605, lng: -84.4030 } },
+
     ],
   },
   {
@@ -116,13 +120,14 @@ export const parks: Park[] = [
     name: 'Havener Park',
     description: 'Home to youth sports leagues with multiple soccer and baseball fields.',
     address: '4085 Liberty Rd, Delaware, OH 43015',
-    coordinates: { lat: 39.4489, lng: -84.3812 },
+    coordinates: { lat: 40.243969, lng: -83.076998 },
+    zoom: 16,
     image: havenerPark,
     amenities: [
-      { id: 'lef-sports-1', type: 'sports', name: 'Baseball Diamonds', coordinates: { lat: 39.4492, lng: -84.3815 } },
-      { id: 'lef-sports-2', type: 'sports', name: 'Soccer Complex', coordinates: { lat: 39.4485, lng: -84.3808 } },
-      { id: 'lef-bathroom-1', type: 'bathroom', name: 'Field House Restrooms', coordinates: { lat: 39.4488, lng: -84.3810 } },
-      { id: 'lef-parking-1', type: 'parking', name: 'East Lot', coordinates: { lat: 39.4495, lng: -84.3820 } },
+      { id: 'lef-sports-1', type: 'sports', name: 'Lacrosse Field', coordinates: { lat: 40.245381, lng: -83.081942 } },
+      { id: 'lef-sports-2', type: 'sports', name: 'Soccer Fields', coordinates: { lat: 40.245232, lng: -83.080373 } },
+      { id: 'lef-bathroom-1', type: 'visitor-center', name: 'Visitor Center', coordinates: { lat: 40.2412396, lng: -83.0761966 } },
+      { id: 'lef-parking-1', type: 'greenspace', name: 'Open Greenspace', coordinates: { lat: 40.244675, lng: -83.077376 } },
     ],
   },
   {
@@ -130,13 +135,14 @@ export const parks: Park[] = [
     name: 'Hyatts Park',
     description: 'A dedicated off-leash dog park with separate areas for large and small dogs.',
     address: '2500 Hyatts Road, Delaware, OH 43065',
-    coordinates: { lat: 39.4401, lng: -84.4156 },
-    image: heroPark,
+    coordinates: { lat: 40.216461, lng: -83.0841297 },
+    zoom: 18,
+    image: hyattsPark,
     amenities: [
-      { id: 'kdp-dogpark-1', type: 'dog-park', name: 'Large Dog Area', coordinates: { lat: 39.4403, lng: -84.4155 } },
-      { id: 'kdp-dogpark-2', type: 'dog-park', name: 'Small Dog Area', coordinates: { lat: 39.4399, lng: -84.4158 } },
-      { id: 'kdp-bench-1', type: 'bench', name: 'Shaded Seating', coordinates: { lat: 39.4400, lng: -84.4152 } },
-      { id: 'kdp-parking-1', type: 'parking', name: 'Dog Park Parking', coordinates: { lat: 39.4398, lng: -84.4160 } },
+      { id: 'kdp-dogpark-1', type: 'sports', name: 'Basketball Court', coordinates: { lat: 40.216332, lng: -83.084543 } },
+      { id: 'kdp-dogpark-2', type: 'sports', name: 'Baseball Field', coordinates: { lat: 40.216595, lng: -83.083624 } },
+      { id: 'kdp-bench-1', type: 'sports', name: 'Horseshoe Pit', coordinates: { lat: 40.216513, lng: -83.084190 } },
+      { id: 'kdp-parking-1', type: 'playground', name: 'Playground', coordinates: { lat: 40.216210, lng: -83.083965 } },
     ],
   },
 ];
@@ -272,6 +278,8 @@ export const amenityInfo: Record<string, { label: string; icon: string; color: s
   picnic: { label: 'Picnic Area', icon: 'UtensilsCrossed', color: 'earth' },
   'dog-park': { label: 'Dog Park', icon: 'Dog', color: 'moss' },
   sports: { label: 'Sports', icon: 'Trophy', color: 'primary' },
+  'visitor-center': { label: 'Visitor Center', icon: 'Info', color: 'primary' },
+  greenspace: { label: 'Greenspace', icon: 'Leaf', color: 'moss' },
 };
 
 // Voting Polls Data

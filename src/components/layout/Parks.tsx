@@ -4,10 +4,11 @@ import { MapPin, Trees, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import libertyPark from "@/assets/liberty-park.jpg";
 import havenerPark from "@/assets/havener-park.jpg";
-import bigBearPark from "@/assets/big-bear-park.jpg";
+import hyattsPark from "@/assets/hyatts-park.jpg";
 
 const parks = [
   {
+    id: "liberty-park",
     name: "Liberty Park",
     description: "The largest park in Liberty Township with over 2 miles of wooded and open trails, 3 playgrounds (one fully accessible), and restroom facilities. Features 12 soccer fields, 4 baseball/softball fields, basketball courts, tennis courts, handball courts, sand volleyball courts, a stocked fishing pond, and a Tranquility Garden for quiet relaxation.",
     image: libertyPark,
@@ -15,6 +16,7 @@ const parks = [
     features: ["12 Soccer Fields", "3 Playgrounds", "Fishing Pond", "Tennis Courts", "Basketball Courts", "Tranquility Garden"]
   },
   {
+    id: "havener-park",
     name: "Havener Park",
     description: "Located approximately 3.5 miles north of Liberty Park at the intersection of Liberty Road and Ford Road. Features 6 athletic fields including 1 lacrosse field and open greenspace. A 1.5 mile trail connects with the Deer Haven Preserve trail system and Visitor's Center.",
     image: havenerPark,
@@ -22,11 +24,12 @@ const parks = [
     features: ["6 Athletic Fields", "Lacrosse Field", "1.5 Mile Trail", "Open Greenspace"]
   },
   {
-    name: "Big Bear Park",
-    description: "Located east of Sawmill Parkway next to Press Church Powell Campus. Features a trail that connects to the City of Powell trail system, with plans for a cricket pitch.",
-    image: bigBearPark,
-    acres: 5,
-    features: ["Powell Trail Connection", "Cricket Pitch (TBD)", "Green Space"]
+    id: "hyatts-park",
+    name: "Hyatts Park",
+    description: "A dedicated off-leash dog park with separate areas for large and small dogs. Also features sports facilities including a baseball field and basketball court.",
+    image: hyattsPark,
+    acres: 22,
+    features: ["Dog Park", "Basketball Court", "Baseball Field", "Playground"]
   }
 ];
 
@@ -96,9 +99,11 @@ const FeaturedParks = () => {
                   )}
                 </div>
 
-                <Button variant="ghost" className="p-0 h-auto text-primary hover:text-primary/80 group/btn">
-                  Learn More
-                  <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover/btn:translate-x-1" />
+                <Button variant="ghost" className="p-0 h-auto text-primary hover:text-primary/80 group/btn" asChild>
+                  <Link to={`/parks?park=${park.id}`}>
+                    Learn More
+                    <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover/btn:translate-x-1" />
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

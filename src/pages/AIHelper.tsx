@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Sparkles, MapPin, TrendingUp } from 'lucide-react';
+import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -219,7 +220,7 @@ const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synon
 };
 
 export default function AIParkHelperPage() {
-  const { toast } = useToast();   
+  const { toast } = useToast();
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState<MatchScore[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -231,17 +232,17 @@ export default function AIParkHelperPage() {
 
     // Extract matched activities with synonym support
     const matchedActivities = new Map<string, number>();
-    
+
     for (const [keyword, config] of Object.entries(ACTIVITY_KEYWORDS)) {
       const allTerms = [keyword, ...config.synonyms];
       let maxMatches = 0;
-      
+
       for (const term of allTerms) {
         const regex = new RegExp(`\\b${term}\\b`, 'gi');
         const matches = (lowerQuery.match(regex) || []).length;
         maxMatches = Math.max(maxMatches, matches);
       }
-      
+
       if (maxMatches > 0) {
         matchedActivities.set(keyword, maxMatches);
       }
@@ -271,7 +272,7 @@ export default function AIParkHelperPage() {
 
           totalScore += keywordScore;
           maxPossibleScore += keywordMax;
-          
+
           if (keywordScore / keywordMax > 0.6) {
             contributingFeatures.push(keyword);
           }
@@ -284,12 +285,12 @@ export default function AIParkHelperPage() {
 
         const percentage = Math.round((totalScore / maxPossibleScore) * 100);
         const topFeatures = contributingFeatures.slice(0, 3);
-        
+
         scores.push({
           parkId: park.id,
           parkName: park.name,
           score: Math.min(100, Math.max(0, percentage)),
-          matchReason: topFeatures.length > 0 
+          matchReason: topFeatures.length > 0
             ? `Great for ${topFeatures.join(', ').replace(/,([^,]*)$/, ' and$1')}`
             : 'Good general match',
           matchedFeatures: Array.from(matchedActivities.keys())
@@ -299,7 +300,7 @@ export default function AIParkHelperPage() {
         const amenityScore = (park.amenities.length / 6) * 50;
         const varietyScore = (new Set(park.amenities.map(a => a.type)).size / 6) * 30;
         const baseScore = amenityScore + varietyScore;
-        
+
         scores.push({
           parkId: park.id,
           parkName: park.name,
@@ -344,7 +345,7 @@ export default function AIParkHelperPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <Layout>
       <div className="container py-8 max-w-6xl mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-2 flex items-center gap-2">
@@ -378,9 +379,9 @@ export default function AIParkHelperPage() {
                   >
                     <Sparkles className="h-4 w-4" />
                     {isSearching ? 'Analyzing...' : 'Find Parks'}
-                    </Button>
+                  </Button>
+                </div>
               </div>
-            </div>
 
               <div className="space-y-2">
                 <p className="text-xs font-medium text-muted-foreground">Popular searches:</p>
@@ -408,7 +409,7 @@ export default function AIParkHelperPage() {
                 </div>
               </div>
             </div>
-           </CardContent>
+          </CardContent>
         </Card>
 
         {hasSearched && (
@@ -424,9 +425,8 @@ export default function AIParkHelperPage() {
                   return (
                     <div
                       key={rec.parkId}
-                      className={`overflow-hidden transition-all hover:shadow-lg rounded-lg border bg-card ${
-                        index === 0 ? 'border-2 border-primary bg-primary/5' : ''
-                      }`}
+                      className={`overflow-hidden transition-all hover:shadow-lg rounded-lg border bg-card ${index === 0 ? 'border-2 border-primary bg-primary/5' : ''
+                        }`}
                     >
                       <div className="p-6">
                         <div className="space-y-4">
@@ -502,12 +502,12 @@ export default function AIParkHelperPage() {
                 <CardTitle className="text-lg">Why These Recommendations?</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2">
-                  <p>
-                    Our AI Park Helper analyzes your interests and matches them against Liberty Township's 7 parks. Each park is scored based on its amenities and suitability for your activities.
-                  </p>
-                  <p>
-                    We consider factors like running trails, dog-friendliness, picnic areas, sports fields, water access, and more to give you personalized recommendations.
-                  </p>
+                <p>
+                  Our AI Park Helper analyzes your interests and matches them against Liberty Township's 7 parks. Each park is scored based on its amenities and suitability for your activities.
+                </p>
+                <p>
+                  We consider factors like running trails, dog-friendliness, picnic areas, sports fields, water access, and more to give you personalized recommendations.
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -539,8 +539,8 @@ export default function AIParkHelperPage() {
               </Card>
             ))}
           </div>
-          )}
+        )}
       </div>
-    </div>
+    </Layout>
   );
 }

@@ -3,8 +3,9 @@ import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trees, MapPin, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { parks as allParks, Park, amenityInfo } from "@/data/mockData";
+import { useSearchParams } from "react-router-dom";
 import {
     Dialog,
     DialogContent,
@@ -13,6 +14,17 @@ import { Badge } from "@/components/ui/badge";
 
 const Parks = () => {
     const [selectedPark, setSelectedPark] = useState<Park | null>(null);
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        const parkId = searchParams.get('park');
+        if (parkId) {
+            const parkToSelect = allParks.find(p => p.id === parkId);
+            if (parkToSelect) {
+                setSelectedPark(parkToSelect);
+            }
+        }
+    }, [searchParams]);
 
     const openParkDetails = (park: Park) => {
         setSelectedPark(park);

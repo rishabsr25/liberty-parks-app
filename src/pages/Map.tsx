@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy } from 'lucide-react';
+import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy, Info, Leaf } from 'lucide-react';
 import { GoogleMap, useJsApiLoader, MarkerF, OverlayView } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ const amenityFilters = [
 ];
 
 const IconMap: Record<string, any> = {
-  Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy
+  Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy, Info, Leaf
 };
 
 const amenityColorMap: Record<string, string> = {
@@ -63,6 +63,12 @@ export default function MapPage() {
   // Update map view when selected park changes
   useEffect(() => {
     if (map && selectedPark) {
+      if (selectedPark.zoom) {
+        map.panTo({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
+        map.setZoom(selectedPark.zoom);
+        return;
+      }
+
       const bounds = new window.google.maps.LatLngBounds();
       // Add park location
       bounds.extend({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
@@ -128,9 +134,6 @@ export default function MapPage() {
                     </div>
                     <div>
                       <h3 className="font-medium text-foreground">{park.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {park.amenities.length} amenities
-                      </p>
                     </div>
                   </div>
                 </button>
@@ -170,14 +173,14 @@ export default function MapPage() {
                           position={{ lat: amenity.coordinates.lat, lng: amenity.coordinates.lng }}
                           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                         >
-                          <div className="relative -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+                          <div className="relative -translate-x-1/2 -translate-y-1/2 group cursor-pointer w-8 h-8">
                             <div className={cn(
                               "flex h-8 w-8 items-center justify-center rounded-full border-2 shadow-sm transition-transform group-hover:scale-110",
                               colorClass
                             )}>
                               <IconComponent className="h-4 w-4" />
                             </div>
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                            <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                               <div className="bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md border">
                                 {amenity.name}
                               </div>
