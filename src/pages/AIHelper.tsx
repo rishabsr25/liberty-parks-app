@@ -1,36 +1,225 @@
 import { useState } from 'react';
 import { Sparkles, MapPin, TrendingUp } from 'lucide-react';
-import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { parks, parkAttributes, ParkRecommendation } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+
+interface Park {
+  id: string;
+  name: string;
+  description: string;
+  address: string;
+  amenities: Array<{ type: string; name: string }>;
+}
+
+interface ParkAttributes {
+  runningTrails: number;
+  dogFriendly: number;
+  picnicFacilities: number;
+  playground: number;
+  sportsFields: number;
+  natureSensitivity: number;
+  waterAccess: number;
+  parking: number;
+  accessibility: number;
+  bikingTrails: number;
+  openSpace: number;
+  shelters: number;
+}
+
+// Updated parks list
+const parks: Park[] = [
+  {
+    id: 'liberty',
+    name: 'Liberty Park',
+    description: 'Main community park with extensive trails and facilities',
+    address: '9385 Columbus Pike, Lewis Center, OH',
+    amenities: [
+      { type: 'trail', name: 'Running Trail' },
+      { type: 'playground', name: 'Playground' },
+      { type: 'picnic', name: 'Picnic Area' },
+      { type: 'sports', name: 'Sports Fields' },
+      { type: 'restroom', name: 'Restrooms' },
+      { type: 'parking', name: 'Parking Lot' }
+    ]
+  },
+  {
+    id: 'havener',
+    name: 'Havener Park',
+    description: 'Quiet neighborhood park perfect for families',
+    address: '7747 Graphics Way, Lewis Center, OH',
+    amenities: [
+      { type: 'playground', name: 'Playground' },
+      { type: 'picnic', name: 'Picnic Tables' },
+      { type: 'parking', name: 'Parking' }
+    ]
+  },
+  {
+    id: 'big-bear',
+    name: 'Big Bear Park',
+    description: 'Large park with sports facilities and open spaces',
+    address: '7770 Liberty Rd, Powell, OH',
+    amenities: [
+      { type: 'sports', name: 'Sports Fields' },
+      { type: 'playground', name: 'Playground' },
+      { type: 'trail', name: 'Walking Trail' },
+      { type: 'parking', name: 'Parking' }
+    ]
+  },
+  {
+    id: 'hyatts',
+    name: 'Hyatts Park',
+    description: 'Community park with shelters and recreation areas',
+    address: '8710 Columbus Pike, Lewis Center, OH',
+    amenities: [
+      { type: 'shelter', name: 'Picnic Shelter' },
+      { type: 'playground', name: 'Playground' },
+      { type: 'sports', name: 'Ball Field' },
+      { type: 'parking', name: 'Parking' }
+    ]
+  },
+  {
+    id: 'patriot',
+    name: 'Patriot Park',
+    description: 'Scenic park with trails and natural features',
+    address: '9877 Worthington Rd, Powell, OH',
+    amenities: [
+      { type: 'trail', name: 'Nature Trail' },
+      { type: 'parking', name: 'Parking' },
+      { type: 'picnic', name: 'Picnic Area' }
+    ]
+  },
+  {
+    id: 'wedgewood',
+    name: 'Wedgewood Park',
+    description: 'Neighborhood park with playground and open areas',
+    address: '8190 Wedgewood Blvd, Powell, OH',
+    amenities: [
+      { type: 'playground', name: 'Playground' },
+      { type: 'sports', name: 'Open Field' },
+      { type: 'parking', name: 'Parking' }
+    ]
+  },
+  {
+    id: 'smith-preserve',
+    name: 'Smith Preserve',
+    description: 'Natural preserve with hiking trails and wildlife',
+    address: '580 Home Rd, Powell, OH',
+    amenities: [
+      { type: 'trail', name: 'Hiking Trails' },
+      { type: 'nature', name: 'Wildlife Viewing' },
+      { type: 'parking', name: 'Parking' }
+    ]
+  }
+];
+
+const parkAttributes: Record<string, ParkAttributes> = {
+  liberty: { runningTrails: 5, dogFriendly: 5, picnicFacilities: 5, playground: 4, sportsFields: 5, natureSensitivity: 3, waterAccess: 2, parking: 5, accessibility: 5, bikingTrails: 4, openSpace: 5, shelters: 4 },
+  havener: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 4, playground: 5, sportsFields: 1, natureSensitivity: 3, waterAccess: 0, parking: 4, accessibility: 5, bikingTrails: 2, openSpace: 3, shelters: 2 },
+  'big-bear': { runningTrails: 3, dogFriendly: 4, picnicFacilities: 3, playground: 4, sportsFields: 5, natureSensitivity: 2, waterAccess: 0, parking: 5, accessibility: 4, bikingTrails: 3, openSpace: 5, shelters: 3 },
+  hyatts: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 5, playground: 4, sportsFields: 4, natureSensitivity: 2, waterAccess: 0, parking: 4, accessibility: 4, bikingTrails: 2, openSpace: 4, shelters: 5 },
+  patriot: { runningTrails: 4, dogFriendly: 5, picnicFacilities: 3, playground: 1, sportsFields: 1, natureSensitivity: 5, waterAccess: 1, parking: 3, accessibility: 3, bikingTrails: 4, openSpace: 4, shelters: 2 },
+  wedgewood: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 2, playground: 5, sportsFields: 3, natureSensitivity: 2, waterAccess: 0, parking: 3, accessibility: 4, bikingTrails: 2, openSpace: 4, shelters: 1 },
+  'smith-preserve': { runningTrails: 5, dogFriendly: 4, picnicFacilities: 1, playground: 0, sportsFields: 0, natureSensitivity: 5, waterAccess: 3, parking: 3, accessibility: 2, bikingTrails: 4, openSpace: 3, shelters: 0 }
+};
 
 interface MatchScore {
   parkId: string;
   parkName: string;
   score: number;
   matchReason: string;
+  matchedFeatures: string[];
 }
 
-const ACTIVITY_KEYWORDS: Record<string, Record<string, number>> = {
-  run: { runningTrails: 5, parking: 2, accessibility: 3 },
-  dog: { dogFriendly: 5, parking: 3, playground: 1 },
-  picnic: { picnicFacilities: 5, parking: 3, playground: 1 },
-  family: { playground: 5, picnicFacilities: 3, parking: 4, accessibility: 3 },
-  sports: { sportsFields: 5, parking: 3, accessibility: 3 },
-  nature: { natureSensitivity: 5, waterAccess: 3, runningTrails: 2 },
-  water: { waterAccess: 5, parking: 3, playground: 2 },
-  hiking: { runningTrails: 5, natureSensitivity: 3, accessibility: 2 },
-  playground: { playground: 5, parking: 3, picnicFacilities: 2 },
-  fishing: { waterAccess: 5, parking: 3, picnicFacilities: 2 },
+// DOUBLED keywords - now with twice as many activity categories
+const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synonyms: string[] }> = {
+  run: {
+    weights: { runningTrails: 5, parking: 2, accessibility: 3, dogFriendly: 1 },
+    synonyms: ['running', 'jog', 'jogging', 'exercise', 'workout', 'cardio', 'trail', 'runner', 'jogs', 'sprint', 'sprinting', 'distance', 'marathon', 'training', 'pace', 'mile', 'miles', '5k', '10k']
+  },
+  dog: {
+    weights: { dogFriendly: 5, runningTrails: 3, parking: 3, playground: -1, openSpace: 3 },
+    synonyms: ['dogs', 'puppy', 'puppies', 'pet', 'pets', 'canine', 'walk dog', 'dog walk', 'pup', 'doggy', 'doggie', 'fur baby', 'pooch', 'hound', 'retriever', 'labrador', 'german shepherd', 'poodle', 'terrier', 'bulldog']
+  },
+  picnic: {
+    weights: { picnicFacilities: 5, parking: 3, playground: 2, accessibility: 2, shelters: 4, openSpace: 3 },
+    synonyms: ['lunch', 'eat', 'food', 'meal', 'outdoor dining', 'bbq', 'grill', 'shelter', 'dining', 'snack', 'breakfast', 'dinner', 'feast', 'cookout', 'barbecue', 'blanket', 'basket', 'table', 'pavilion', 'covered']
+  },
+  family: {
+    weights: { playground: 5, picnicFacilities: 4, parking: 4, accessibility: 4, sportsFields: 2, shelters: 3 },
+    synonyms: ['families', 'kids', 'children', 'kid', 'child', 'toddler', 'baby', 'family-friendly', 'youngster', 'infant', 'preschool', 'kindergarten', 'elementary', 'little ones', 'youth', 'juvenile', 'son', 'daughter', 'grandkids', 'nephew']
+  },
+  sports: {
+    weights: { sportsFields: 5, parking: 3, accessibility: 3, openSpace: 4 },
+    synonyms: ['sport', 'soccer', 'football', 'basketball', 'baseball', 'athletic', 'game', 'play', 'tennis', 'volleyball', 'lacrosse', 'frisbee', 'disc', 'kickball', 'softball', 'field', 'court', 'practice', 'team', 'league']
+  },
+  nature: {
+    weights: { natureSensitivity: 5, runningTrails: 3, waterAccess: 2, accessibility: 1 },
+    synonyms: ['natural', 'wildlife', 'outdoors', 'scenic', 'peaceful', 'quiet', 'serene', 'tranquil', 'wilderness', 'flora', 'fauna', 'birds', 'birdwatching', 'trees', 'forest', 'woods', 'preserve', 'conservation', 'eco', 'environment']
+  },
+  water: {
+    weights: { waterAccess: 5, natureSensitivity: 3, parking: 3, picnicFacilities: 2 },
+    synonyms: ['lake', 'pond', 'creek', 'stream', 'fish', 'fishing', 'waterfront', 'swim', 'swimming', 'river', 'wade', 'wading', 'splash', 'kayak', 'boat', 'boating', 'shore', 'beach', 'aquatic', 'angling']
+  },
+  hike: {
+    weights: { runningTrails: 5, natureSensitivity: 4, accessibility: 1, parking: 2, bikingTrails: 2 },
+    synonyms: ['hiking', 'walk', 'walking', 'stroll', 'trek', 'trekking', 'explore', 'wander', 'ramble', 'trail walk', 'nature walk', 'backpack', 'backpacking', 'expedition', 'adventure', 'pathway', 'footpath', 'traverse', 'roam', 'meander']
+  },
+  playground: {
+    weights: { playground: 5, parking: 3, picnicFacilities: 3, accessibility: 4 },
+    synonyms: ['play', 'swing', 'swings', 'slide', 'slides', 'playarea', 'playset', 'jungle gym', 'monkey bars', 'seesaw', 'merry-go-round', 'sandbox', 'climber', 'playstructure', 'equipment', 'toy', 'climbing', 'playing', 'recess', 'playdate']
+  },
+  relax: {
+    weights: { picnicFacilities: 4, natureSensitivity: 4, parking: 3, accessibility: 3, shelters: 3 },
+    synonyms: ['relaxing', 'chill', 'unwind', 'rest', 'peaceful', 'calm', 'leisure', 'lounge', 'sit', 'meditate', 'meditation', 'yoga', 'zen', 'destress', 'decompress', 'recharge', 'peace', 'serenity', 'solitude', 'contemplation']
+  },
+  bike: {
+    weights: { bikingTrails: 5, runningTrails: 3, parking: 3, accessibility: 2, openSpace: 2 },
+    synonyms: ['biking', 'bicycle', 'cycling', 'cycle', 'ride', 'riding', 'pedal', 'pedaling', 'cyclist', 'mountain bike', 'road bike', 'bmx', 'bike ride', 'bike trail', 'two wheels', 'wheeling', 'cruising', 'spin', 'velocipede', 'tandem']
+  },
+  event: {
+    weights: { openSpace: 5, parking: 4, accessibility: 4, shelters: 3, sportsFields: 3 },
+    synonyms: ['events', 'gathering', 'party', 'celebration', 'festival', 'reunion', 'meetup', 'get-together', 'assembly', 'function', 'occasion', 'ceremony', 'program', 'activity', 'social', 'community', 'group', 'organization', 'club', 'meeting']
+  },
+  exercise: {
+    weights: { runningTrails: 4, sportsFields: 4, openSpace: 3, parking: 2, accessibility: 3, bikingTrails: 3 },
+    synonyms: ['exercising', 'fitness', 'workout', 'training', 'physical activity', 'active', 'cardio', 'conditioning', 'movement', 'health', 'wellness', 'gym', 'outdoor gym', 'calisthenics', 'aerobics', 'stretching', 'warmup', 'cooldown', 'bodyweight', 'strength']
+  },
+  photography: {
+    weights: { natureSensitivity: 5, waterAccess: 3, runningTrails: 2, parking: 3 },
+    synonyms: ['photo', 'photos', 'photograph', 'picture', 'pictures', 'camera', 'shoot', 'photoshoot', 'scenic photos', 'landscape', 'portrait', 'snapshot', 'capture', 'imaging', 'lens', 'instagram', 'selfie', 'pics', 'photography', 'photographer']
+  },
+  shelter: {
+    weights: { shelters: 5, picnicFacilities: 4, parking: 3, accessibility: 3 },
+    synonyms: ['shelters', 'pavilion', 'pavilions', 'covered area', 'shade', 'covered', 'roof', 'canopy', 'gazebo', 'pergola', 'awning', 'cover', 'rain protection', 'sun protection', 'reserved space', 'rental', 'booking', 'reservation', 'indoor-outdoor', 'structure']
+  },
+  accessible: {
+    weights: { accessibility: 5, parking: 4, picnicFacilities: 3, playground: 3 },
+    synonyms: ['accessibility', 'wheelchair', 'handicap', 'ada', 'disability', 'disabled', 'mobility', 'paved', 'flat', 'easy access', 'ramp', 'ramped', 'barrier-free', 'universal design', 'inclusive', 'stroller', 'walker', 'cane', 'elderly', 'senior']
+  },
+  scenic: {
+    weights: { natureSensitivity: 5, waterAccess: 3, runningTrails: 2, openSpace: 3 },
+    synonyms: ['scenery', 'view', 'views', 'vista', 'panorama', 'landscape', 'picturesque', 'beautiful', 'pretty', 'gorgeous', 'breathtaking', 'stunning', 'photogenic', 'aesthetic', 'overlook', 'lookout', 'vantage', 'sightseeing', 'natural beauty', 'pristine']
+  },
+  open: {
+    weights: { openSpace: 5, sportsFields: 3, parking: 2, accessibility: 3 },
+    synonyms: ['open space', 'spacious', 'field', 'fields', 'lawn', 'grass', 'meadow', 'clearing', 'expanse', 'wide open', 'roomy', 'uncrowded', 'spread out', 'large area', 'big', 'vast', 'expansive', 'room', 'space', 'area']
+  },
+  parking: {
+    weights: { parking: 5, accessibility: 3 },
+    synonyms: ['park', 'lot', 'parking lot', 'car', 'vehicle', 'parking space', 'parking area', 'easy parking', 'ample parking', 'good parking', 'convenient', 'close parking', 'nearby parking', 'accessible parking', 'drive', 'driving', 'automobile', 'transportation', 'access', 'entrance']
+  },
+  quiet: {
+    weights: { natureSensitivity: 5, waterAccess: 2, openSpace: -2, sportsFields: -2 },
+    synonyms: ['quietness', 'silent', 'silence', 'tranquil', 'tranquility', 'peaceful', 'calm', 'still', 'hushed', 'secluded', 'isolated', 'private', 'remote', 'away', 'hidden', 'undisturbed', 'solitary', 'retreat', 'sanctuary', 'escape']
+  }
 };
 
 export default function AIParkHelperPage() {
-  const { toast } = useToast();
+  const { toast } = useToast();   
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState<MatchScore[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -40,46 +229,83 @@ export default function AIParkHelperPage() {
     const lowerQuery = query.toLowerCase();
     const scores: MatchScore[] = [];
 
+    // Extract matched activities with synonym support
+    const matchedActivities = new Map<string, number>();
+    
+    for (const [keyword, config] of Object.entries(ACTIVITY_KEYWORDS)) {
+      const allTerms = [keyword, ...config.synonyms];
+      let maxMatches = 0;
+      
+      for (const term of allTerms) {
+        const regex = new RegExp(`\\b${term}\\b`, 'gi');
+        const matches = (lowerQuery.match(regex) || []).length;
+        maxMatches = Math.max(maxMatches, matches);
+      }
+      
+      if (maxMatches > 0) {
+        matchedActivities.set(keyword, maxMatches);
+      }
+    }
+
+    // Calculate scores for each park
     for (const park of parks) {
       const parkAttr = parkAttributes[park.id];
       if (!parkAttr) continue;
 
       let totalScore = 0;
       let maxPossibleScore = 0;
-      const matchedActivities: string[] = [];
+      const contributingFeatures: string[] = [];
 
-      for (const [keyword, weights] of Object.entries(ACTIVITY_KEYWORDS)) {
-        if (lowerQuery.includes(keyword)) {
-          matchedActivities.push(keyword);
+      if (matchedActivities.size > 0) {
+        for (const [keyword, frequency] of matchedActivities.entries()) {
+          const config = ACTIVITY_KEYWORDS[keyword];
           let keywordScore = 0;
           let keywordMax = 0;
 
-          for (const [attribute, weight] of Object.entries(weights)) {
-            const attrValue = parkAttr[attribute as keyof typeof parkAttr] || 0;
-            keywordScore += (attrValue / 5) * weight;
-            keywordMax += weight;
+          for (const [attribute, weight] of Object.entries(config.weights)) {
+            const attrValue = parkAttr[attribute as keyof ParkAttributes] || 0;
+            const weightedValue = weight > 0 ? (attrValue / 5) * Math.abs(weight) : (1 - attrValue / 5) * Math.abs(weight);
+            keywordScore += weightedValue * frequency;
+            keywordMax += Math.abs(weight) * frequency;
           }
 
           totalScore += keywordScore;
           maxPossibleScore += keywordMax;
+          
+          if (keywordScore / keywordMax > 0.6) {
+            contributingFeatures.push(keyword);
+          }
         }
-      }
 
-      if (matchedActivities.length > 0) {
+        // Boost for multiple matched activities (synergy bonus)
+        const synergyBonus = matchedActivities.size > 1 ? 1.1 : 1.0;
+        totalScore *= synergyBonus;
+        maxPossibleScore *= synergyBonus;
+
         const percentage = Math.round((totalScore / maxPossibleScore) * 100);
+        const topFeatures = contributingFeatures.slice(0, 3);
+        
         scores.push({
           parkId: park.id,
           parkName: park.name,
           score: Math.min(100, Math.max(0, percentage)),
-          matchReason: `Perfect for ${matchedActivities.slice(0, 2).join(', ')}`,
+          matchReason: topFeatures.length > 0 
+            ? `Great for ${topFeatures.join(', ').replace(/,([^,]*)$/, ' and$1')}`
+            : 'Good general match',
+          matchedFeatures: Array.from(matchedActivities.keys())
         });
       } else {
-        // Default score for no matches
+        // Deterministic fallback for vague queries - based on amenity count and variety (NO RANDOMNESS)
+        const amenityScore = (park.amenities.length / 6) * 50;
+        const varietyScore = (new Set(park.amenities.map(a => a.type)).size / 6) * 30;
+        const baseScore = amenityScore + varietyScore;
+        
         scores.push({
           parkId: park.id,
           parkName: park.name,
-          score: Math.random() * 30 + 40,
-          matchReason: 'General park amenities',
+          score: Math.round(baseScore),
+          matchReason: 'Versatile park with good amenities',
+          matchedFeatures: []
         });
       }
     }
@@ -100,7 +326,6 @@ export default function AIParkHelperPage() {
     setIsSearching(true);
     setHasSearched(true);
 
-    // Simulate AI processing
     setTimeout(() => {
       const results = calculateParkScore(query);
       setRecommendations(results);
@@ -119,9 +344,8 @@ export default function AIParkHelperPage() {
   };
 
   return (
-    <Layout>
-      <div className="container py-8">
-        {/* Page Header */}
+    <div className="min-h-screen bg-background">
+      <div className="container py-8 max-w-6xl mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-2 flex items-center gap-2">
             <Sparkles className="h-8 w-8" />
@@ -132,7 +356,6 @@ export default function AIParkHelperPage() {
           </p>
         </div>
 
-        {/* Search Section */}
         <Card className="mb-8 border-2">
           <CardContent className="pt-6">
             <div className="space-y-4">
@@ -155,11 +378,10 @@ export default function AIParkHelperPage() {
                   >
                     <Sparkles className="h-4 w-4" />
                     {isSearching ? 'Analyzing...' : 'Find Parks'}
-                  </Button>
-                </div>
+                    </Button>
               </div>
+            </div>
 
-              {/* Example Prompts */}
               <div className="space-y-2">
                 <p className="text-xs font-medium text-muted-foreground">Popular searches:</p>
                 <div className="flex flex-wrap gap-2">
@@ -186,10 +408,9 @@ export default function AIParkHelperPage() {
                 </div>
               </div>
             </div>
-          </CardContent>
+           </CardContent>
         </Card>
 
-        {/* Results Section */}
         {hasSearched && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-foreground">Your Personalized Recommendations</h2>
@@ -201,16 +422,14 @@ export default function AIParkHelperPage() {
                   if (!park) return null;
 
                   return (
-                    <Card
+                    <div
                       key={rec.parkId}
-                      className={cn(
-                        'overflow-hidden transition-all hover:shadow-lg',
-                        index === 0 && 'border-2 border-primary bg-primary/5'
-                      )}
+                      className={`overflow-hidden transition-all hover:shadow-lg rounded-lg border bg-card ${
+                        index === 0 ? 'border-2 border-primary bg-primary/5' : ''
+                      }`}
                     >
-                      <CardContent className="p-6">
+                      <div className="p-6">
                         <div className="space-y-4">
-                          {/* Header */}
                           <div className="flex items-start justify-between gap-4">
                             <div>
                               <div className="flex items-center gap-2 mb-2">
@@ -229,13 +448,11 @@ export default function AIParkHelperPage() {
                             </div>
                           </div>
 
-                          {/* Match Reason */}
                           <div className="flex items-center gap-2">
                             <TrendingUp className="h-4 w-4 text-green-600" />
                             <p className="text-sm text-green-700 font-medium">{rec.matchReason}</p>
                           </div>
 
-                          {/* Match Bar */}
                           <div className="space-y-2">
                             <div className="h-2 rounded-full bg-muted overflow-hidden">
                               <div
@@ -245,7 +462,6 @@ export default function AIParkHelperPage() {
                             </div>
                           </div>
 
-                          {/* Park Info */}
                           <div className="grid grid-cols-2 gap-4 pt-2 border-t">
                             <div>
                               <p className="text-xs text-muted-foreground">Location</p>
@@ -260,7 +476,6 @@ export default function AIParkHelperPage() {
                             </div>
                           </div>
 
-                          {/* Amenity Tags */}
                           <div className="flex flex-wrap gap-2">
                             {Array.from(new Set(park.amenities.map((a) => a.type)))
                               .slice(0, 4)
@@ -271,37 +486,33 @@ export default function AIParkHelperPage() {
                               ))}
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
             ) : (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <p className="text-muted-foreground">No parks found for your search. Try different keywords!</p>
-                </CardContent>
-              </Card>
+              <div className="rounded-lg border bg-card p-12 text-center">
+                <p className="text-muted-foreground">No parks found for your search. Try different keywords!</p>
+              </div>
             )}
 
-            {/* Why These Recommendations */}
             <Card className="bg-muted/50">
               <CardHeader>
                 <CardTitle className="text-lg">Why These Recommendations?</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2">
-                <p>
-                  Our AI Park Helper analyzes your interests and matches them against Liberty Township's 7 parks. Each park is scored based on its amenities and suitability for your activities.
-                </p>
-                <p>
-                  We consider factors like running trails, dog-friendliness, picnic areas, sports fields, water access, and more to give you personalized recommendations.
-                </p>
+                  <p>
+                    Our AI Park Helper analyzes your interests and matches them against Liberty Township's 7 parks. Each park is scored based on its amenities and suitability for your activities.
+                  </p>
+                  <p>
+                    We consider factors like running trails, dog-friendliness, picnic areas, sports fields, water access, and more to give you personalized recommendations.
+                  </p>
               </CardContent>
             </Card>
           </div>
         )}
 
-        {/* Initial Info */}
         {!hasSearched && (
           <div className="grid gap-6 md:grid-cols-3">
             {[
@@ -328,8 +539,8 @@ export default function AIParkHelperPage() {
               </Card>
             ))}
           </div>
-        )}
+          )}
       </div>
-    </Layout>
+    </div>
   );
 }
