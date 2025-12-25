@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Lora:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Nature Green & Earth Tones Palette */
+    --background: 45 30% 97%;
+    --foreground: 150 25% 15%;
+
+    --card: 45 25% 95%;
+    --card-foreground: 150 25% 15%;
+
+    --popover: 45 30% 97%;
+    --popover-foreground: 150 25% 15%;
+
+    /* Forest Green Primary */
+    --primary: 152 45% 28%;
+    --primary-foreground: 45 30% 97%;
+
+    /* Warm Earth Secondary */
+    --secondary: 35 35% 85%;
+    --secondary-foreground: 30 30% 25%;
+
+    --muted: 45 20% 90%;
+    --muted-foreground: 150 10% 40%;
+
+    /* Sage Green Accent */
+    --accent: 145 30% 45%;
+    --accent-foreground: 45 30% 97%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 45 20% 85%;
+    --input: 45 20% 85%;
+    --ring: 152 45% 28%;
+
+    --radius: 0.75rem;
+
+    /* Custom nature tokens */
+    --forest: 152 45% 28%;
+    --forest-light: 152 35% 45%;
+    --forest-dark: 152 50% 18%;
+    --earth: 30 30% 45%;
+    --earth-light: 35 35% 75%;
+    --sand: 45 30% 92%;
+    --bark: 25 35% 30%;
+    --moss: 120 25% 40%;
+    --sky: 200 60% 55%;
+
+    --sidebar-background: 45 25% 95%;
+    --sidebar-foreground: 150 25% 15%;
+    --sidebar-primary: 152 45% 28%;
+    --sidebar-primary-foreground: 45 30% 97%;
+    --sidebar-accent: 145 30% 45%;
+    --sidebar-accent-foreground: 45 30% 97%;
+    --sidebar-border: 45 20% 85%;
+    --sidebar-ring: 152 45% 28%;
+  }
+
+  .dark {
+    --background: 150 20% 8%;
+    --foreground: 45 20% 95%;
+
+    --card: 150 20% 12%;
+    --card-foreground: 45 20% 95%;
+
+    --popover: 150 20% 10%;
+    --popover-foreground: 45 20% 95%;
+
+    --primary: 152 40% 45%;
+    --primary-foreground: 150 20% 8%;
+
+    --secondary: 30 20% 20%;
+    --secondary-foreground: 45 20% 90%;
+
+    --muted: 150 15% 18%;
+    --muted-foreground: 45 15% 60%;
+
+    --accent: 145 35% 35%;
+    --accent-foreground: 45 20% 95%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 15% 20%;
+    --input: 150 15% 20%;
+    --ring: 152 40% 45%;
+
+    --forest: 152 40% 45%;
+    --forest-light: 152 35% 55%;
+    --forest-dark: 152 45% 30%;
+    --earth: 30 25% 35%;
+    --earth-light: 35 30% 45%;
+    --sand: 45 20% 18%;
+    --bark: 25 30% 45%;
+    --moss: 120 20% 35%;
+    --sky: 200 50% 45%;
+
+    --sidebar-background: 150 20% 10%;
+    --sidebar-foreground: 45 20% 95%;
+    --sidebar-primary: 152 40% 45%;
+    --sidebar-primary-foreground: 150 20% 8%;
+    --sidebar-accent: 145 35% 35%;
+    --sidebar-accent-foreground: 45 20% 95%;
+    --sidebar-border: 150 15% 20%;
+    --sidebar-ring: 152 40% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  .font-heading {
+    font-family: 'Lora', serif;
+  }
+  .font-sans {
+    font-family: 'Outfit', sans-serif;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
