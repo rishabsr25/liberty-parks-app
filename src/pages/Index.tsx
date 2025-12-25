@@ -42,7 +42,7 @@ const features = [
 ];
 
 const stats = [
-  { icon: TreePine, value: '7+', label: 'Parks' },
+  { icon: TreePine, value: '8', label: 'Parks' },
   { icon: Users, value: '35K+', label: 'Residents' },
   { icon: Heart, value: '100+', label: 'Events/Year' },
 ];
@@ -67,7 +67,7 @@ export default function Index() {
             
             <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
               Discover and Enjoy{' '}
-              <span className="text-primary">Liberty Township Parks</span>
+              <span className="text-primary">Liberty Township's Parks</span>
             </h1>
             
             <p className="mb-8 text-lg text-muted-foreground md:text-xl">
