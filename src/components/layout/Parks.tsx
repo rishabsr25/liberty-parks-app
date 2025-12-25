@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Trees, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import libertyPark from "@/assets/liberty-park.jpg";
 import havenerPark from "@/assets/havener-park.jpg";
 import bigBearPark from "@/assets/big-bear-park.jpg";
@@ -43,14 +44,14 @@ const FeaturedParks = () => {
             Discover Our Green Spaces
           </h2>
           <p className="text-muted-foreground text-lg">
-            From peaceful nature trails to vibrant community gathering spots, 
+            From peaceful nature trails to vibrant community gathering spots,
             Liberty Township offers parks for every adventure.
           </p>
         </div>
 
         {/* Parks Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {parks.map((park, index) => (
+          {parks.map((park) => (
             <Card
               key={park.name}
               className="overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow duration-300"
@@ -106,10 +107,12 @@ const FeaturedParks = () => {
 
         {/* View All Button */}
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
-            View All Parks
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <Link to="/parks">
+            <Button variant="outline" size="lg">
+              View All Parks
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
