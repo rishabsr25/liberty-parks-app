@@ -30,6 +30,7 @@ export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedParkId, setSelectedParkId] = useState<string>('all');
   const [eventList, setEventList] = useState<ParkEvent[]>(events);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newEvent, setNewEvent] = useState({
@@ -51,7 +52,17 @@ export default function CalendarPage() {
   const filteredEvents = eventList.filter((event) => {
     const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
     const matchesDate = !selectedDate || isSameDay(event.date, selectedDate);
-    return matchesCategory && matchesDate;
+
+    let matchesPark = true;
+    if (selectedParkId !== 'all') {
+      const selectedPark = parks.find(p => p.id === selectedParkId);
+      if (selectedPark) {
+        // Check if event location contains park name (case insensitive for safety, though data matches)
+        matchesPark = event.location.toLowerCase().includes(selectedPark.name.toLowerCase());
+      }
+    }
+
+    return matchesCategory && matchesDate && matchesPark;
   });
 
   const getEventsForDay = (day: Date) => {
@@ -101,7 +112,7 @@ export default function CalendarPage() {
     <Layout>
       <div className="container py-8">
         {/* Page Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-2">
               Event Calendar
@@ -110,91 +121,106 @@ export default function CalendarPage() {
               Discover upcoming events and activities at Liberty Township parks. Click on a date and add your own event!
             </p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                Add Event
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Add Event to {selectedDate ? format(selectedDate, 'MMMM d') : 'Calendar'}</DialogTitle>
-                <DialogDescription>
-                  Create a new event for Liberty Township parks.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="title">Event Title *</Label>
-                  <Input
-                    id="title"
-                    placeholder="e.g., Community Volleyball Tournament"
-                    value={newEvent.title}
-                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Describe the event..."
-                    value={newEvent.description}
-                    onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="location">Location *</Label>
-                  <Input
-                    id="location"
-                    placeholder="e.g., Liberty Park - Sports Field A"
-                    value={newEvent.location}
-                    onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
+            <Select value={selectedParkId} onValueChange={setSelectedParkId}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All Parks" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Parks</SelectItem>
+                {parks.map((park) => (
+                  <SelectItem key={park.id} value={park.id}>
+                    {park.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add Event
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Add Event to {selectedDate ? format(selectedDate, 'MMMM d') : 'Calendar'}</DialogTitle>
+                  <DialogDescription>
+                    Create a new event for Liberty Township parks.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="startTime">Start Time</Label>
+                    <Label htmlFor="title">Event Title *</Label>
                     <Input
-                      id="startTime"
-                      type="time"
-                      value={newEvent.startTime}
-                      onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                      id="title"
+                      placeholder="e.g., Community Volleyball Tournament"
+                      value={newEvent.title}
+                      onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="endTime">End Time</Label>
-                    <Input
-                      id="endTime"
-                      type="time"
-                      value={newEvent.endTime}
-                      onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Describe the event..."
+                      value={newEvent.description}
+                      onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
                     />
                   </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="location">Location *</Label>
+                    <Input
+                      id="location"
+                      placeholder="e.g., Liberty Park - Sports Field A"
+                      value={newEvent.location}
+                      onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="startTime">Start Time</Label>
+                      <Input
+                        id="startTime"
+                        type="time"
+                        value={newEvent.startTime}
+                        onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="endTime">End Time</Label>
+                      <Input
+                        id="endTime"
+                        type="time"
+                        value={newEvent.endTime}
+                        onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Select value={newEvent.category} onValueChange={(value: any) => setNewEvent({ ...newEvent, category: value })}>
+                      <SelectTrigger id="category">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sports">Sports</SelectItem>
+                        <SelectItem value="community">Community</SelectItem>
+                        <SelectItem value="nature">Nature</SelectItem>
+                        <SelectItem value="fitness">Fitness</SelectItem>
+                        <SelectItem value="family">Family</SelectItem>
+                        <SelectItem value="seasonal">Seasonal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Select value={newEvent.category} onValueChange={(value: any) => setNewEvent({ ...newEvent, category: value })}>
-                    <SelectTrigger id="category">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sports">Sports</SelectItem>
-                      <SelectItem value="community">Community</SelectItem>
-                      <SelectItem value="nature">Nature</SelectItem>
-                      <SelectItem value="fitness">Fitness</SelectItem>
-                      <SelectItem value="family">Family</SelectItem>
-                      <SelectItem value="seasonal">Seasonal</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                  <Button onClick={handleAddEvent}>Add Event</Button>
                 </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleAddEvent}>Add Event</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
@@ -279,19 +305,24 @@ export default function CalendarPage() {
               </CardContent>
             </Card>
 
-            {/* Category Filters */}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className="capitalize"
-                >
-                  {category === 'all' ? 'All Events' : category}
-                </Button>
-              ))}
+            {/* Filters */}
+            <div className="flex flex-col gap-4 mt-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Filter by Category</Label>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category) => (
+                    <Button
+                      key={category}
+                      variant={selectedCategory === category ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSelectedCategory(category)}
+                      className="capitalize"
+                    >
+                      {category === 'all' ? 'All Events' : category}
+                    </Button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { MapPin, Filter, AlertTriangle } from 'lucide-react';
-import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
+import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy } from 'lucide-react';
+import { GoogleMap, useJsApiLoader, MarkerF, OverlayView } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +18,20 @@ const amenityFilters = [
   { type: 'dog-park', label: 'Dog Park' },
   { type: 'sports', label: 'Sports' },
 ];
+
+const IconMap: Record<string, any> = {
+  Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy
+};
+
+const amenityColorMap: Record<string, string> = {
+  sky: 'bg-sky text-sky-foreground border-sky/30',
+  earth: 'bg-earth text-earth-foreground border-earth/30',
+  forest: 'bg-forest text-forest-foreground border-forest-light/30',
+  bark: 'bg-bark text-bark-foreground border-bark/30',
+  accent: 'bg-accent text-accent-foreground border-accent/30',
+  moss: 'bg-moss text-moss-foreground border-moss/30',
+  primary: 'bg-primary text-primary-foreground border-primary/30',
+};
 
 const containerStyle = {
   width: '100%',
@@ -142,28 +156,36 @@ export default function MapPage() {
                       fullscreenControl: true,
                     }}
                   >
-                    {/* Park Marker */}
-                    <MarkerF
-                      position={{ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng }}
-                      title={selectedPark.name}
-                    // You can customize icon here if needed
-                    />
+                    {/* Park Marker - Removed as per request */}
 
                     {/* Amenities Markers */}
-                    {filteredAmenities.map((amenity) => (
-                      <MarkerF
-                        key={amenity.id}
-                        position={{ lat: amenity.coordinates.lat, lng: amenity.coordinates.lng }}
-                        title={amenity.name}
-                        // Using standard marker for now, can be customized with amenityInfo[amenity.type].icon
-                        label={{
-                          text: amenity.name.charAt(0),
-                          color: "white",
-                          fontSize: "10px",
-                          fontWeight: "bold"
-                        }}
-                      />
-                    ))}
+                    {filteredAmenities.map((amenity) => {
+                      const info = amenityInfo[amenity.type];
+                      const IconComponent = IconMap[info.icon] || MapPin;
+                      const colorClass = amenityColorMap[info.color] || 'bg-primary text-primary-foreground';
+
+                      return (
+                        <OverlayView
+                          key={amenity.id}
+                          position={{ lat: amenity.coordinates.lat, lng: amenity.coordinates.lng }}
+                          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                        >
+                          <div className="relative -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+                            <div className={cn(
+                              "flex h-8 w-8 items-center justify-center rounded-full border-2 shadow-sm transition-transform group-hover:scale-110",
+                              colorClass
+                            )}>
+                              <IconComponent className="h-4 w-4" />
+                            </div>
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                              <div className="bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md border">
+                                {amenity.name}
+                              </div>
+                            </div>
+                          </div>
+                        </OverlayView>
+                      )
+                    })}
                   </GoogleMap>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
