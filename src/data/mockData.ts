@@ -1,4 +1,8 @@
 // Mock data for Liberty Township Parks App
+import libertyPark from "@/assets/liberty-park.jpg";
+import havenerPark from "@/assets/havener-park.jpg";
+import bigBearPark from "@/assets/big-bear-park.jpg";
+import heroPark from "@/assets/hero-park.jpg";
 
 export interface Park {
   id: string;
@@ -85,6 +89,7 @@ export const parks: Park[] = [
     description: 'Our flagship community park featuring sports fields, playgrounds, and walking trails.',
     address: '2845 Home Rd, Powell, OH 43065',
     coordinates: { lat: 39.4523, lng: -84.3965 },
+    image: libertyPark,
     amenities: [
       { id: 'lp-bathroom-1', type: 'bathroom', name: 'Main Restrooms', coordinates: { lat: 39.4525, lng: -84.3960 } },
       { id: 'lp-parking-1', type: 'parking', name: 'Main Parking Lot', coordinates: { lat: 39.4520, lng: -84.3970 } },
@@ -99,6 +104,7 @@ export const parks: Park[] = [
     description: 'A peaceful park perfect for picnics and family gatherings with beautiful natural scenery.',
     address: '8794 Big Bear Ave, Powell, OH 43065',
     coordinates: { lat: 39.4612, lng: -84.4023 },
+    image: bigBearPark,
     amenities: [
       { id: 'wp-bathroom-1', type: 'bathroom', name: 'Park Restrooms', coordinates: { lat: 39.4610, lng: -84.4020 } },
       { id: 'wp-picnic-1', type: 'picnic', name: 'Picnic Pavilion', coordinates: { lat: 39.4615, lng: -84.4025 } },
@@ -112,6 +118,7 @@ export const parks: Park[] = [
     description: 'Home to youth sports leagues with multiple soccer and baseball fields.',
     address: '4085 Liberty Rd, Delaware, OH 43015',
     coordinates: { lat: 39.4489, lng: -84.3812 },
+    image: havenerPark,
     amenities: [
       { id: 'lef-sports-1', type: 'sports', name: 'Baseball Diamonds', coordinates: { lat: 39.4492, lng: -84.3815 } },
       { id: 'lef-sports-2', type: 'sports', name: 'Soccer Complex', coordinates: { lat: 39.4485, lng: -84.3808 } },
@@ -125,6 +132,7 @@ export const parks: Park[] = [
     description: 'A dedicated off-leash dog park with separate areas for large and small dogs.',
     address: '2500 Hyatts Road, Delaware, OH 43065',
     coordinates: { lat: 39.4401, lng: -84.4156 },
+    image: heroPark,
     amenities: [
       { id: 'kdp-dogpark-1', type: 'dog-park', name: 'Large Dog Area', coordinates: { lat: 39.4403, lng: -84.4155 } },
       { id: 'kdp-dogpark-2', type: 'dog-park', name: 'Small Dog Area', coordinates: { lat: 39.4399, lng: -84.4158 } },
