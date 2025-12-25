@@ -4,6 +4,7 @@ import FeaturedParks from "@/components/layout/FeaturedParks";
 import Events from "@/components/layout/Events";
 import Amenities from "@/components/layout/Amenities";
 import CallToAction from "@/components/layout/CallToAction";
+import Parks from "@/components/layout/Parks";
 import {Footer} from "@/components/layout/Footer";
 
 const Index = () => {
@@ -13,8 +14,8 @@ const Index = () => {
       <main>
         <Hero />
         <FeaturedParks />
-        <Events />
-        <Amenities />
+        <Parks />
+        
         <CallToAction />
       </main>
       <Footer />
