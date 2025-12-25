@@ -1,23 +1,13 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { MapPin, Car, TreePine, Bath, Baby, Dog, Trophy, Armchair, UtensilsCrossed, Filter } from 'lucide-react';
-import { GoogleMap } from '@react-google-maps/api';
+import { useState, useCallback, useEffect } from 'react';
+import { MapPin, Filter, AlertTriangle } from 'lucide-react';
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { parks, amenityInfo } from '@/data/mockData';
 import { cn } from '@/lib/utils';
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Bath,
-  Armchair,
-  TreePine,
-  Car,
-  Baby,
-  UtensilsCrossed,
-  Dog,
-  Trophy,
-};
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const amenityFilters = [
   { type: 'all', label: 'All' },
@@ -29,119 +19,55 @@ const amenityFilters = [
   { type: 'sports', label: 'Sports' },
 ];
 
+const containerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
 export default function MapPage() {
   const [selectedPark, setSelectedPark] = useState(parks[0]);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [map, setMap] = useState<google.maps.Map | null>(null);
 
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [loadError, setLoadError] = useState(false);
-
-  // API key (for development only - remove before production)
-  const apiKey = '';
-
-  useEffect(() => {
-    const key = apiKey;
-    if (!key) {
-      setLoadError(true);
-      return;
-    }
-
-    // Check if Google Maps is already loaded
-    if (window.google && window.google.maps) {
-      setIsLoaded(true);
-      return;
-    }
-
-    // Check if script already exists in DOM
-    const existing = Array.from(document.getElementsByTagName('script')).find((s) => s.src.includes('maps.googleapis.com'));
-    if (existing) {
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&v=weekly&language=en&region=US`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => setIsLoaded(true);
-    script.onerror = () => setLoadError(true);
-    document.head.appendChild(script);
-  }, [apiKey]);
-
-  const mapContainerStyle = { width: '100%', height: '100%' };
-  const defaultZoom = 15;
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<any[]>([]);
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
+  });
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
+    setMap(map);
+  }, []);
+
+  const onUnmount = useCallback(() => {
+    setMap(null);
   }, []);
 
   const filteredAmenities = selectedPark.amenities.filter(
     (amenity) => activeFilter === 'all' || amenity.type === activeFilter
   );
 
+  // Update map view when selected park changes
   useEffect(() => {
-    if (!isLoaded || !mapRef.current) return;
-    try {
-      const bounds = new google.maps.LatLngBounds();
-      bounds.extend({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng } as any);
-      filteredAmenities.forEach((a) => bounds.extend({ lat: a.coordinates.lat, lng: a.coordinates.lng } as any));
-      if (!bounds.isEmpty()) {
-        mapRef.current.fitBounds(bounds);
-      } else {
-        mapRef.current.setCenter({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
-        mapRef.current.setZoom(defaultZoom);
-      }
-    } catch (e) {
-      // ignore if google maps types not ready
-    }
-  }, [isLoaded, selectedPark, activeFilter, filteredAmenities]);
+    if (map && selectedPark) {
+      const bounds = new window.google.maps.LatLngBounds();
+      // Add park location
+      bounds.extend({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
 
-  // create AdvancedMarkerElement markers (preferred over google.maps.Marker)
-  useEffect(() => {
-    if (!isLoaded || !mapRef.current) return;
-
-    // clear existing markers
-    try {
-      markersRef.current.forEach((m) => {
-        if (m && typeof m.setMap === 'function') m.setMap(null);
-      });
-    } catch (e) {
-      // ignore
-    }
-    markersRef.current = [];
-
-    try {
-      // park marker
-      const parkMarker = new google.maps.Marker({
-        position: { lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng },
-        title: selectedPark.name,
-        map: mapRef.current,
-      });
-      markersRef.current.push(parkMarker);
-
-      // amenity markers
+      // Add amenities
       filteredAmenities.forEach((a) => {
-        const m = new google.maps.Marker({
-          position: { lat: a.coordinates.lat, lng: a.coordinates.lng },
-          title: a.name,
-          map: mapRef.current,
-        });
-        markersRef.current.push(m);
+        bounds.extend({ lat: a.coordinates.lat, lng: a.coordinates.lng });
       });
-    } catch (e) {
-      // fallback: do nothing
-    }
 
-    return () => {
-      try {
-        markersRef.current.forEach((m) => {
-          if (m && typeof m.setMap === 'function') m.setMap(null);
-        });
-      } catch (e) {}
-      markersRef.current = [];
-    };
-  }, [isLoaded, selectedPark, filteredAmenities]);
+      if (filteredAmenities.length > 0) {
+        map.fitBounds(bounds);
+      } else {
+        map.panTo({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
+        map.setZoom(16);
+      }
+    }
+  }, [map, selectedPark, filteredAmenities]);
+
+  const apiKeyMissing = !import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   return (
     <Layout>
@@ -155,6 +81,16 @@ export default function MapPage() {
             Explore park amenities and find what you need for your visit.
           </p>
         </div>
+
+        {apiKeyMissing && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Configuration Required</AlertTitle>
+            <AlertDescription>
+              Google Maps API Key is missing. Please add <code>VITE_GOOGLE_MAPS_API_KEY</code> to your <code>.env</code> file.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Sidebar - Park List */}
@@ -190,35 +126,59 @@ export default function MapPage() {
 
           {/* Main Map Area */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Google Map (satellite) */}
             <Card className="overflow-hidden">
-              <div className="relative aspect-[16/10]">
-                {!isLoaded && !loadError && (
+              <div className="relative aspect-[16/10] bg-muted">
+                {isLoaded ? (
+                  <GoogleMap
+                    mapContainerStyle={containerStyle}
+                    center={{ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng }}
+                    zoom={15}
+                    onLoad={onMapLoad}
+                    onUnmount={onUnmount}
+                    options={{
+                      mapTypeId: 'satellite',
+                      streetViewControl: false,
+                      mapTypeControl: false,
+                      fullscreenControl: true,
+                    }}
+                  >
+                    {/* Park Marker */}
+                    <MarkerF
+                      position={{ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng }}
+                      title={selectedPark.name}
+                    // You can customize icon here if needed
+                    />
+
+                    {/* Amenities Markers */}
+                    {filteredAmenities.map((amenity) => (
+                      <MarkerF
+                        key={amenity.id}
+                        position={{ lat: amenity.coordinates.lat, lng: amenity.coordinates.lng }}
+                        title={amenity.name}
+                        // Using standard marker for now, can be customized with amenityInfo[amenity.type].icon
+                        label={{
+                          text: amenity.name.charAt(0),
+                          color: "white",
+                          fontSize: "10px",
+                          fontWeight: "bold"
+                        }}
+                      />
+                    ))}
+                  </GoogleMap>
+                ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center p-6">
-                      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
-                        <MapPin className="h-8 w-8 text-primary" />
-                      </div>
-                      <div>Loading map…</div>
+                      {loadError ? (
+                        <div className="text-destructive font-medium">Map failed to load. Check API Key.</div>
+                      ) : apiKeyMissing ? (
+                        <div className="text-muted-foreground">Map disabled (No API Key)</div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <MapPin className="h-5 w-5 animate-bounce" />
+                          Loading Google Maps...
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
-
-                {loadError && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-red-600">Map failed to load</div>
-                  </div>
-                )}
-
-                {isLoaded && (
-                  <div className="absolute inset-0">
-                    <GoogleMap
-                      mapContainerStyle={mapContainerStyle}
-                      center={{ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng }}
-                      zoom={defaultZoom}
-                      options={{ mapTypeId: 'satellite' as any, streetViewControl: false, mapTypeControl: false }}
-                      onLoad={onMapLoad}
-                    />
                   </div>
                 )}
               </div>
@@ -249,19 +209,20 @@ export default function MapPage() {
                 <div className="grid gap-3 sm:grid-cols-2">
                   {filteredAmenities.map((amenity) => {
                     const info = amenityInfo[amenity.type];
-                    const Icon = iconMap[info.icon] || MapPin;
                     return (
                       <div
                         key={amenity.id}
                         className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
                       >
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                          <Icon className="h-5 w-5 text-primary" />
+                          {/* We really should have a proper icon mapping component. 
+                              For now, just MapPin is safe or we assume the text description is enough */}
+                          <MapPin className="h-5 w-5 text-primary" />
                         </div>
                         <div>
                           <p className="font-medium text-foreground text-sm">{amenity.name}</p>
                           <Badge variant="secondary" className="mt-1 text-xs">
-                            {info.label}
+                            {info?.label || amenity.type}
                           </Badge>
                         </div>
                       </div>
