@@ -1,6 +1,10 @@
 import { TreePine, Users, Calendar, Award, Heart, MapPin } from 'lucide-react';
 import { Layout } from '@/components/layout';
 import { Card, CardContent } from '@/components/ui/card';
+import boysRunning from "@/assets/boys-running.jpg";
+import everyKidsPlayground from "@/assets/every-kids-playground.jpg";
+import libertyParkSign from "@/assets/liberty-park-sign.jpg";
+import patriot5k from "@/assets/patriot-5k.png";
 
 const stats = [
   { icon: TreePine, value: '7', label: 'Community Parks' },
@@ -39,7 +43,7 @@ export default function AboutPage() {
               <span>Serving Our Community</span>
             </div>
             <h1 className="mb-6 text-4xl font-bold text-foreground md:text-5xl">
-              About Liberty Township Parks
+              About Liberty Township's Parks
             </h1>
             <p className="text-lg text-muted-foreground">
               For over 15 years, we've been dedicated to providing beautiful, safe, and accessible
@@ -93,19 +97,35 @@ export default function AboutPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <div className="aspect-square rounded-2xl bg-primary/10 flex items-center justify-center">
-                  <TreePine className="h-16 w-16 text-primary/50" />
+                <div className="aspect-square rounded-2xl overflow-hidden">
+                  <img 
+                    src={boysRunning} 
+                    alt="Boys running in Liberty Park" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="aspect-[4/3] rounded-2xl bg-accent/10 flex items-center justify-center">
-                  <Users className="h-12 w-12 text-accent/50" />
+                <div className="aspect-[4/3] rounded-2xl overflow-hidden">
+                  <img 
+                    src={everyKidsPlayground} 
+                    alt="Every Kids Playground" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
               <div className="space-y-4 pt-8">
-                <div className="aspect-[4/3] rounded-2xl bg-earth/10 flex items-center justify-center">
-                  <Calendar className="h-12 w-12 text-earth/50" />
+                <div className="aspect-[4/3] rounded-2xl overflow-hidden">
+                  <img 
+                    src={libertyParkSign} 
+                    alt="Liberty Park Sign" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="aspect-square rounded-2xl bg-forest-light/10 flex items-center justify-center">
-                  <MapPin className="h-16 w-16 text-forest-light/50" />
+                <div className="aspect-square rounded-2xl overflow-hidden">
+                  <img 
+                    src={patriot5k} 
+                    alt="Patriot 5K Event" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>

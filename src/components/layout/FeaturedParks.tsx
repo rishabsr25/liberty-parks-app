@@ -34,7 +34,7 @@ const features = [
     icon: AlertCircle,
     title: 'Park Watch',
     description: 'Report park issues and help keep our community spaces safe and clean.',
-    color: 'bg-red/20 text-red',
+    color: 'bg-red-200 text-red-600',
     href: '/report',
   },
 ];
