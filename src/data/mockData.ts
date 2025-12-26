@@ -86,6 +86,15 @@ export interface ParkRecommendation {
   description: string;
 }
 
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  date: Date;
+  category: 'general' | 'alert' | 'maintenance' | 'event';
+  priority: 'low' | 'medium' | 'high';
+}
+
 // Parks Data
 export const parks: Park[] = [
   {
@@ -450,5 +459,41 @@ export const parkReports: ParkReport[] = [
     description: 'The water fountain in the dog park is not dispensing water.',
     status: 'pending',
     createdAt: new Date('2025-12-22'),
+  },
+];
+
+// Announcements Data
+export const announcements: Announcement[] = [
+  {
+    id: 'ann-1',
+    title: 'Trail Maintenance at Liberty Park',
+    content: 'The north trail loop at Liberty Park will be closed for resurfacing from June 15th to June 20th. Please use the south trail loop during this time.',
+    date: new Date('2025-06-10'),
+    category: 'maintenance',
+    priority: 'medium',
+  },
+  {
+    id: 'ann-2',
+    title: 'Severe Weather Warning',
+    content: 'Due to predicted thunderstorms, all evening sports practices for tonight (May 25th) are cancelled. Stay safe!',
+    date: new Date('2025-05-25'),
+    category: 'alert',
+    priority: 'high',
+  },
+  {
+    id: 'ann-3',
+    title: 'Summer Concert Series Kickoff',
+    content: 'Join us for the first concert of the summer season featuring "The Local Roots" next Saturday at 7 PM in the Liberty Park Amphitheater.',
+    date: new Date('2025-06-01'),
+    category: 'event',
+    priority: 'low',
+  },
+  {
+    id: 'ann-4',
+    title: 'New Playground Equipment',
+    content: 'We are excited to announce the installation of new accessible playground equipment at Havener Park is now complete and open to the public!',
+    date: new Date('2025-05-15'),
+    category: 'general',
+    priority: 'low',
   },
 ];

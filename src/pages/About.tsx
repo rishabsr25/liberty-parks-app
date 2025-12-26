@@ -3,10 +3,10 @@ import { Layout } from '@/components/layout';
 import { Card, CardContent } from '@/components/ui/card';
 
 const stats = [
-  { icon: TreePine, value: '12', label: 'Community Parks' },
+  { icon: TreePine, value: '7', label: 'Community Parks' },
   { icon: Users, value: '35,000+', label: 'Residents Served' },
   { icon: Calendar, value: '100+', label: 'Annual Events' },
-  { icon: Award, value: '15+', label: 'Years of Service' },
+  { icon: Award, value: '20+', label: 'Years of Service' },
 ];
 
 const parkHighlights = [

@@ -11,6 +11,7 @@ import Report from "./pages/Report";
 import Voting from "./pages/Voting";
 import AIHelper from "./pages/AIHelper";
 import About from "./pages/About";
+import Announcements from "./pages/Announcements";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/report" element={<Report />} />
           <Route path="/voting" element={<Voting />} />
+          <Route path="/announcements" element={<Announcements />} />
           <Route path="/ai-helper" element={<AIHelper />} />
           <Route path="/about" element={<About />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

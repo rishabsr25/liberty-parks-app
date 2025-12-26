@@ -10,6 +10,7 @@ const navLinks = [
   { href: '/map', label: 'Map' },
   { href: '/calendar', label: 'Calendar' },
   { href: '/voting', label: 'Voting' },
+  { href: '/announcements', label: 'Announcements' },
   { href: '/ai-helper', label: 'Park Selector' },
   { href: '/report', label: 'Report' },
   { href: '/about', label: 'About' },
