@@ -7,45 +7,75 @@ import { Badge } from '@/components/ui/badge';
 import { votingPolls, VotingPoll } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/supabase-client';
 
 export default function VotingPage() {
   const { toast } = useToast();
   const [polls, setPolls] = useState<VotingPoll[]>(votingPolls);
   const [userVotes, setUserVotes] = useState<Record<string, 'yes' | 'no'>>({});
 
-  const handleVote = (pollId: string, vote: 'yes' | 'no') => {
-    if (userVotes[pollId]) {
+  const handleVote = async (pollId: string, vote: 'yes' | 'no') => {
+    try {
+      // Insert vote into Supabase
+      const { data, error } = await supabase
+        .from('voting')
+        .insert([
+          {
+            vote: vote === 'yes', // true for yes, false for no
+          }
+        ]);
+
+      if (error) {
+        console.error('Error saving vote:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to save your vote. Please try again.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Update local state only if database insert was successful
+      if (userVotes[pollId]) {
+        toast({
+          title: 'Vote Updated',
+          description: 'Your vote has been updated successfully.',
+          variant: 'default',
+        });
+      } else {
+        toast({
+          title: 'Vote Recorded',
+          description: 'Thank you for voting!',
+        });
+      }
+
+      setUserVotes((prev) => ({ ...prev, [pollId]: vote }));
+
+      setPolls((prevPolls) =>
+        prevPolls.map((poll) => {
+          if (poll.id === pollId) {
+            const oldVote = userVotes[pollId];
+            const newPoll = { ...poll };
+
+            if (oldVote === 'yes') newPoll.votes.yes--;
+            if (oldVote === 'no') newPoll.votes.no--;
+
+            if (vote === 'yes') newPoll.votes.yes++;
+            if (vote === 'no') newPoll.votes.no++;
+
+            return newPoll;
+          }
+          return poll;
+        })
+      );
+    } catch (err) {
+      console.error('Unexpected error:', err);
       toast({
-        title: 'Already Voted',
-        description: 'You have already voted on this poll. Your vote has been updated.',
-        variant: 'default',
-      });
-    } else {
-      toast({
-        title: 'Vote Recorded',
-        description: 'Thank you for voting!',
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        variant: 'destructive',
       });
     }
-
-    setUserVotes((prev) => ({ ...prev, [pollId]: vote }));
-    
-    setPolls((prevPolls) =>
-      prevPolls.map((poll) => {
-        if (poll.id === pollId) {
-          const oldVote = userVotes[pollId];
-          const newPoll = { ...poll };
-
-          if (oldVote === 'yes') newPoll.votes.yes--;
-          if (oldVote === 'no') newPoll.votes.no--;
-
-          if (vote === 'yes') newPoll.votes.yes++;
-          if (vote === 'no') newPoll.votes.no++;
-
-          return newPoll;
-        }
-        return poll;
-      })
-    );
   };
 
   const getTotalVotes = (poll: VotingPoll) => poll.votes.yes + poll.votes.no;
