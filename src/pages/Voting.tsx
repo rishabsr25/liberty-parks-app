@@ -8,14 +8,17 @@ import { votingPolls, VotingPoll } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/supabase-client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function VotingPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [polls, setPolls] = useState<VotingPoll[]>(votingPolls);
   const [userVotes, setUserVotes] = useState<Record<string, 'yes' | 'no'>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [votingForPoll, setVotingForPoll] = useState<string | null>(null);
 
-  // Fetch vote counts from Supabase on component mount
+  // Fetch vote counts and user's votes from Supabase on component mount
   useEffect(() => {
     const fetchVoteCounts = async () => {
       if (!supabase) {
@@ -27,7 +30,7 @@ export default function VotingPage() {
         // Fetch all votes from the database
         const { data: votes, error } = await supabase
           .from('voting')
-          .select('poll_id, vote');
+          .select('poll_id, vote, user_id');
 
         if (error) {
           console.error('Error fetching votes:', error);
@@ -37,9 +40,12 @@ export default function VotingPage() {
 
         // Group votes by poll_id and count yes/no for each poll
         const voteCountsByPoll: Record<string, { yes: number; no: number }> = {};
+        const currentUserVotes: Record<string, 'yes' | 'no'> = {};
 
         votes?.forEach(v => {
           const pollId = String(v.poll_id); // Convert integer poll_id to string
+
+          // Count all votes
           if (!voteCountsByPoll[pollId]) {
             voteCountsByPoll[pollId] = { yes: 0, no: 0 };
           }
@@ -47,6 +53,11 @@ export default function VotingPage() {
             voteCountsByPoll[pollId].yes++;
           } else {
             voteCountsByPoll[pollId].no++;
+          }
+
+          // Track current user's votes
+          if (user && v.user_id === user.id) {
+            currentUserVotes[pollId] = v.vote ? 'yes' : 'no';
           }
         });
 
@@ -58,6 +69,9 @@ export default function VotingPage() {
           }))
         );
 
+        // Update user's votes
+        setUserVotes(currentUserVotes);
+
         setIsLoading(false);
       } catch (err) {
         console.error('Unexpected error fetching votes:', err);
@@ -66,10 +80,20 @@ export default function VotingPage() {
     };
 
     fetchVoteCounts();
-  }, []);
+  }, [user]);
 
   const handleVote = async (pollId: string, vote: 'yes' | 'no') => {
     try {
+      // Check if user is logged in
+      if (!user) {
+        toast({
+          title: 'Sign In Required',
+          description: 'Please sign in to vote on polls.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       // Check if Supabase client is available
       if (!supabase) {
         toast({
@@ -80,15 +104,23 @@ export default function VotingPage() {
         return;
       }
 
-      // Insert vote into Supabase
-      const { data, error } = await supabase
+      setVotingForPoll(pollId);
+      const isChangingVote = !!userVotes[pollId];
+
+      // Use upsert to insert or update the vote
+      // This ensures one vote per user per poll
+      const { error } = await supabase
         .from('voting')
-        .insert([
+        .upsert(
           {
-            poll_id: parseInt(pollId), // Convert string ID to integer for database
-            vote: vote === 'yes', // true for yes, false for no
+            user_id: user.id,
+            poll_id: parseInt(pollId),
+            vote: vote === 'yes',
+          },
+          {
+            onConflict: 'user_id,poll_id', // Unique constraint on these columns
           }
-        ]);
+        );
 
       if (error) {
         console.error('Error saving vote:', error);
@@ -97,36 +129,31 @@ export default function VotingPage() {
           description: 'Failed to save your vote. Please try again.',
           variant: 'destructive',
         });
+        setVotingForPoll(null);
         return;
       }
 
       // Update local state for user's vote
-      if (userVotes[pollId]) {
-        toast({
-          title: 'Vote Updated',
-          description: 'Your vote has been updated successfully.',
-          variant: 'default',
-        });
-      } else {
-        toast({
-          title: 'Vote Recorded',
-          description: 'Thank you for voting!',
-        });
-      }
+      toast({
+        title: isChangingVote ? 'Vote Updated' : 'Vote Recorded',
+        description: isChangingVote
+          ? 'Your vote has been updated successfully.'
+          : 'Thank you for voting!',
+      });
 
       setUserVotes((prev) => ({ ...prev, [pollId]: vote }));
 
       // Refetch vote counts from database to update UI
       const { data: votes, error: fetchError } = await supabase
         .from('voting')
-        .select('poll_id, vote');
+        .select('poll_id, vote, user_id');
 
       if (!fetchError && votes) {
         // Group votes by poll_id
         const voteCountsByPoll: Record<string, { yes: number; no: number }> = {};
 
         votes.forEach(v => {
-          const pid = String(v.poll_id); // Convert integer poll_id to string
+          const pid = String(v.poll_id);
           if (!voteCountsByPoll[pid]) {
             voteCountsByPoll[pid] = { yes: 0, no: 0 };
           }
@@ -144,6 +171,7 @@ export default function VotingPage() {
           }))
         );
       }
+      setVotingForPoll(null);
     } catch (err) {
       console.error('Unexpected error:', err);
       toast({
@@ -151,6 +179,7 @@ export default function VotingPage() {
         description: 'An unexpected error occurred. Please try again.',
         variant: 'destructive',
       });
+      setVotingForPoll(null);
     }
   };
 
@@ -249,19 +278,21 @@ export default function VotingPage() {
                       variant={userVote === 'yes' ? 'default' : 'outline'}
                       className="flex-1 gap-2"
                       onClick={() => handleVote(poll.id, 'yes')}
+                      disabled={votingForPoll === poll.id}
                     >
-                      <ThumbsUp className="h-4 w-4" />
+                      <ThumbsUp className={cn("h-4 w-4", votingForPoll === poll.id && "animate-pulse")} />
                       {userVote === 'yes' && <CheckCircle2 className="h-4 w-4" />}
-                      Yes
+                      {votingForPoll === poll.id ? 'Voting...' : 'Yes'}
                     </Button>
                     <Button
                       variant={userVote === 'no' ? 'default' : 'outline'}
                       className="flex-1 gap-2"
                       onClick={() => handleVote(poll.id, 'no')}
+                      disabled={votingForPoll === poll.id}
                     >
-                      <ThumbsDown className="h-4 w-4" />
+                      <ThumbsDown className={cn("h-4 w-4", votingForPoll === poll.id && "animate-pulse")} />
                       {userVote === 'no' && <CheckCircle2 className="h-4 w-4" />}
-                      No
+                      {votingForPoll === poll.id ? 'Voting...' : 'No'}
                     </Button>
                   </div>
                 </CardContent>

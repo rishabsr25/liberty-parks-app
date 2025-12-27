@@ -1,7 +1,16 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Menu, X, TreePine, LogIn } from 'lucide-react';
+import { Menu, X, TreePine, LogIn, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
@@ -19,6 +28,13 @@ const navLinks = [
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -51,10 +67,34 @@ export function Header() {
               </Link>
             ))}
           </nav>
-          <Button className="gap-2">
-            <LogIn className="h-4 w-4" />
-            Sign In
-          </Button>
+
+          {!loading && (
+            <>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="gap-2">
+                      <User className="h-4 w-4" />
+                      {user.email}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button className="gap-2" onClick={() => navigate('/signin')}>
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Button>
+              )}
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -88,10 +128,40 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            <Button className="w-full mt-4 gap-2" onClick={() => setIsMenuOpen(false)}>
-              <LogIn className="h-4 w-4" />
-              Sign In
-            </Button>
+
+            {!loading && (
+              <>
+                {user ? (
+                  <div className="mt-4 space-y-2">
+                    <div className="text-sm text-muted-foreground px-2">
+                      Signed in as {user.email}
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    className="w-full mt-4 gap-2"
+                    onClick={() => {
+                      navigate('/signin');
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Sign In
+                  </Button>
+                )}
+              </>
+            )}
           </div>
         </nav>
       )}
