@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import { Menu, X, TreePine } from 'lucide-react';
+import { Menu, X, TreePine, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -34,22 +34,28 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex md:items-center md:gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className={cn(
-                'px-4 py-2 text-sm font-medium transition-colors rounded-md',
-                location.pathname === link.href
-                  ? 'text-primary bg-primary/10'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="hidden md:flex md:items-center md:gap-3">
+          <nav className="flex items-center gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={cn(
+                  'px-4 py-2 text-sm font-medium transition-colors rounded-md',
+                  location.pathname === link.href
+                    ? 'text-primary bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <Button className="gap-2">
+            <LogIn className="h-4 w-4" />
+            Sign In
+          </Button>
+        </div>
 
         {/* Mobile Menu Button */}
         <Button
@@ -82,6 +88,10 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            <Button className="w-full mt-4 gap-2" onClick={() => setIsMenuOpen(false)}>
+              <LogIn className="h-4 w-4" />
+              Sign In
+            </Button>
           </div>
         </nav>
       )}
