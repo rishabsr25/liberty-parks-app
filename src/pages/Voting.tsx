@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThumbsUp, ThumbsDown, CheckCircle2 } from 'lucide-react';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -13,14 +13,79 @@ export default function VotingPage() {
   const { toast } = useToast();
   const [polls, setPolls] = useState<VotingPoll[]>(votingPolls);
   const [userVotes, setUserVotes] = useState<Record<string, 'yes' | 'no'>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch vote counts from Supabase on component mount
+  useEffect(() => {
+    const fetchVoteCounts = async () => {
+      if (!supabase) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Fetch all votes from the database
+        const { data: votes, error } = await supabase
+          .from('voting')
+          .select('poll_id, vote');
+
+        if (error) {
+          console.error('Error fetching votes:', error);
+          setIsLoading(false);
+          return;
+        }
+
+        // Group votes by poll_id and count yes/no for each poll
+        const voteCountsByPoll: Record<string, { yes: number; no: number }> = {};
+
+        votes?.forEach(v => {
+          const pollId = String(v.poll_id); // Convert integer poll_id to string
+          if (!voteCountsByPoll[pollId]) {
+            voteCountsByPoll[pollId] = { yes: 0, no: 0 };
+          }
+          if (v.vote === true) {
+            voteCountsByPoll[pollId].yes++;
+          } else {
+            voteCountsByPoll[pollId].no++;
+          }
+        });
+
+        // Update each poll with its specific vote counts
+        setPolls(prevPolls =>
+          prevPolls.map(poll => ({
+            ...poll,
+            votes: voteCountsByPoll[poll.id] || { yes: 0, no: 0 }
+          }))
+        );
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Unexpected error fetching votes:', err);
+        setIsLoading(false);
+      }
+    };
+
+    fetchVoteCounts();
+  }, []);
 
   const handleVote = async (pollId: string, vote: 'yes' | 'no') => {
     try {
+      // Check if Supabase client is available
+      if (!supabase) {
+        toast({
+          title: 'Configuration Error',
+          description: 'Voting is currently unavailable. Please contact support.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       // Insert vote into Supabase
       const { data, error } = await supabase
         .from('voting')
         .insert([
           {
+            poll_id: parseInt(pollId), // Convert string ID to integer for database
             vote: vote === 'yes', // true for yes, false for no
           }
         ]);
@@ -35,7 +100,7 @@ export default function VotingPage() {
         return;
       }
 
-      // Update local state only if database insert was successful
+      // Update local state for user's vote
       if (userVotes[pollId]) {
         toast({
           title: 'Vote Updated',
@@ -51,23 +116,34 @@ export default function VotingPage() {
 
       setUserVotes((prev) => ({ ...prev, [pollId]: vote }));
 
-      setPolls((prevPolls) =>
-        prevPolls.map((poll) => {
-          if (poll.id === pollId) {
-            const oldVote = userVotes[pollId];
-            const newPoll = { ...poll };
+      // Refetch vote counts from database to update UI
+      const { data: votes, error: fetchError } = await supabase
+        .from('voting')
+        .select('poll_id, vote');
 
-            if (oldVote === 'yes') newPoll.votes.yes--;
-            if (oldVote === 'no') newPoll.votes.no--;
+      if (!fetchError && votes) {
+        // Group votes by poll_id
+        const voteCountsByPoll: Record<string, { yes: number; no: number }> = {};
 
-            if (vote === 'yes') newPoll.votes.yes++;
-            if (vote === 'no') newPoll.votes.no++;
-
-            return newPoll;
+        votes.forEach(v => {
+          const pid = String(v.poll_id); // Convert integer poll_id to string
+          if (!voteCountsByPoll[pid]) {
+            voteCountsByPoll[pid] = { yes: 0, no: 0 };
           }
-          return poll;
-        })
-      );
+          if (v.vote === true) {
+            voteCountsByPoll[pid].yes++;
+          } else {
+            voteCountsByPoll[pid].no++;
+          }
+        });
+
+        setPolls(prevPolls =>
+          prevPolls.map(poll => ({
+            ...poll,
+            votes: voteCountsByPoll[poll.id] || { yes: 0, no: 0 }
+          }))
+        );
+      }
     } catch (err) {
       console.error('Unexpected error:', err);
       toast({
