@@ -94,14 +94,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signUp = async (email: string, password: string) => {
+        console.log('AuthContext: signUp called with', email);
         if (!supabase) {
+            console.error('AuthContext: Supabase client missing');
             return { error: { message: 'Authentication is not configured' } as AuthError };
         }
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
         });
+
+        console.log('AuthContext: Supabase signUp result:', { data, error });
 
         return { error };
     };
