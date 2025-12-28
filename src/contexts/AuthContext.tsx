@@ -5,10 +5,10 @@ import { supabase } from '@/supabase-client';
 interface AuthContextType {
     user: User | null;
     session: Session | null;
-    role: 'admin' | 'user' | null;
+    isAdmin: boolean;
     loading: boolean;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-    signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+    signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: AuthError | null }>;
     signInWithGoogle: () => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
 }
@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
-    const [role, setRole] = useState<'admin' | 'user' | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(session);
             setUser(session?.user ?? null);
             if (session?.user) {
-                fetchUserRole(session.user.id);
+                checkAdminStatus(session.user.id);
             } else {
                 setLoading(false);
             }
@@ -46,9 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(session);
             setUser(session?.user ?? null);
             if (session?.user) {
-                fetchUserRole(session.user.id);
+                checkAdminStatus(session.user.id);
             } else {
-                setRole(null);
+                setIsAdmin(false);
                 setLoading(false);
             }
         });
@@ -56,25 +56,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    const fetchUserRole = async (userId: string) => {
+    const checkAdminStatus = async (userId: string) => {
         if (!supabase) return;
 
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('role')
+                .select('admin')
                 .eq('id', userId)
                 .single();
 
             if (error) {
-                console.error('Error fetching role:', error);
-                setRole('user'); // Default to user on error
+                console.error('Error fetching admin status:', error);
+                setIsAdmin(false);
             } else {
-                setRole(data?.role as 'admin' | 'user' ?? 'user');
+                setIsAdmin(data?.admin ?? false);
             }
         } catch (err) {
-            console.error('Error fetching role:', err);
-            setRole('user');
+            console.error('Error fetching admin status:', err);
+            setIsAdmin(false);
         } finally {
             setLoading(false);
         }
@@ -93,19 +93,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error };
     };
 
-    const signUp = async (email: string, password: string) => {
-        console.log('AuthContext: signUp called with', email);
+    const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
         if (!supabase) {
-            console.error('AuthContext: Supabase client missing');
             return { error: { message: 'Authentication is not configured' } as AuthError };
         }
 
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+                data: {
+                    full_name: `${firstName} ${lastName}`.trim(),
+                },
+            },
         });
-
-        console.log('AuthContext: Supabase signUp result:', { data, error });
 
         return { error };
     };
@@ -136,14 +137,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Always clear local state
             setSession(null);
             setUser(null);
-            setRole(null);
+            setIsAdmin(false);
         }
     };
 
     const value = {
         user,
         session,
-        role,
+        isAdmin,
         loading,
         signIn,
         signUp,

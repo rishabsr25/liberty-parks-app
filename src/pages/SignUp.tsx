@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 export default function SignUp() {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,7 +22,7 @@ export default function SignUp() {
     const handleEmailSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!email || !password || !confirmPassword) {
+        if (!email || !password || !confirmPassword || !firstName || !lastName) {
             toast({
                 title: 'Error',
                 description: 'Please fill in all fields',
@@ -48,7 +50,7 @@ export default function SignUp() {
         }
 
         setLoading(true);
-        const { error } = await signUp(email, password);
+        const { error } = await signUp(email, password, firstName, lastName);
         setLoading(false);
 
         if (error) {
@@ -91,6 +93,32 @@ export default function SignUp() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <form onSubmit={handleEmailSignUp} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="firstName">First Name</Label>
+                                <Input
+                                    id="firstName"
+                                    type="text"
+                                    placeholder="John"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    disabled={loading}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="lastName">Last Name</Label>
+                                <Input
+                                    id="lastName"
+                                    type="text"
+                                    placeholder="Doe"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    disabled={loading}
+                                    required
+                                />
+                            </div>
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input

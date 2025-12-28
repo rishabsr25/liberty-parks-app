@@ -63,7 +63,7 @@ interface PollWithData extends Poll {
 
 export default function VotingPage() {
   const { toast } = useToast();
-  const { user, role } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [polls, setPolls] = useState<PollWithData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [votingForPoll, setVotingForPoll] = useState<string | null>(null);
@@ -366,7 +366,7 @@ export default function VotingPage() {
             </p>
           </div>
 
-          {role === 'admin' && (
+          {isAdmin && (
             <Button onClick={() => { setEditingPoll(null); setIsDialogOpen(true); }}>
               <Plus className="h-4 w-4 mr-2" />
               Create Poll
@@ -414,7 +414,7 @@ export default function VotingPage() {
                       </div>
 
                       {/* Admin Actions */}
-                      {role === 'admin' && (
+                      {isAdmin && (
                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
                             variant="secondary"
