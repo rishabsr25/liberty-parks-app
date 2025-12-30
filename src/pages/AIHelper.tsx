@@ -1,3 +1,4 @@
+// Import necessary libraries and components
 import { useState } from 'react';
 import { Sparkles, MapPin, TrendingUp } from 'lucide-react';
 import { Layout } from '@/components/layout';
@@ -5,33 +6,48 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
+/* -------------------------------------------------------------------------- */
+/*                               TYPE DEFINITIONS                              */
+/* -------------------------------------------------------------------------- */
+
+// Represents a park and its public-facing information
+
 interface Park {
-  id: string;
-  name: string;
-  description: string;
-  address: string;
-  amenities: Array<{ type: string; name: string }>;
+  id: string;                 // Unique identifier (used for lookup)
+  name: string;               // Display name
+  description: string;        // Short summary shown to users
+  address: string;            // Physical address
+  amenities: Array<{ type: string; name: string }>; // List of amenities offered
 }
+
+// Numerical scoring dimensions used by the AI matcher
+// Each value is normalized from 0–5
 
 interface ParkAttributes {
-  runningTrails: number;
-  dogFriendly: number;
-  picnicFacilities: number;
-  playground: number;
-  sportsFields: number;
-  natureSensitivity: number;
-  waterAccess: number;
-  parking: number;
-  accessibility: number;
-  bikingTrails: number;
-  openSpace: number;
-  shelters: number;
+  runningTrails: number;      // Quality/length of running trails
+  dogFriendly: number;         // Dog-friendly amenities and policies
+  picnicFacilities: number;    // Tables, grills, and picnic areas
+  playground: number;          // Children's play equipment
+  sportsFields: number;        // Sports courts and fields
+  natureSensitivity: number;   // Natural beauty and wildlife
+  waterAccess: number;         // Lakes, streams, water features
+  parking: number;             // Parking availability and convenience
+  accessibility: number;       // ADA compliance and ease of access
+  bikingTrails: number;        // Biking paths and trails
+  openSpace: number;           // Open fields and spacious areas
+  shelters: number;            // Covered pavilions and shelters
 }
 
-// Updated parks list
+/* -------------------------------------------------------------------------- */
+/*                               DATA: PARK INFORMATION                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Complete list of parks in Liberty Township with their basic information
+ */
+
 const parks: Park[] = [
   {
     id: 'liberty',
@@ -117,6 +133,7 @@ const parks: Park[] = [
   }
 ];
 
+// Quantitative scoring attributes for each park
 const parkAttributes: Record<string, ParkAttributes> = {
   liberty: { runningTrails: 5, dogFriendly: 5, picnicFacilities: 5, playground: 4, sportsFields: 5, natureSensitivity: 3, waterAccess: 2, parking: 5, accessibility: 5, bikingTrails: 4, openSpace: 5, shelters: 4 },
   havener: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 4, playground: 5, sportsFields: 1, natureSensitivity: 3, waterAccess: 0, parking: 4, accessibility: 5, bikingTrails: 2, openSpace: 3, shelters: 2 },
@@ -127,6 +144,11 @@ const parkAttributes: Record<string, ParkAttributes> = {
   'smith-preserve': { runningTrails: 5, dogFriendly: 4, picnicFacilities: 1, playground: 0, sportsFields: 0, natureSensitivity: 5, waterAccess: 3, parking: 3, accessibility: 2, bikingTrails: 4, openSpace: 3, shelters: 0 }
 };
 
+/* -------------------------------------------------------------------------- */
+/*                         RECOMMENDATION RESULT TYPE                          */
+/* -------------------------------------------------------------------------- */
+
+// Represents a scored recommendation returned to the UI
 interface MatchScore {
   parkId: string;
   parkName: string;
@@ -135,7 +157,13 @@ interface MatchScore {
   matchedFeatures: string[];
 }
 
-// DOUBLED keywords - now with twice as many activity categories
+/* -------------------------------------------------------------------------- */
+/*                     NATURAL LANGUAGE ACTIVITY ENGINE                        */
+/* -------------------------------------------------------------------------- */
+
+// Maps activities to:
+// - weighted park attributes
+// - extensive synonym lists for NLP-style matching
 const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synonyms: string[] }> = {
   run: {
     weights: { runningTrails: 5, parking: 2, accessibility: 3, dogFriendly: 1 },
@@ -219,102 +247,124 @@ const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synon
   }
 };
 
+/* -------------------------------------------------------------------------- */
+/*                             MAIN COMPONENT                                  */
+/* -------------------------------------------------------------------------- */
+
 export default function AIParkHelperPage() {
+  // Toast notification hook for user feedback
   const { toast } = useToast();
-  const [query, setQuery] = useState('');
-  const [recommendations, setRecommendations] = useState<MatchScore[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  
+  // Component state management
+  const [query, setQuery] = useState('');                              // User's search query
+  const [recommendations, setRecommendations] = useState<MatchScore[]>([]); // Park match results
+  const [isSearching, setIsSearching] = useState(false);               // Loading state
+  const [hasSearched, setHasSearched] = useState(false);               // Whether user has performed a search
+
+
+  // ============================================================================
+  // SCORING ALGORITHM
+  // ============================================================================
+  
+  /**
+   * Calculate match scores for all parks based on user query
+   * 
+   * Algorithm:
+   * 1. Parse query for activity keywords and their synonyms
+   * 2. For each park, calculate weighted scores based on matched activities
+   * 3. Apply synergy bonus for multiple matched activities
+   * 4. Sort parks by score and return top matches
+   * 
+   * @param query - User's natural language search query
+   * @returns Array of parks with match scores, sorted by relevance
+   */
 
   const calculateParkScore = (query: string): MatchScore[] => {
-    const lowerQuery = query.toLowerCase();
-    const scores: MatchScore[] = [];
-
-    // Extract matched activities with synonym support
-    const matchedActivities = new Map<string, number>();
-
-    for (const [keyword, config] of Object.entries(ACTIVITY_KEYWORDS)) {
-      const allTerms = [keyword, ...config.synonyms];
-      let maxMatches = 0;
-
-      for (const term of allTerms) {
-        const regex = new RegExp(`\\b${term}\\b`, 'gi');
-        const matches = (lowerQuery.match(regex) || []).length;
-        maxMatches = Math.max(maxMatches, matches);
-      }
-
-      if (maxMatches > 0) {
-        matchedActivities.set(keyword, maxMatches);
-      }
+  const lowerQuery = query.toLowerCase();
+  
+  // Extract activity keywords that appear in query
+  const matchedActivities = new Set<string>();
+  
+  for (const [keyword, config] of Object.entries(ACTIVITY_KEYWORDS)) {
+    const allTerms = [keyword, ...config.synonyms];
+    const regex = new RegExp(`\\b(${allTerms.join('|')})\\b`, 'i');
+    if (regex.test(lowerQuery)) {
+      matchedActivities.add(keyword);
     }
+  }
 
-    // Calculate scores for each park
-    for (const park of parks) {
-      const parkAttr = parkAttributes[park.id];
-      if (!parkAttr) continue;
+  // Score each park
+  const scores = parks.map(park => {
+    const attrs = parkAttributes[park.id];
+    if (!attrs) return null;
 
-      let totalScore = 0;
-      let maxPossibleScore = 0;
-      const contributingFeatures: string[] = [];
+    let score = 0;
+    let maxScore = 0;
+    const matched: string[] = [];
 
-      if (matchedActivities.size > 0) {
-        for (const [keyword, frequency] of matchedActivities.entries()) {
-          const config = ACTIVITY_KEYWORDS[keyword];
-          let keywordScore = 0;
-          let keywordMax = 0;
-
-          for (const [attribute, weight] of Object.entries(config.weights)) {
-            const attrValue = parkAttr[attribute as keyof ParkAttributes] || 0;
-            const weightedValue = weight > 0 ? (attrValue / 5) * Math.abs(weight) : (1 - attrValue / 5) * Math.abs(weight);
-            keywordScore += weightedValue * frequency;
-            keywordMax += Math.abs(weight) * frequency;
-          }
-
-          totalScore += keywordScore;
-          maxPossibleScore += keywordMax;
-
-          if (keywordScore / keywordMax > 0.6) {
-            contributingFeatures.push(keyword);
+    if (matchedActivities.size > 0) {
+      // Calculate weighted score for matched activities
+      for (const activity of matchedActivities) {
+        const config = ACTIVITY_KEYWORDS[activity];
+        let activityScore = 0;
+        let activityMax = 0;
+        
+        for (const [attr, weight] of Object.entries(config.weights)) {
+          const value = attrs[attr as keyof ParkAttributes] || 0;
+          if (weight > 0) {
+            activityScore += (value / 5) * weight;
+            activityMax += weight;
+          } else {
+            // Negative weight: penalize high values
+            activityScore += ((5 - value) / 5) * Math.abs(weight);
+            activityMax += Math.abs(weight);
           }
         }
-
-        // Boost for multiple matched activities (synergy bonus)
-        const synergyBonus = matchedActivities.size > 1 ? 1.1 : 1.0;
-        totalScore *= synergyBonus;
-        maxPossibleScore *= synergyBonus;
-
-        const percentage = Math.round((totalScore / maxPossibleScore) * 100);
-        const topFeatures = contributingFeatures.slice(0, 3);
-
-        scores.push({
-          parkId: park.id,
-          parkName: park.name,
-          score: Math.min(100, Math.max(0, percentage)),
-          matchReason: topFeatures.length > 0
-            ? `Great for ${topFeatures.join(', ').replace(/,([^,]*)$/, ' and$1')}`
-            : 'Good general match',
-          matchedFeatures: Array.from(matchedActivities.keys())
-        });
-      } else {
-        // Deterministic fallback for vague queries - based on amenity count and variety (NO RANDOMNESS)
-        const amenityScore = (park.amenities.length / 6) * 50;
-        const varietyScore = (new Set(park.amenities.map(a => a.type)).size / 6) * 30;
-        const baseScore = amenityScore + varietyScore;
-
-        scores.push({
-          parkId: park.id,
-          parkName: park.name,
-          score: Math.round(baseScore),
-          matchReason: 'Versatile park with good amenities',
-          matchedFeatures: []
-        });
+        
+        // Activity contributes if score is positive
+        if (activityScore > 0) {
+          score += activityScore;
+          maxScore += activityMax;
+          matched.push(activity);
+        }
       }
+      
+      // Convert to percentage (0-100)
+      score = maxScore > 0 ? (score / maxScore) * 100 : 0;
+    } else {
+      // Fallback: rank by amenity diversity (0-100 scale)
+      const diversity = new Set(park.amenities.map(a => a.type)).size;
+      score = (diversity / 6) * 100; // Max 6 amenity types
     }
 
-    return scores.sort((a, b) => b.score - a.score);
-  };
+    return {
+      parkId: park.id,
+      parkName: park.name,
+      score: Math.round(score),
+      matchReason: matched.length > 0 
+        ? `Good for ${matched.slice(0, 2).join(' and ')}`
+        : 'General-purpose park',
+      matchedFeatures: matched
+    };
+  }).filter((s): s is MatchScore => s !== null);
 
+  // Sort by score, then by name for stability
+  return scores.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.parkName.localeCompare(b.parkName);
+  });
+};
+
+  // ============================================================================
+  // EVENT HANDLERS
+  // ============================================================================
+  
+  /**
+   * Handle search button click
+   * Validates input, performs scoring, and displays results
+   */
   const handleSearch = () => {
+    // Validate that user entered something
     if (!query.trim()) {
       toast({
         title: 'Please enter your interests',
@@ -324,13 +374,18 @@ export default function AIParkHelperPage() {
       return;
     }
 
+     // Show loading state
     setIsSearching(true);
     setHasSearched(true);
 
+    // If you are reading this then don't remove the timeout :)
+    // Simulates processing delay for better UX
     setTimeout(() => {
       const results = calculateParkScore(query);
       setRecommendations(results);
       setIsSearching(false);
+
+      // Show success notification
       toast({
         title: 'Analysis Complete',
         description: 'Here are your personalized park recommendations!',
@@ -338,11 +393,16 @@ export default function AIParkHelperPage() {
     }, 1000);
   };
 
+  // Handle Enter key press in input field
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
+
+  // ============================================================================
+  // RENDER
+  // ============================================================================
 
   return (
     <Layout>
