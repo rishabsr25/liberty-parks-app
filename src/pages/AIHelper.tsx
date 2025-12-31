@@ -9,6 +9,36 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
 /* -------------------------------------------------------------------------- */
+/*                           SCORING CONSTANTS                                 */
+/* -------------------------------------------------------------------------- */
+
+const SCORING_CONFIG = {
+  // Attribute scoring
+  MAX_ATTRIBUTE_VALUE: 5,              // Park attributes are rated 0-5
+  
+  // Phrase detection
+  PHRASE_BONUS_MULTIPLIER: 1.2,        // Extra weight for multi-word phrases
+  
+  // Fallback scoring weights (when no keywords match)
+  FALLBACK_DIVERSITY_WEIGHT: 40,       // Points for amenity variety
+  FALLBACK_QUALITY_WEIGHT: 40,         // Points for facility quality
+  FALLBACK_SIZE_WEIGHT: 20,            // Points for total amenities
+  MAX_AMENITY_TYPES: 6,                // Max unique amenity types in dataset
+  MAX_AMENITIES_FOR_SIZE: 8,           // Threshold for size scoring
+  
+  // Match reason display
+  MAX_FEATURES_IN_REASON: 2,           // How many activities to show in match reason
+  MIN_CONTRIBUTION_THRESHOLD: 0.3,     // Minimum score ratio to count as "contributing" (60%)
+  
+  // Keyword specificity defaults
+  DEFAULT_SPECIFICITY: 10,              // Default specificity for unscored keywords
+  GENERIC_KEYWORD_SPECIFICITY: 5,       // Specificity for generic terms like "exercise"
+  
+  // UI
+  SEARCH_SIMULATION_DELAY: 1000,       // ms to show loading state
+} as const;
+
+/* -------------------------------------------------------------------------- */
 /*                               TYPE DEFINITIONS                              */
 /* -------------------------------------------------------------------------- */
 
@@ -175,7 +205,7 @@ const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synon
   },
   picnic: {
     weights: { picnicFacilities: 5, parking: 3, playground: 2, accessibility: 2, shelters: 4, openSpace: 3 },
-    synonyms: ['lunch', 'eat', 'food', 'meal', 'outdoor dining', 'bbq', 'grill', 'shelter', 'dining', 'snack', 'breakfast', 'dinner', 'feast', 'cookout', 'barbecue', 'blanket', 'basket', 'table', 'pavilion', 'covered']
+    synonyms: ['lunch', 'eat', 'food', 'meal', 'outdoor dining', 'bbq', 'grill', 'dining', 'snack', 'breakfast', 'dinner', 'feast', 'cookout', 'barbecue', 'blanket', 'basket', 'table', 'pavilion', 'covered']
   },
   family: {
     weights: { playground: 5, picnicFacilities: 4, parking: 4, accessibility: 4, sportsFields: 2, shelters: 3 },
@@ -187,7 +217,7 @@ const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synon
   },
   nature: {
     weights: { natureSensitivity: 5, runningTrails: 3, waterAccess: 2, accessibility: 1 },
-    synonyms: ['natural', 'wildlife', 'outdoors', 'scenic', 'peaceful', 'quiet', 'serene', 'tranquil', 'wilderness', 'flora', 'fauna', 'birds', 'birdwatching', 'trees', 'forest', 'woods', 'preserve', 'conservation', 'eco', 'environment']
+    synonyms: ['natural', 'wildlife', 'wilderness', 'flora', 'fauna', 'birds', 'birdwatching', 'trees', 'forest', 'woods', 'preserve', 'conservation', 'eco', 'environment']
   },
   water: {
     weights: { waterAccess: 5, natureSensitivity: 3, parking: 3, picnicFacilities: 2 },
@@ -203,7 +233,7 @@ const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synon
   },
   relax: {
     weights: { picnicFacilities: 4, natureSensitivity: 4, parking: 3, accessibility: 3, shelters: 3 },
-    synonyms: ['relaxing', 'chill', 'unwind', 'rest', 'peaceful', 'calm', 'leisure', 'lounge', 'sit', 'meditate', 'meditation', 'yoga', 'zen', 'destress', 'decompress', 'recharge', 'peace', 'serenity', 'solitude', 'contemplation']
+    synonyms: ['relaxing', 'chill', 'unwind', 'rest', 'leisure', 'lounge', 'sit', 'meditate', 'meditation', 'yoga', 'zen', 'destress', 'decompress', 'recharge', 'peace', 'serenity', 'solitude', 'contemplation']
   },
   bike: {
     weights: { bikingTrails: 5, runningTrails: 3, parking: 3, accessibility: 2, openSpace: 2 },
@@ -215,7 +245,7 @@ const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synon
   },
   exercise: {
     weights: { runningTrails: 4, sportsFields: 4, openSpace: 3, parking: 2, accessibility: 3, bikingTrails: 3 },
-    synonyms: ['exercising', 'fitness', 'workout', 'training', 'physical activity', 'active', 'cardio', 'conditioning', 'movement', 'health', 'wellness', 'gym', 'outdoor gym', 'calisthenics', 'aerobics', 'stretching', 'warmup', 'cooldown', 'bodyweight', 'strength']
+    synonyms: ['exercising', 'fitness', 'training', 'physical activity', 'active', 'conditioning', 'movement', 'health', 'wellness', 'gym', 'outdoor gym', 'calisthenics', 'aerobics', 'stretching', 'warmup', 'cooldown', 'bodyweight', 'strength']
   },
   photography: {
     weights: { natureSensitivity: 5, waterAccess: 3, runningTrails: 2, parking: 3 },
@@ -243,24 +273,16 @@ const ACTIVITY_KEYWORDS: Record<string, { weights: Record<string, number>; synon
   },
   quiet: {
     weights: { natureSensitivity: 5, waterAccess: 2, openSpace: -2, sportsFields: -2 },
-    synonyms: ['quietness', 'silent', 'silence', 'tranquil', 'tranquility', 'peaceful', 'calm', 'still', 'hushed', 'secluded', 'isolated', 'private', 'remote', 'away', 'hidden', 'undisturbed', 'solitary', 'retreat', 'sanctuary', 'escape']
+    synonyms: ['quietness', 'silent', 'silence', 'tranquil', 'tranquility', 'peaceful', 'calm', 'still', 'hushed', 'secluded', 'isolated', 'private', 'remote', 'away', 'hidden', 'undisturbed', 'solitary', 'retreat', 'sanctuary', 'escape', 'serene']
   }
 };
 
-/* -------------------------------------------------------------------------- */
-/*                             MAIN COMPONENT                                  */
-/* -------------------------------------------------------------------------- */
-
-export default function AIParkHelperPage() {
-  // Toast notification hook for user feedback
-  const { toast } = useToast();
-  
-  // Component state management
-  const [query, setQuery] = useState('');                              // User's search query
-  const [recommendations, setRecommendations] = useState<MatchScore[]>([]); // Park match results
-  const [isSearching, setIsSearching] = useState(false);               // Loading state
-  const [hasSearched, setHasSearched] = useState(false);               // Whether user has performed a search
-
+const ACTIVITY_REGEX_MAP = Object.fromEntries(
+  Object.entries(ACTIVITY_KEYWORDS).map(([key, config]) => {
+    const allTerms = [key, ...config.synonyms];
+    return [key, new RegExp(`\\b(${allTerms.join('|')})\\b`, 'gi')];
+  })
+);
 
   // ============================================================================
   // SCORING ALGORITHM
@@ -279,17 +301,85 @@ export default function AIParkHelperPage() {
    * @returns Array of parks with match scores, sorted by relevance
    */
 
-  const calculateParkScore = (query: string): MatchScore[] => {
+/**
+ * Calculate match scores for all parks based on user query
+ */
+const calculateParkScore = (query: string): MatchScore[] => {
   const lowerQuery = query.toLowerCase();
   
-  // Extract activity keywords that appear in query
-  const matchedActivities = new Set<string>();
-  
-  for (const [keyword, config] of Object.entries(ACTIVITY_KEYWORDS)) {
-    const allTerms = [keyword, ...config.synonyms];
-    const regex = new RegExp(`\\b(${allTerms.join('|')})\\b`, 'i');
-    if (regex.test(lowerQuery)) {
-      matchedActivities.add(keyword);
+  // First pass: collect all matches with their counts
+  const allMatches = new Map<string, number>();
+
+  for (const [keyword, regex] of Object.entries(ACTIVITY_REGEX_MAP)) {
+    regex.lastIndex = 0;
+    const matches = lowerQuery.match(regex);
+    if (matches) {
+      allMatches.set(keyword, matches.length);
+    }
+  }
+
+  // Second pass: Deduplicate overlapping keywords by keeping the more specific one
+  const matchedActivities = new Map<string, number>();
+
+  // Define keyword specificity (more specific = higher priority)
+  const specificityMap: Record<string, number> = {
+    run: 10,
+    bike: 10,
+    hike: 10,
+    dog: 10,
+    picnic: 10,
+    family: 10,
+    sports: 10,
+    water: 10,
+    playground: 10,
+    shelter: 10,
+    accessible: 10,
+    scenic: 10,
+    open: 10,
+    parking: 10,
+    photography: 10,
+    
+    exercise: 5,     // Less specific than 'run'
+    nature: 8,       // Less specific than 'scenic'
+    relax: 8,        // Medium specificity
+    quiet: 9,        // More specific
+    event: 7,        // Medium specificity
+  };
+
+  // Group overlapping keywords
+  const overlappingGroups = [
+    ['run', 'exercise', 'hike'],   // All share 'trail', 'workout'
+    ['bike', 'exercise'],           // Both share 'workout'
+    ['nature', 'quiet', 'relax', 'scenic'],  // All share 'peaceful', 'tranquil', 'beautiful'
+    ['picnic', 'shelter'],          // Both share 'pavilion', 'covered'
+    ['family', 'playground'],       // Both share 'kids', 'children'
+    ['parking', 'accessible'],      // Both share 'easy parking', 'convenient'
+    ['sports', 'event'],          // Both share 'field', 'game'
+    ['water', 'nature']           // Both share 'outdoors', 'natural'
+  ];
+
+  const used = new Set<string>();
+
+  for (const group of overlappingGroups) {
+    const matchedInGroup = group.filter(k => allMatches.has(k));
+    if (matchedInGroup.length > 1) {
+      // Multiple keywords in this group matched - keep most specific
+      const best = matchedInGroup.sort((a, b) => 
+        (specificityMap[b] || SCORING_CONFIG.DEFAULT_SPECIFICITY) - (specificityMap[a] || SCORING_CONFIG.DEFAULT_SPECIFICITY)
+      )[0];
+      matchedActivities.set(best, allMatches.get(best)!);
+      used.add(best);
+    } else if (matchedInGroup.length === 1) {
+      const k = matchedInGroup[0];
+      matchedActivities.set(k, allMatches.get(k)!);
+      used.add(k);
+    }
+  }
+
+  // Add non-overlapping keywords
+  for (const [keyword, count] of allMatches.entries()) {
+    if (!used.has(keyword)) {
+      matchedActivities.set(keyword, count);
     }
   }
 
@@ -304,7 +394,7 @@ export default function AIParkHelperPage() {
 
     if (matchedActivities.size > 0) {
       // Calculate weighted score for matched activities
-      for (const activity of matchedActivities) {
+      for (const [activity, frequency] of matchedActivities.entries()) {
         const config = ACTIVITY_KEYWORDS[activity];
         let activityScore = 0;
         let activityMax = 0;
@@ -312,19 +402,21 @@ export default function AIParkHelperPage() {
         for (const [attr, weight] of Object.entries(config.weights)) {
           const value = attrs[attr as keyof ParkAttributes] || 0;
           if (weight > 0) {
-            activityScore += (value / 5) * weight;
-            activityMax += weight;
+            activityScore += (value / SCORING_CONFIG.MAX_ATTRIBUTE_VALUE) * weight * frequency;
+            activityMax += weight * frequency;
           } else {
             // Negative weight: penalize high values
-            activityScore += ((5 - value) / 5) * Math.abs(weight);
-            activityMax += Math.abs(weight);
+            activityScore += ((SCORING_CONFIG.MAX_ATTRIBUTE_VALUE - value) / SCORING_CONFIG.MAX_ATTRIBUTE_VALUE) * Math.abs(weight) * frequency;
+            activityMax += Math.abs(weight) * frequency;
           }
         }
         
-        // Activity contributes if score is positive
-        if (activityScore > 0) {
-          score += activityScore;
-          maxScore += activityMax;
+        // Always count the activity score toward the total
+        score += activityScore;
+        maxScore += activityMax;
+
+        // Only show in "matched" list if it significantly contributed
+        if (activityScore > SCORING_CONFIG.MIN_CONTRIBUTION_THRESHOLD * activityMax) {
           matched.push(activity);
         }
       }
@@ -332,9 +424,24 @@ export default function AIParkHelperPage() {
       // Convert to percentage (0-100)
       score = maxScore > 0 ? (score / maxScore) * 100 : 0;
     } else {
-      // Fallback: rank by amenity diversity (0-100 scale)
-      const diversity = new Set(park.amenities.map(a => a.type)).size;
-      score = (diversity / 6) * 100; // Max 6 amenity types
+      // Fallback for vague queries: Use a balanced "general appeal" formula
+      
+      // Amenity diversity score
+      const uniqueAmenityTypes = new Set(park.amenities.map(a => a.type)).size;
+      const diversityScore = (uniqueAmenityTypes / SCORING_CONFIG.MAX_AMENITY_TYPES) * SCORING_CONFIG.FALLBACK_DIVERSITY_WEIGHT;
+      
+      // Facility quality score - sum of top attributes
+      const topAttributes: (keyof ParkAttributes)[] = [
+        'parking', 'accessibility', 'playground', 'picnicFacilities', 'runningTrails'
+      ];
+      const qualityScore = topAttributes.reduce((sum, attr) => 
+        sum + (attrs[attr] || 0), 0
+      ) / (SCORING_CONFIG.MAX_ATTRIBUTE_VALUE * topAttributes.length) * SCORING_CONFIG.FALLBACK_QUALITY_WEIGHT;
+      
+      // Size/versatility bonus - total amenity count
+      const sizeScore = Math.min(park.amenities.length / SCORING_CONFIG.MAX_AMENITIES_FOR_SIZE, 1) * SCORING_CONFIG.FALLBACK_SIZE_WEIGHT;
+      
+      score = diversityScore + qualityScore + sizeScore;
     }
 
     return {
@@ -342,7 +449,7 @@ export default function AIParkHelperPage() {
       parkName: park.name,
       score: Math.round(score),
       matchReason: matched.length > 0 
-        ? `Good for ${matched.slice(0, 2).join(' and ')}`
+        ? `Good for ${matched.slice(0, SCORING_CONFIG.MAX_FEATURES_IN_REASON).join(' and ')}`
         : 'General-purpose park',
       matchedFeatures: matched
     };
@@ -354,6 +461,20 @@ export default function AIParkHelperPage() {
     return a.parkName.localeCompare(b.parkName);
   });
 };
+
+/* -------------------------------------------------------------------------- */
+/*                             MAIN COMPONENT                                  */
+/* -------------------------------------------------------------------------- */
+
+export default function AIParkHelperPage() {
+  // Toast notification hook for user feedback
+  const { toast } = useToast();
+  
+  // Component state management
+  const [query, setQuery] = useState('');                              // User's search query
+  const [recommendations, setRecommendations] = useState<MatchScore[]>([]); // Park match results
+  const [isSearching, setIsSearching] = useState(false);               // Loading state
+  const [hasSearched, setHasSearched] = useState(false);               // Whether user has performed a search
 
   // ============================================================================
   // EVENT HANDLERS
