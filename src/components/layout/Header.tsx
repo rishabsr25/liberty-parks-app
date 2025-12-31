@@ -51,13 +51,13 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex md:items-center md:gap-3">
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-0.75">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  'px-4 py-2 text-sm font-medium transition-colors rounded-md',
+                  'px-3 py-1.5 text-sm font-medium transition-colors rounded-md',
                   location.pathname === link.href
                     ? 'text-primary bg-primary/10'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'

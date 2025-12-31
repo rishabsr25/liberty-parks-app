@@ -83,7 +83,7 @@ const parks: Park[] = [
     id: 'liberty',
     name: 'Liberty Park',
     description: 'Main community park with extensive trails and facilities',
-    address: '9385 Columbus Pike, Lewis Center, OH',
+    address: '2845 Home Rd, Powell, OH',
     amenities: [
       { type: 'trail', name: 'Running Trail' },
       { type: 'playground', name: 'Playground' },
@@ -97,7 +97,7 @@ const parks: Park[] = [
     id: 'havener',
     name: 'Havener Park',
     description: 'Quiet neighborhood park perfect for families',
-    address: '7747 Graphics Way, Lewis Center, OH',
+    address: '4085 Liberty Rd, Delaware, OH',
     amenities: [
       { type: 'playground', name: 'Playground' },
       { type: 'picnic', name: 'Picnic Tables' },
@@ -108,7 +108,7 @@ const parks: Park[] = [
     id: 'big-bear',
     name: 'Big Bear Park',
     description: 'Large park with sports facilities and open spaces',
-    address: '7770 Liberty Rd, Powell, OH',
+    address: '9351 Big Bear Avenue, Powell, OH',
     amenities: [
       { type: 'sports', name: 'Sports Fields' },
       { type: 'playground', name: 'Playground' },
@@ -120,7 +120,7 @@ const parks: Park[] = [
     id: 'hyatts',
     name: 'Hyatts Park',
     description: 'Community park with shelters and recreation areas',
-    address: '8710 Columbus Pike, Lewis Center, OH',
+    address: '2500 Hyatts Rd, Powell, OH',
     amenities: [
       { type: 'shelter', name: 'Picnic Shelter' },
       { type: 'playground', name: 'Playground' },
@@ -131,8 +131,8 @@ const parks: Park[] = [
   {
     id: 'patriot',
     name: 'Patriot Park',
-    description: 'Scenic park with trails and natural features',
-    address: '9877 Worthington Rd, Powell, OH',
+    description: 'Compact local park with a baseball diamond and surrounding open space',
+    address: '7765 Liberty Road North, Powell, OH',
     amenities: [
       { type: 'trail', name: 'Nature Trail' },
       { type: 'parking', name: 'Parking' },
@@ -143,7 +143,7 @@ const parks: Park[] = [
     id: 'wedgewood',
     name: 'Wedgewood Park',
     description: 'Neighborhood park with playground and open areas',
-    address: '8190 Wedgewood Blvd, Powell, OH',
+    address: '10150 Sawmill Pkwy, Powell, OH',
     amenities: [
       { type: 'playground', name: 'Playground' },
       { type: 'sports', name: 'Open Field' },
@@ -154,7 +154,7 @@ const parks: Park[] = [
     id: 'smith-preserve',
     name: 'Smith Preserve',
     description: 'Natural preserve with hiking trails and wildlife',
-    address: '580 Home Rd, Powell, OH',
+    address: '6000 Farmstead Ln, Delaware, OH',
     amenities: [
       { type: 'trail', name: 'Hiking Trails' },
       { type: 'nature', name: 'Wildlife Viewing' },
@@ -163,13 +163,14 @@ const parks: Park[] = [
   }
 ];
 
-// Quantitative scoring attributes for each park
+// Quantitative scoring attributes for each park 
+// WE NEED TO UPDATE THIS DATA BASED ON REAL INFO
 const parkAttributes: Record<string, ParkAttributes> = {
-  liberty: { runningTrails: 5, dogFriendly: 5, picnicFacilities: 5, playground: 4, sportsFields: 5, natureSensitivity: 3, waterAccess: 2, parking: 5, accessibility: 5, bikingTrails: 4, openSpace: 5, shelters: 4 },
+  liberty: { runningTrails: 7, dogFriendly: 7, picnicFacilities: 5, playground: 4, sportsFields: 5, natureSensitivity: 2, waterAccess: 2, parking: 5, accessibility: 5, bikingTrails: 4, openSpace: 5, shelters: 4 },
   havener: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 4, playground: 5, sportsFields: 1, natureSensitivity: 3, waterAccess: 0, parking: 4, accessibility: 5, bikingTrails: 2, openSpace: 3, shelters: 2 },
   'big-bear': { runningTrails: 3, dogFriendly: 4, picnicFacilities: 3, playground: 4, sportsFields: 5, natureSensitivity: 2, waterAccess: 0, parking: 5, accessibility: 4, bikingTrails: 3, openSpace: 5, shelters: 3 },
   hyatts: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 5, playground: 4, sportsFields: 4, natureSensitivity: 2, waterAccess: 0, parking: 4, accessibility: 4, bikingTrails: 2, openSpace: 4, shelters: 5 },
-  patriot: { runningTrails: 4, dogFriendly: 5, picnicFacilities: 3, playground: 1, sportsFields: 1, natureSensitivity: 5, waterAccess: 1, parking: 3, accessibility: 3, bikingTrails: 4, openSpace: 4, shelters: 2 },
+  patriot: { runningTrails: 4, dogFriendly: 5, picnicFacilities: 3, playground: 1, sportsFields: 6, natureSensitivity: 0, waterAccess: 1, parking: 3, accessibility: 3, bikingTrails: 0, openSpace: 4, shelters: 2 },
   wedgewood: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 2, playground: 5, sportsFields: 3, natureSensitivity: 2, waterAccess: 0, parking: 3, accessibility: 4, bikingTrails: 2, openSpace: 4, shelters: 1 },
   'smith-preserve': { runningTrails: 5, dogFriendly: 4, picnicFacilities: 1, playground: 0, sportsFields: 0, natureSensitivity: 5, waterAccess: 3, parking: 3, accessibility: 2, bikingTrails: 4, openSpace: 3, shelters: 0 }
 };
