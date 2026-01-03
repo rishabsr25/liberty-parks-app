@@ -164,6 +164,7 @@ src/
 ## 🎯 Roadmap
 
 ### Phase 1: Pilot (Months 1-5) 
+- [x] Presented Idea
 - [x] Core feature development
 - [x] Working prototype
 - [ ] Liberty Park beta testing (50-100 users)
@@ -197,7 +198,7 @@ This project is currently maintained by Rishab Sriram and Thejan Nelahonne as pa
 ### Development Guidelines
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+3. Commit your changes (`git commit -m 'Added some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
@@ -207,7 +208,7 @@ This project is currently maintained by Rishab Sriram and Thejan Nelahonne as pa
 
 This project is proprietary software developed for Liberty Township, Ohio. All rights reserved.
 
-For licensing inquiries, contact: rishabsr25@gmail.com
+For licensing inquiries, contact: rishabsr25@gmail.com or nelthejan@gmail.com
 
 ---
 
@@ -227,7 +228,7 @@ For licensing inquiries, contact: rishabsr25@gmail.com
 **Email:** rishabsr25@gmail.com  
 **School:** Olentangy Liberty High School, Class of 2027
 
-**CFO** THejan Nelahonne
+**CFO:** Thejan Nelahonne
 **Email:** nelthejan@gmail.com  
 **School:** Olentangy Liberty High School, Class of 2027
 

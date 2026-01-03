@@ -28,18 +28,28 @@ export default defineConfig(({ mode }) => ({
 
       workbox: {
         globPatterns: [
-          "**/*.{js,css,html,svg,png,jpg,jpeg,webp,ico}",
+          "**/*.{js,css,html,svg,png,jpg,jpeg,webp,ico,json}",
         ],
         navigateFallback: "/index.html",
         runtimeCaching: [
           {
-            urlPattern: ({ request }) =>
-              request.destination === "image",
+            urlPattern: ({ request }) => request.destination === "image",
             handler: "CacheFirst",
             options: {
               cacheName: "images-cache",
               expiration: {
                 maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.endsWith(".json"),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "json-cache",
+              expiration: {
+                maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
               },
             },
@@ -53,7 +63,7 @@ export default defineConfig(({ mode }) => ({
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
-        theme_color: "#16a34a",
+        theme_color: "#ffffff",
         icons: [
           {
             src: "/pwa-192x192.png",

@@ -456,6 +456,15 @@ const calculateParkScore = (query: string): MatchScore[] => {
     };
   }).filter((s): s is MatchScore => s !== null);
 
+  // Normalize scores if any exceed 100
+  const maxScore = Math.max(...scores.map(s => s.score));
+  if (maxScore > 100) {
+    const scaleFactor = maxScore / 100;
+    scores.forEach(s => {
+      s.score = Math.round(s.score / scaleFactor);
+    });
+  }
+
   // Sort by score, then by name for stability
   return scores.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
