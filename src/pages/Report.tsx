@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Send, CheckCircle, Wrench, AlertTriangle, Trash2, XCircle, Lightbulb, HelpCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Send, CheckCircle, Wrench, AlertTriangle, Trash2, XCircle, Lightbulb, HelpCircle,} from 'lucide-react';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,10 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { parks, reportCategories, parkReports, ParkReport } from '@/data/mockData';
+import { parks, reportCategories } from '@/data/mockData';
+import { supabase } from '@/supabase-client';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Wrench,
@@ -22,10 +24,22 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   HelpCircle,
 };
 
-const statusColors: Record<string, string> = {
+
+interface Report {
+  id: string;
+  created_at: string;
+  brief_description: string;
+  detailed_description: string;
+  type_of_issue: number;
+  park_id: string;
+  email: string | null;
+  report_state: 'pending' | 'accepted' | 'rejected' | 'resolved';
+}
+
+const statusColors: Record<Report['report_state'], string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  acknowledged: 'bg-blue-100 text-blue-800 border-blue-300',
-  'in-progress': 'bg-orange-100 text-orange-800 border-orange-300',
+  accepted: 'bg-blue-100 text-blue-800 border-blue-300',
+  rejected: 'bg-red-100 text-red-800 border-red-300',
   resolved: 'bg-green-100 text-green-800 border-green-300',
 };
 
@@ -33,7 +47,8 @@ export default function ReportPage() {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [reports, setReports] = useState<ParkReport[]>(parkReports);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     park: '',
     category: '',
@@ -42,61 +57,72 @@ export default function ReportPage() {
     email: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const fetchReports = async () => {
+    if (!supabase) return;
 
-    if (!formData.park || !formData.category || !formData.title || !formData.description) {
+    const { data, error } = await supabase
+      .from('reports')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
       toast({
-        title: 'Missing Information',
-        description: 'Please fill in all required fields.',
+        title: 'Error',
+        description: 'Failed to load reports.',
         variant: 'destructive',
       });
       return;
     }
 
-    // Construct Mailto Link
-    const parkName = getParkName(formData.park);
-    const categoryName = reportCategories.find(c => c.id === formData.category)?.name || formData.category;
-
-    const subject = encodeURIComponent(`Park Issue Report: ${categoryName} at ${parkName}`);
-    const body = encodeURIComponent(
-      `New Issue Report
-
-Park: ${parkName}
-Category: ${categoryName}
-Issue: ${formData.title}
-
-Description:
-${formData.description}
-
-Reporter Email: ${formData.email || 'Not provided'}
-
---
-Sent from Liberty Township Parks App`
-    );
-
-    const recipients = 'rishabsr25@gmail.com,nelthejan@gmail.com';
-    window.location.href = `mailto:${recipients}?subject=${subject}&body=${body}`;
-
-    const newReport: ParkReport = {
-      id: `rpt-${Date.now()}`,
-      parkId: formData.park,
-      category: formData.category,
-      title: formData.title,
-      description: formData.description,
-      email: formData.email,
-      status: 'pending',
-      createdAt: new Date(),
-    };
-
-    setReports([newReport, ...reports]);
-    setIsSubmitted(true);
-
-    toast({
-      title: 'Report Submitted',
-      description: 'Your email client has been opened to send the report.',
-    });
+    setReports(data as Report[]);
+    setIsLoading(false);
   };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!supabase) return;
+
+  if (!formData.park || !formData.category || !formData.title || !formData.description) {
+    toast({
+      title: 'Missing Information',
+      description: 'Please fill in all required fields.',
+      variant: 'destructive',
+    });
+    return;
+  }
+
+  const { error } = await supabase.from('reports').insert({
+    park_id: formData.park,
+    type_of_issue: Number(formData.category),
+    brief_description: formData.title,
+    detailed_description: formData.description,
+    email: formData.email || null,
+    report_state: 'pending',
+  });
+
+  if (error) {
+    toast({
+      title: 'Error',
+      description: 'Failed to submit report.',
+      variant: 'destructive',
+    });
+    return;
+  }
+
+  toast({
+    title: 'Report Submitted',
+    description: 'Thank you for helping improve our parks.',
+  });
+
+  setIsSubmitted(true);
+  fetchReports();
+};
+
 
   const handleReset = () => {
     setIsSubmitted(false);
@@ -109,6 +135,7 @@ Sent from Liberty Township Parks App`
       email: '',
     });
   };
+
 
   if (isSubmitted) {
     return (
@@ -131,7 +158,9 @@ Sent from Liberty Township Parks App`
     );
   }
 
+
   const getParkName = (parkId: string) => parks.find(p => p.id === parkId)?.name || 'Unknown Park';
+
 
   return (
     <Layout>
@@ -145,6 +174,7 @@ Sent from Liberty Township Parks App`
             Help us keep our parks safe and beautiful by reporting maintenance issues.
           </p>
         </div>
+
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Category Selection */}
@@ -179,6 +209,7 @@ Sent from Liberty Township Parks App`
             </div>
           </div>
 
+
           {/* Report Form */}
           <div className="lg:col-span-2">
             <Card>
@@ -210,6 +241,7 @@ Sent from Liberty Township Parks App`
                     </Select>
                   </div>
 
+
                   {/* Issue Title */}
                   <div className="space-y-2">
                     <Label htmlFor="title">Brief description</Label>
@@ -221,6 +253,7 @@ Sent from Liberty Township Parks App`
                       required
                     />
                   </div>
+
 
                   {/* Detailed Description */}
                   <div className="space-y-2">
@@ -234,6 +267,7 @@ Sent from Liberty Township Parks App`
                       required
                     />
                   </div>
+
 
                   {/* Email (optional) */}
                   <div className="space-y-2">
@@ -250,6 +284,7 @@ Sent from Liberty Township Parks App`
                     </p>
                   </div>
 
+
                   <Button type="submit" className="w-full gap-2" disabled={!selectedCategory || !formData.park}>
                     <Send className="h-4 w-4" />
                     Submit Report
@@ -260,13 +295,15 @@ Sent from Liberty Township Parks App`
           </div>
         </div>
 
+
         {/* Recent Reports Section */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">Recent Reports</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {reports.map((report) => {
-              const categoryInfo = reportCategories.find(c => c.id === report.category);
+              const categoryInfo = reportCategories.find(c => Number(c.id) === report.type_of_issue);
               const Icon = categoryInfo ? iconMap[categoryInfo.icon] : HelpCircle;
+
 
               return (
                 <Card key={report.id} className="hover:shadow-md transition-shadow">
@@ -276,16 +313,18 @@ Sent from Liberty Township Parks App`
                         <Icon className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-medium text-foreground">{report.title}</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">{getParkName(report.parkId)}</p>
+                        <h3 className="font-medium text-foreground">{report.brief_description}</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">{getParkName(report.park_id)}</p>
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{report.description}</p>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{report.detailed_description}</p>
                     <div className="flex items-center justify-between">
-                      <Badge className={cn('text-xs', statusColors[report.status])}>
-                        {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                      <Badge className={cn('text-xs', statusColors[report.report_state])}>
+                        {report.report_state.charAt(0).toUpperCase() + report.report_state.slice(1)}
                       </Badge>
-                      <span className="text-xs text-muted-foreground">{format(report.createdAt, 'MMM d')}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {format(new Date(report.created_at), 'MMM d')}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -297,3 +336,4 @@ Sent from Liberty Township Parks App`
     </Layout>
   );
 }
+
