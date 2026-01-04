@@ -98,23 +98,25 @@ export default function ReportPage() {
     return;
   }
 
-  const { error } = await supabase.from('reports').insert({
-    park_id: formData.park,
-    type_of_issue: Number(formData.category),
-    brief_description: formData.title,
-    detailed_description: formData.description,
-    email: formData.email || null,
-    report_state: 'pending',
-  });
+  const { data, error } = await supabase.from('reports').insert({
+  park_id: formData.park,
+  type_of_issue: Number(formData.category),
+  brief_description: formData.title,
+  detailed_description: formData.description,
+  email: formData.email || null,
+  report_state: 'pending',
+});
 
-  if (error) {
-    toast({
-      title: 'Error',
-      description: 'Failed to submit report.',
-      variant: 'destructive',
-    });
-    return;
-  }
+if (error) {
+  console.error('Supabase insert error:', error); // <-- debug line
+  toast({
+    title: 'Error',
+    description: `Failed to submit report: ${error.message}`, // shows actual error
+    variant: 'destructive',
+  });
+  return;
+}
+
 
   toast({
     title: 'Report Submitted',
