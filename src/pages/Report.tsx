@@ -33,13 +33,13 @@ interface Report {
   type_of_issue: number;
   park_id: string;
   email: string | null;
-  report_state: 'pending' | 'accepted' | 'rejected' | 'resolved';
+  report_state: 'pending' | 'dismissed' | 'in_progress' | 'resolved';
 }
 
 const statusColors: Record<Report['report_state'], string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  accepted: 'bg-blue-100 text-blue-800 border-blue-300',
-  rejected: 'bg-red-100 text-red-800 border-red-300',
+  dismissed: 'bg-red-100 text-red-800 border-red-300',
+  in_progress: 'bg-purple-100 text-purple-800 border-purple-300',
   resolved: 'bg-green-100 text-green-800 border-green-300',
 };
 
@@ -63,7 +63,9 @@ export default function ReportPage() {
     const { data, error } = await supabase
       .from('reports')
       .select('*')
+      .in('report_state', ['in_progress', 'resolved'])
       .order('created_at', { ascending: false });
+
 
     if (error) {
       toast({
