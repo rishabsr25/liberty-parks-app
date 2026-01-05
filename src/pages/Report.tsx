@@ -98,14 +98,31 @@ export default function ReportPage() {
     return;
   }
 
-  const { data, error } = await supabase.from('reports').insert({
-  park_id: formData.park,
-  type_of_issue: Number(formData.category),
-  brief_description: formData.title,
-  detailed_description: formData.description,
-  email: formData.email || null,
-  status: 'pending',
-});
+  // Look up park UUID by name
+  const { data: park, error: parkError } = await supabase
+    .from('parks')
+    .select('id')
+    .eq('park_name', formData.park)
+    .single();
+
+  if (parkError || !park) {
+    toast({
+      title: 'Error',
+      description: 'Selected park not found.',
+      variant: 'destructive',
+    });
+    return;
+  }
+
+  const { error } = await supabase.from('reports').insert({
+    park_id: park.id,
+    type_of_issue: Number(formData.category),
+    brief_description: formData.title,
+    detailed_description: formData.description,
+    email: formData.email || null,
+    status: 'pending',
+  });
+
 
 if (error) {
   console.error('Supabase insert error:', error); // <-- debug line
@@ -163,7 +180,8 @@ if (error) {
   }
 
 
-  const getParkName = (parkId: string) => parks.find(p => p.id === parkId)?.name || 'Unknown Park';
+  const getParkName = (parkId: string) =>
+    parks.find(p => p.id === parkId)?.name ?? 'Unknown Park';
 
 
   return (
@@ -237,9 +255,10 @@ if (error) {
                       </SelectTrigger>
                       <SelectContent>
                         {parks.map((park) => (
-                          <SelectItem key={park.id} value={park.id}>
+                          <SelectItem key={park.id} value={park.name}>
                             {park.name}
                           </SelectItem>
+
                         ))}
                       </SelectContent>
                     </Select>
