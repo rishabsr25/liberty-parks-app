@@ -49,6 +49,7 @@ export default function ReportPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [parksMap, setParksMap] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     park: '',
     category: '',
@@ -80,9 +81,27 @@ export default function ReportPage() {
     setIsLoading(false);
   };
 
+  const fetchParks = async () => {
+  const { data, error } = await supabase
+    .from('parks')
+    .select('id, park_name');
+
+  if (error || !data) return;
+
+  const map: Record<string, string> = {};
+  for (const park of data) {
+    map[park.id] = park.park_name;
+  }
+
+  setParksMap(map);
+};
+
+
   useEffect(() => {
-    fetchReports();
-  }, []);
+  fetchParks();
+  fetchReports();
+}, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -98,24 +117,10 @@ export default function ReportPage() {
     return;
   }
 
-  // Look up park UUID by name
-  const { data: park, error: parkError } = await supabase
-    .from('parks')
-    .select('id')
-    .eq('park_name', formData.park)
-    .single();
-
-  if (parkError || !park) {
-    toast({
-      title: 'Error',
-      description: 'Selected park not found.',
-      variant: 'destructive',
-    });
-    return;
-  }
+  
 
   const { error } = await supabase.from('reports').insert({
-    park_id: park.id,
+    park_id: formData.park,
     type_of_issue: Number(formData.category),
     brief_description: formData.title,
     detailed_description: formData.description,
@@ -181,7 +186,7 @@ if (error) {
 
 
   const getParkName = (parkId: string) =>
-    parks.find(p => p.id === parkId)?.name ?? 'Unknown Park';
+    parksMap[parkId] ?? 'Unknown Park';
 
 
   return (
@@ -255,10 +260,9 @@ if (error) {
                       </SelectTrigger>
                       <SelectContent>
                         {parks.map((park) => (
-                          <SelectItem key={park.id} value={park.name}>
+                          <SelectItem key={park.id} value={park.id}>
                             {park.name}
                           </SelectItem>
-
                         ))}
                       </SelectContent>
                     </Select>
