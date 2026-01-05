@@ -33,10 +33,10 @@ interface Report {
   type_of_issue: number;
   park_id: string;
   email: string | null;
-  report_state: 'pending' | 'dismissed' | 'in_progress' | 'resolved';
+  status: 'pending' | 'dismissed' | 'in_progress' | 'resolved';
 }
 
-const statusColors: Record<Report['report_state'], string> = {
+const statusColors: Record<Report['status'], string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
   dismissed: 'bg-red-100 text-red-800 border-red-300',
   in_progress: 'bg-purple-100 text-purple-800 border-purple-300',
@@ -63,7 +63,7 @@ export default function ReportPage() {
     const { data, error } = await supabase
       .from('reports')
       .select('*')
-      .in('report_state', ['in_progress', 'resolved'])
+      .in('status', ['in_progress', 'resolved'])
       .order('created_at', { ascending: false });
 
 
@@ -104,7 +104,7 @@ export default function ReportPage() {
   brief_description: formData.title,
   detailed_description: formData.description,
   email: formData.email || null,
-  report_state: 'pending',
+  status: 'pending',
 });
 
 if (error) {
@@ -323,8 +323,8 @@ if (error) {
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{report.detailed_description}</p>
                     <div className="flex items-center justify-between">
-                      <Badge className={cn('text-xs', statusColors[report.report_state])}>
-                        {report.report_state.charAt(0).toUpperCase() + report.report_state.slice(1)}
+                      <Badge className={cn('text-xs', statusColors[report.status])}>
+                        {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
                         {format(new Date(report.created_at), 'MMM d')}
