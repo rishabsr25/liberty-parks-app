@@ -103,7 +103,7 @@ export default function ReportPage() {
 }, []);
 
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   if (!supabase) return;
@@ -111,16 +111,28 @@ export default function ReportPage() {
   if (!formData.park || !formData.category || !formData.title || !formData.description) {
     toast({
       title: 'Missing Information',
-      description: 'Please fill in all required fields.',
+      description: `Please fill in all required fields. Current park value: "${formData.park}"`,
       variant: 'destructive',
     });
     return;
   }
 
-  
+  // Find the UUID for the selected park
+  const selectedParkId = Object.entries(parksMap).find(
+    ([id, name]) => name === formData.park
+  )?.[0];
+
+  if (!selectedParkId) {
+    toast({
+      title: 'Selected Park Not Found',
+      description: `The park you selected ("${formData.park}") could not be found in the database.`,
+      variant: 'destructive',
+    });
+    return;
+  }
 
   const { error } = await supabase.from('reports').insert({
-    park_id: formData.park,
+    park_id: selectedParkId,
     type_of_issue: Number(formData.category),
     brief_description: formData.title,
     detailed_description: formData.description,
@@ -128,17 +140,15 @@ export default function ReportPage() {
     status: 'pending',
   });
 
-
-if (error) {
-  console.error('Supabase insert error:', error); // <-- debug line
-  toast({
-    title: 'Error',
-    description: `Failed to submit report: ${error.message}`, // shows actual error
-    variant: 'destructive',
-  });
-  return;
-}
-
+  if (error) {
+    console.error('Supabase insert error:', error);
+    toast({
+      title: 'Error',
+      description: `Failed to submit report for park "${formData.park}": ${error.message}`,
+      variant: 'destructive',
+    });
+    return;
+  }
 
   toast({
     title: 'Report Submitted',
@@ -148,6 +158,7 @@ if (error) {
   setIsSubmitted(true);
   fetchReports();
 };
+
 
 
   const handleReset = () => {
