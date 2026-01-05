@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { parks, reportCategories } from '@/data/mockData';
+import { reportCategories } from '@/data/mockData';
 import { supabase } from '@/supabase-client';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -50,6 +50,7 @@ export default function ReportPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [parksMap, setParksMap] = useState<Record<string, string>>({});
+  const [parksList, setParksList] = useState<{ id: string; park_name: string }[]>([]);
   const [formData, setFormData] = useState({
     park: '',
     category: '',
@@ -81,20 +82,24 @@ export default function ReportPage() {
     setIsLoading(false);
   };
 
-  const fetchParks = async () => {
+const fetchParks = async () => {
   const { data, error } = await supabase
     .from('parks')
     .select('id, park_name');
 
   if (error || !data) return;
 
-  const map: Record<string, string> = {};
-  for (const park of data) {
-    map[park.id] = park.park_name;
-  }
+  // Store live array for Select dropdown
+  setParksList(data);
 
+  // Map UUID -> park_name for handleSubmit & getParkName
+  const map: Record<string, string> = {};
+  data.forEach((park) => {
+    map[park.id] = park.park_name;
+  });
   setParksMap(map);
 };
+
 
 
   useEffect(() => {
@@ -267,12 +272,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                       onValueChange={(value) => setFormData((prev) => ({ ...prev, park: value }))}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a park" />
+                        <SelectValue placeholder={parksList.length ? 'Select a park' : 'Loading...'} />
                       </SelectTrigger>
                       <SelectContent>
-                        {parks.map((park) => (
-                          <SelectItem key={park.id} value={park.id}>
-                            {park.name}
+                        {parksList.map((park) => (
+                          <SelectItem key={park.id} value={park.park_name}>
+                            {park.park_name}
                           </SelectItem>
                         ))}
                       </SelectContent>
