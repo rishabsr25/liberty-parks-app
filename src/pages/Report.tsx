@@ -356,8 +356,11 @@ const handleSubmit = async (e: React.FormEvent) => {
           <h2 className="text-2xl font-bold text-foreground mb-6">Recent Reports</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {reports.map((report) => {
-              const categoryInfo = reportCategories.find(c => c.id === report.type_of_issue);
-              const Icon = categoryInfo ? iconMap[categoryInfo.icon] : HelpCircle;
+              const Icon = (() => {
+                const category = reportCategories.find(c => c.id === report.type_of_issue);
+                return category ? iconMap[category.icon] : HelpCircle;
+              })();
+
 
 
               return (
