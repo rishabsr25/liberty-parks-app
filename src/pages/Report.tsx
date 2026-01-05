@@ -30,7 +30,7 @@ interface Report {
   created_at: string;
   brief_description: string;
   detailed_description: string;
-  type_of_issue: number;
+  type_of_issue: 'maintenance' | 'safety' | 'cleanliness' | 'equipment' | 'lighting' | 'other';
   park_id: string;
   email: string | null;
   status: 'pending' | 'dismissed' | 'in_progress' | 'resolved';
@@ -61,6 +61,7 @@ export default function ReportPage() {
 
   const fetchReports = async () => {
     if (!supabase) return;
+    console.time('fetchReports'); // Start timer
 
     const { data, error } = await supabase
       .from('reports')
@@ -68,6 +69,7 @@ export default function ReportPage() {
       .in('status', ['in_progress', 'resolved'])
       .order('created_at', { ascending: false });
 
+    console.timeEnd('fetchReports'); // End timer
 
     if (error) {
       toast({
@@ -75,31 +77,41 @@ export default function ReportPage() {
         description: 'Failed to load reports.',
         variant: 'destructive',
       });
+      console.error('Error fetching reports:', error);
       return;
     }
 
+    console.log('Fetched reports:', data?.length || 0, 'records');
     setReports(data as Report[]);
     setIsLoading(false);
   };
 
-const fetchParks = async () => {
-  const { data, error } = await supabase
-    .from('parks')
-    .select('id, park_name');
 
-  if (error || !data) return;
+  const fetchParks = async () => {
+    console.time('fetchParks'); // Start timer
+    const { data, error } = await supabase
+      .from('parks')
+      .select('id, park_name');
 
-  // Store live array for Select dropdown
-  setParksList(data);
+    if (error || !data) {
+      console.timeEnd('fetchParks'); // End timer even on error
+      console.error('Error fetching parks:', error);
+      return;
+    }
 
-  // Map UUID -> park_name for handleSubmit & getParkName
-  const map: Record<string, string> = {};
-  data.forEach((park) => {
-    map[park.id] = park.park_name;
-  });
-  setParksMap(map);
-};
+    console.timeEnd('fetchParks'); // End timer
+    console.log('Fetched parks:', data.length, 'records');
 
+    // Store live array for Select dropdown
+    setParksList(data);
+
+    // Map UUID -> park_name for handleSubmit & getParkName
+    const map: Record<string, string> = {};
+    data.forEach((park) => {
+      map[park.id] = park.park_name;
+    });
+    setParksMap(map);
+  };
 
 
   useEffect(() => {
@@ -138,7 +150,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   const { error } = await supabase.from('reports').insert({
     park_id: selectedParkId,
-    type_of_issue: Number(formData.category),
+    type_of_issue: formData.category,
     brief_description: formData.title,
     detailed_description: formData.description,
     email: formData.email || null,
@@ -344,7 +356,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           <h2 className="text-2xl font-bold text-foreground mb-6">Recent Reports</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {reports.map((report) => {
-              const categoryInfo = reportCategories.find(c => Number(c.id) === report.type_of_issue);
+              const categoryInfo = reportCategories.find(c => c.id === report.type_of_issue);
               const Icon = categoryInfo ? iconMap[categoryInfo.icon] : HelpCircle;
 
 
