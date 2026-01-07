@@ -1,9 +1,15 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+//import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { createClient } from "@supabase/supabase-js"
 
-const RATE_LIMIT_WINDOW_MS = 3_600_000 // 1 hour
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+)
+
+const _RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000 // 1 hour
 const MAX_REQUESTS = 5
-
-const ipHits = new Map<string, { count: number; timestamp: number }>()
+const ACTION = "submit_report"
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
@@ -13,30 +19,39 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Get client IP
   const ip =
-    req.headers.get("x-forwarded-for") ??
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     req.headers.get("cf-connecting-ip") ??
     "unknown"
 
-  const now = Date.now()
-  const record = ipHits.get(ip)
-
-  if (record) {
-    if (now - record.timestamp < RATE_LIMIT_WINDOW_MS) {
-      if (record.count >= MAX_REQUESTS) {
-        return new Response(
-          JSON.stringify({ error: "Too many requests" }),
-          { status: 429, headers: { "Content-Type": "application/json" } }
-        )
-      }
-      record.count++
-    } else {
-      ipHits.set(ip, { count: 1, timestamp: now })
-    }
-  } else {
-    ipHits.set(ip, { count: 1, timestamp: now })
+const { data: allowed, error } = await supabase.rpc(
+  "check_rate_limit",
+  {
+    p_ip: ip,
+    p_action: ACTION,
+    p_max: MAX_REQUESTS,
+    p_window: "1 hour",
   }
+)
 
+if (error) {
+  console.error("Rate limit error:", error)
+  return new Response(
+    JSON.stringify({ error: "Internal error" }),
+    { status: 500, headers: { "Content-Type": "application/json" } }
+  )
+}
+
+if (!allowed) {
+  return new Response(
+    JSON.stringify({ error: "Too many requests" }),
+    { status: 429, headers: { "Content-Type": "application/json" } }
+  )
+}
+
+
+  // 3️⃣ Parse body
   let body
   try {
     body = await req.json()
@@ -66,6 +81,9 @@ Deno.serve(async (req) => {
       { status: 400, headers: { "Content-Type": "application/json" } }
     )
   }
+
+  // 4️⃣ Continue with your normal logic here
+  // (insert report, send email, etc.)
 
   return new Response(
     JSON.stringify({ success: true }),
