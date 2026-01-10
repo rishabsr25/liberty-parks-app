@@ -13,10 +13,6 @@ const MAX_REQUESTS = 5
 const ACTION = "submit_report"
 
 Deno.serve(async (req) => {
-  // Simple test response
-  return new Response("ok", { status: 200 });
-
-  /*
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
@@ -24,16 +20,18 @@ Deno.serve(async (req) => {
     })
   }
 
+  // Get IP address
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     req.headers.get("cf-connecting-ip") ??
     "unknown"
 
+  // Check rate limit - pass interval as PostgreSQL interval type
   const { data: allowed, error } = await supabase.rpc("check_rate_limit", {
     p_ip: ip,
     p_action: ACTION,
     p_max: MAX_REQUESTS,
-    p_window: "1 hour",
+    p_window: "1 hour"  // This should work as-is
   })
 
   if (error) {
@@ -45,12 +43,13 @@ Deno.serve(async (req) => {
   }
 
   if (!allowed) {
-    return new Response(JSON.stringify({ error: "Too many requests" }), {
+    return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
       status: 429,
       headers: { "Content-Type": "application/json" },
     })
   }
 
+  // Parse request body
   let body
   try {
     body = await req.json()
@@ -70,8 +69,13 @@ Deno.serve(async (req) => {
     })
   }
 
-  return new Response(JSON.stringify({ success: true }), {
+  // Your actual report submission logic here
+  // For now, just return success
+  return new Response(JSON.stringify({ 
+    success: true,
+    message: "Report submitted successfully" 
+  }), {
+    status: 200,
     headers: { "Content-Type": "application/json" },
   })
-  */
 })
