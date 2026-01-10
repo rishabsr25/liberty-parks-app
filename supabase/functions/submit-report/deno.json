@@ -12,6 +12,7 @@
       "singleQuote": true
     }
   },
-  "importMap": "./import_map.json",
-  "unstable": []
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2"
+  }
 }
