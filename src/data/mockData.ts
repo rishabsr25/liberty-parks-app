@@ -162,11 +162,11 @@ export const parks: Park[] = [
     name: 'Patriot Park - Bruce Miller Field',
     description: 'Home to Bruce Miller Field, this 5-acre park features a baseball diamond and open space for recreation.',
     address: '7765 Liberty Road North, Powell, OH 43065',
-    coordinates: { lat: 40.225000, lng: -83.078000 }, // Estimated approx location based on address
-    zoom: 16,
+    coordinates: { lat: 40.188222, lng: -83.075544 }, // Estimated approx location based on address
+    zoom: 17,
     image: patriotPark, // Placeholder
     amenities: [
-      { id: 'pp-1', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.225100, lng: -83.078100 } },
+      { id: 'pp-1', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.188054, lng: -83.075793 } },
     ]
   },
   {
@@ -178,9 +178,7 @@ export const parks: Park[] = [
     zoom: 16,
     image: smithPark, // Placeholder
     amenities: [
-      { id: 'sp-1', type: 'nature', name: 'Eagle\'s Nest', coordinates: { lat: 40.213200, lng: -83.057500 } },
-      { id: 'sp-2', type: 'nature', name: 'Rookery', coordinates: { lat: 40.213400, lng: -83.057700 } },
-      { id: 'sp-3', type: 'water', name: 'River Access', coordinates: { lat: 40.212900, lng: -83.058000 } },
+      { id: 'sp-1', type: 'nature', name: 'Smith Preserve', coordinates: { lat: 40.212480, lng: -83.058873 } },
     ]
   },
   {
@@ -188,11 +186,11 @@ export const parks: Park[] = [
     name: 'Wedgewood Park',
     description: 'A 10-acre community park located on Sawmill Road, offering open green spaces for neighborhood enjoyment.',
     address: '10150 Sawmill Road, Powell, OH 43065',
-    coordinates: { lat: 40.185000, lng: -83.095000 }, // Estimated approx location
+    coordinates: { lat: 40.153271, lng: -83.102062 }, // Estimated approx location
     zoom: 16,
     image: wedgewoodPark, // Placeholder
     amenities: [
-      { id: 'wp-1', type: 'greenspace', name: 'Open Greenspace', coordinates: { lat: 40.185100, lng: -83.095100 } },
+      { id: 'wp-1', type: 'greenspace', name: 'Open Greenspace', coordinates: { lat: 40.153271, lng: -83.102062 } },
     ]
   },
 ];
