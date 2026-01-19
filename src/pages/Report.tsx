@@ -148,24 +148,46 @@ const handleSubmit = async (e: React.FormEvent) => {
     return;
   }
 
-  const { error } = await supabase.from('reports').insert({
-    park_id: selectedParkId,
-    type_of_issue: formData.category,
-    brief_description: formData.title,
-    detailed_description: formData.description,
-    email: formData.email || null,
-    status: 'pending',
-  });
+  try {
+  const res = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-report`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
+        park_id: selectedParkId,
+        type_of_issue: formData.category,
+        brief_description: formData.title,
+        detailed_description: formData.description,
+        email: formData.email || null,
+      }),
+    }
+  );
 
-  if (error) {
-    console.error('Supabase insert error:', error);
+  const data = await res.json();
+
+  if (!res.ok) {
+    console.error("Submit report failed:", data);
     toast({
-      title: 'Error',
-      description: `Failed to submit report for park "${formData.park}": ${error.message}`,
-      variant: 'destructive',
+      title: "Error",
+      description: data.error || "Failed to submit report",
+      variant: "destructive",
     });
     return;
   }
+} catch (err) {
+  console.error("Submit report error:", err);
+  toast({
+    title: "Error",
+    description: "Failed to submit report",
+    variant: "destructive",
+  });
+  return;
+}
+
 
   toast({
     title: 'Report Submitted',
