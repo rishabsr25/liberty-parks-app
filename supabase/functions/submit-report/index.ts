@@ -20,11 +20,29 @@ Deno.serve(async (req) => {
     })
   }
 
+    // ---- DEBUG LOGGING ----
+    console.log("==== submit-report called ====")
+    console.log("Method:", req.method)
+    console.log("URL:", req.url)
+
+    const headers: Record<string, string> = {}
+    req.headers.forEach((value, key) => {
+      headers[key] = value
+    })
+    console.log("Headers:", headers)
+
   // Get IP address
+  const rawForwardedFor = req.headers.get("x-forwarded-for")
+  const cfIp = req.headers.get("cf-connecting-ip")
+
   const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    req.headers.get("cf-connecting-ip") ??
+    rawForwardedFor?.split(",")[0]?.trim() ??
+    cfIp ??
     "unknown"
+
+  console.log("Resolved IP:", ip)
+  console.log("x-forwarded-for:", rawForwardedFor)
+  console.log("cf-connecting-ip:", cfIp)
 
   // Check rate limit - pass interval as PostgreSQL interval type
   const { data: allowed, error } = await supabase.rpc("check_rate_limit", {
@@ -33,6 +51,10 @@ Deno.serve(async (req) => {
     p_max: MAX_REQUESTS,
     p_window: "1 hour"  // This should work as-is
   })
+
+    console.log("Rate limit result:", allowed)
+    console.log("Rate limit error:", error)
+
 
   if (error) {
     console.error("Rate limit error:", error)
