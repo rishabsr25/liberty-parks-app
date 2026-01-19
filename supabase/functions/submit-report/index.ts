@@ -13,23 +13,40 @@ const MAX_REQUESTS = 5
 const ACTION = "submit_report"
 
 Deno.serve(async (req) => {
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
+  // --- CORS Preflight ---
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // or your domain
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
     })
   }
 
-    // ---- DEBUG LOGGING ----
-    console.log("==== submit-report called ====")
-    console.log("Method:", req.method)
-    console.log("URL:", req.url)
+  const corsHeaders = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*", // or your domain
+  }
 
-    const headers: Record<string, string> = {}
-    req.headers.forEach((value, key) => {
-      headers[key] = value
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: corsHeaders,
     })
-    console.log("Headers:", headers)
+  }
+
+  // ---- DEBUG LOGGING ----
+  console.log("==== submit-report called ====")
+  console.log("Method:", req.method)
+  console.log("URL:", req.url)
+
+  const headers: Record<string, string> = {}
+  req.headers.forEach((value, key) => {
+    headers[key] = value
+  })
+  console.log("Headers:", headers)
 
   // Get IP address
   const rawForwardedFor = req.headers.get("x-forwarded-for")
@@ -44,30 +61,29 @@ Deno.serve(async (req) => {
   console.log("x-forwarded-for:", rawForwardedFor)
   console.log("cf-connecting-ip:", cfIp)
 
-  // Check rate limit - pass interval as PostgreSQL interval type
+  // Check rate limit
   const { data: allowed, error } = await supabase.rpc("check_rate_limit", {
     p_ip: ip,
     p_action: ACTION,
     p_max: MAX_REQUESTS,
-    p_window: "1 hour"  // This should work as-is
+    p_window: "1 hour"
   })
 
-    console.log("Rate limit result:", allowed)
-    console.log("Rate limit error:", error)
-
+  console.log("Rate limit result:", allowed)
+  console.log("Rate limit error:", error)
 
   if (error) {
     console.error("Rate limit error:", error)
     return new Response(JSON.stringify({ error: "Internal error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
     })
   }
 
   if (!allowed) {
     return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
       status: 429,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
     })
   }
 
@@ -78,7 +94,7 @@ Deno.serve(async (req) => {
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
     })
   }
 
@@ -87,17 +103,34 @@ Deno.serve(async (req) => {
   if (!park_id || !type_of_issue || !brief_description || !detailed_description) {
     return new Response(JSON.stringify({ error: "Missing required fields" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
     })
   }
 
-  // Your actual report submission logic here
-  // For now, just return success
+  // Insert the report into Supabase
+  const { error: insertError } = await supabase.from("reports").insert({
+    park_id,
+    type_of_issue,
+    brief_description,
+    detailed_description,
+    email: body.email || null,
+    status: "pending", // default status
+    created_at: new Date().toISOString(),
+  })
+
+  if (insertError) {
+    console.error("Error inserting report:", insertError)
+    return new Response(JSON.stringify({ error: "Failed to submit report" }), {
+      status: 500,
+      headers: corsHeaders,
+    })
+  }
+
   return new Response(JSON.stringify({ 
     success: true,
     message: "Report submitted successfully" 
   }), {
     status: 200,
-    headers: { "Content-Type": "application/json" },
+    headers: corsHeaders,
   })
 })
