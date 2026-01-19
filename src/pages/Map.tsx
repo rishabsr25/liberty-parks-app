@@ -91,10 +91,10 @@ export default function MapPage() {
 
   return (
     <Layout>
-      <div className="container py-8">
+      <div className="min-h-screen container py-8 md:py-12">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
             Interactive Park Map
           </h1>
           <p className="text-muted-foreground">
@@ -144,7 +144,7 @@ export default function MapPage() {
           {/* Main Map Area */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="overflow-hidden">
-              <div className="relative aspect-[16/10] bg-muted">
+              <div className="relative w-full h-64 sm:h-80 md:h-[500px] bg-muted">
                 {isLoaded ? (
                   <GoogleMap
                     mapContainerStyle={containerStyle}
@@ -173,13 +173,15 @@ export default function MapPage() {
                           position={{ lat: amenity.coordinates.lat, lng: amenity.coordinates.lng }}
                           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                         >
-                          <div className="relative -translate-x-1/2 -translate-y-1/2 group cursor-pointer w-8 h-8">
+                          <div className="relative -translate-x-1/2 -translate-y-1/2 group cursor-pointer w-6 sm:w-8 h-6 sm:h-8">
                             <div className={cn(
-                              "flex h-8 w-8 items-center justify-center rounded-full border-2 shadow-sm transition-transform group-hover:scale-110",
+                              "flex h-6 sm:h-8 w-6 sm:w-8 items-center justify-center rounded-full border-2 shadow-sm transition-transform group-hover:scale-110",
                               colorClass
                             )}>
-                              <IconComponent className="h-4 w-4" />
+                              <IconComponent className="h-3 sm:h-4 w-3 sm:w-4" />
                             </div>
+
+
                             <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                               <div className="bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md border">
                                 {amenity.name}
@@ -218,8 +220,9 @@ export default function MapPage() {
                   variant={activeFilter === filter.type ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setActiveFilter(filter.type)}
-                  className="shrink-0"
+                  className="shrink-0 text-xs sm:text-sm"
                 >
+
                   {filter.label}
                 </Button>
               ))}
@@ -231,7 +234,7 @@ export default function MapPage() {
                 <CardTitle className="text-lg">Amenities at {selectedPark.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {filteredAmenities.map((amenity) => {
                     const info = amenityInfo[amenity.type];
                     return (
