@@ -87,6 +87,22 @@ Deno.serve(async (req) => {
     })
   }
 
+  // --- CLEANUP OLD RATE LIMIT ENTRIES ---
+  try {
+    const { error: cleanupError } = await supabase
+      .from("rate_limits")
+      .delete()
+      .lt("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+    if (cleanupError) {
+      console.error("Error cleaning up rate_limits:", cleanupError);
+    } else {
+      console.log("Old rate_limits entries cleaned up.");
+    }
+  } catch (err) {
+    console.error("Cleanup failed:", err);
+  }
+
   // Parse request body
   let body
   try {
