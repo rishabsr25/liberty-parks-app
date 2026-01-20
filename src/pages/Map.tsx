@@ -9,6 +9,7 @@ import { parks, amenityInfo } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+
 const amenityFilters = [
   { type: 'all', label: 'All' },
   { type: 'bathroom', label: 'Restrooms' },
@@ -19,9 +20,11 @@ const amenityFilters = [
   { type: 'sports', label: 'Sports' },
 ];
 
+
 const IconMap: Record<string, any> = {
   Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy, Info, Leaf
 };
+
 
 const amenityColorMap: Record<string, string> = {
   sky: 'bg-sky text-sky-foreground border-sky/30',
@@ -33,32 +36,39 @@ const amenityColorMap: Record<string, string> = {
   primary: 'bg-primary text-primary-foreground border-primary/30',
 };
 
+
 const containerStyle = {
   width: '100%',
   height: '100%',
 };
+
 
 export default function MapPage() {
   const [selectedPark, setSelectedPark] = useState(parks[0]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
+
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
   });
 
+
   const onMapLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
   }, []);
+
 
   const onUnmount = useCallback(() => {
     setMap(null);
   }, []);
 
+
   const filteredAmenities = selectedPark.amenities.filter(
     (amenity) => activeFilter === 'all' || amenity.type === activeFilter
   );
+
 
   // Update map view when selected park changes
   useEffect(() => {
@@ -69,14 +79,17 @@ export default function MapPage() {
         return;
       }
 
+
       const bounds = new window.google.maps.LatLngBounds();
       // Add park location
       bounds.extend({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
+
 
       // Add amenities
       filteredAmenities.forEach((a) => {
         bounds.extend({ lat: a.coordinates.lat, lng: a.coordinates.lng });
       });
+
 
       if (filteredAmenities.length > 0) {
         map.fitBounds(bounds);
@@ -87,11 +100,13 @@ export default function MapPage() {
     }
   }, [map, selectedPark, filteredAmenities]);
 
+
   const apiKeyMissing = !import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
 
   return (
     <Layout>
-      <div className="min-h-screen container py-8 md:py-12">
+      <div className="min-h-screen px-5 sm:px-4 md:px-6 py-8 md:py-12 overflow-x-hidden">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
@@ -101,6 +116,7 @@ export default function MapPage() {
             Explore park amenities and find what you need for your visit.
           </p>
         </div>
+
 
         {apiKeyMissing && (
           <Alert variant="destructive" className="mb-6">
@@ -112,9 +128,10 @@ export default function MapPage() {
           </Alert>
         )}
 
-        <div className="grid gap-6 lg:grid-cols-3">
+
+        <div className="grid gap-6 lg:grid-cols-3 md:w-full">
           {/* Sidebar - Park List */}
-          <div className="space-y-4">
+          <div className="space-y-4 w-[63%] md:w-full">
             <h2 className="font-heading text-lg font-semibold text-foreground">Select a Park</h2>
             <div className="space-y-2">
               {parks.map((park) => (
@@ -141,10 +158,11 @@ export default function MapPage() {
             </div>
           </div>
 
+
           {/* Main Map Area */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="overflow-hidden">
-              <div className="relative w-full h-64 sm:h-80 md:h-[500px] bg-muted">
+            <Card className="overflow-hidden w-[63%] md:w-full">
+              <div className="relative w-full h-[70vh] min-h-[100px] bg-muted">
                 {isLoaded ? (
                   <GoogleMap
                     mapContainerStyle={containerStyle}
@@ -161,11 +179,13 @@ export default function MapPage() {
                   >
                     {/* Park Marker - Removed as per request */}
 
+
                     {/* Amenities Markers */}
                     {filteredAmenities.map((amenity) => {
                       const info = amenityInfo[amenity.type];
                       const IconComponent = IconMap[info.icon] || MapPin;
                       const colorClass = amenityColorMap[info.color] || 'bg-primary text-primary-foreground';
+
 
                       return (
                         <OverlayView
@@ -180,6 +200,8 @@ export default function MapPage() {
                             )}>
                               <IconComponent className="h-3 sm:h-4 w-3 sm:w-4" />
                             </div>
+
+
 
 
                             <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
@@ -211,8 +233,9 @@ export default function MapPage() {
               </div>
             </Card>
 
+
             {/* Filters */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            <div className="flex items-center gap-2 pb-2 w-[62%] md:w-full overflow-x-auto">
               <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
               {amenityFilters.map((filter) => (
                 <Button
@@ -223,13 +246,15 @@ export default function MapPage() {
                   className="shrink-0 text-xs sm:text-sm"
                 >
 
+
                   {filter.label}
                 </Button>
               ))}
             </div>
 
+
             {/* Amenities List */}
-            <Card>
+            <Card className="w-[63%] md:w-full">
               <CardHeader>
                 <CardTitle className="text-lg">Amenities at {selectedPark.name}</CardTitle>
               </CardHeader>
@@ -243,7 +268,7 @@ export default function MapPage() {
                         className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
                       >
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                          {/* We really should have a proper icon mapping component. 
+                          {/* We really should have a proper icon mapping component.
                               For now, just MapPin is safe or we assume the text description is enough */}
                           <MapPin className="h-5 w-5 text-primary" />
                         </div>
