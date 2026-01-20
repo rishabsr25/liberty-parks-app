@@ -102,8 +102,8 @@ export const parks: Park[] = [
     name: 'Liberty Park',
     description: 'Our flagship community park featuring sports fields, playgrounds, and walking trails.',
     address: '2845 Home Rd, Powell, OH 43065',
-    coordinates: { lat: 40.192972, lng: -83.081639 },
-    zoom: 16.5,
+    coordinates: { lat: 40.192772, lng: -83.082629 },
+    zoom: 16,
     image: libertyPark,
     amenities: [
       { id: 'lp-bathroom-1', type: 'bathroom', name: 'Main Restrooms', coordinates: { lat: 40.191132, lng: -83.085027 } },
@@ -120,11 +120,13 @@ export const parks: Park[] = [
     name: 'Big Bear Park',
     description: 'A peaceful park perfect for picnics and family gatherings with beautiful natural scenery.',
     address: '8794 Big Bear Ave, Powell, OH 43065',
-    coordinates: { lat: 40.163407, lng: -83.086126 },
-    zoom: 18,
+    coordinates: { lat: 40.162772, lng: -83.082947 },
+    zoom: 17,
     image: bigBearPark,
     amenities: [
-
+        { id: 'pp-1', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.163460, lng: -83.082296 } },
+        { id: 'pp-2', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.162335, lng: -83.081340 } },
+        { id: 'pp-3', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.161811, lng: -83.082116 } }
     ],
   },
   {
@@ -162,11 +164,11 @@ export const parks: Park[] = [
     name: 'Patriot Park - Bruce Miller Field',
     description: 'Home to Bruce Miller Field, this 5-acre park features a baseball diamond and open space for recreation.',
     address: '7765 Liberty Road North, Powell, OH 43065',
-    coordinates: { lat: 40.188222, lng: -83.075544 }, // Estimated approx location based on address
+    coordinates: { lat: 40.188093, lng: -83.075738 }, // Estimated approx location based on address
     zoom: 17,
     image: patriotPark, // Placeholder
     amenities: [
-      { id: 'pp-1', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.188054, lng: -83.075793 } },
+      { id: 'pp-1', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.188093, lng: -83.075738 } },
     ]
   },
   {
@@ -175,7 +177,7 @@ export const parks: Park[] = [
     description: 'A 41-acre natural park area along the scenic Olentangy River, home to an eagle\'s nest and an extensive rookery.',
     address: 'Taggart Road, Powell, OH 43065',
     coordinates: { lat: 40.213053, lng: -83.057835 },
-    zoom: 16,
+    zoom: 17,
     image: smithPark, // Placeholder
     amenities: [
       { id: 'sp-1', type: 'nature', name: 'Smith Preserve', coordinates: { lat: 40.212480, lng: -83.058873 } },
@@ -186,11 +188,11 @@ export const parks: Park[] = [
     name: 'Wedgewood Park',
     description: 'A 10-acre community park located on Sawmill Road, offering open green spaces for neighborhood enjoyment.',
     address: '10150 Sawmill Road, Powell, OH 43065',
-    coordinates: { lat: 40.153271, lng: -83.102062 }, // Estimated approx location
-    zoom: 16,
+    coordinates: { lat: 40.150601, lng: -83.094563 }, // Estimated approx location
+    zoom: 17,
     image: wedgewoodPark, // Placeholder
     amenities: [
-      { id: 'wp-1', type: 'greenspace', name: 'Open Greenspace', coordinates: { lat: 40.153271, lng: -83.102062 } },
+      { id: 'wp-1', type: 'greenspace', name: 'Open Greenspace', coordinates: { lat: 40.150601, lng: -83.094563 } },
     ]
   },
 ];
