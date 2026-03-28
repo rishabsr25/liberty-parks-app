@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
-import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy, Info, Leaf, Waves } from 'lucide-react';
-import { GoogleMap, useJsApiLoader, MarkerF, OverlayView } from '@react-google-maps/api';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy, Info, Leaf, Waves, LocateFixed } from 'lucide-react';
+import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -48,6 +48,12 @@ export default function MapPage() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
+  // User location state
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationTracking, setLocationTracking] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const watchIdRef = useRef<number | null>(null);
+
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -55,8 +61,8 @@ export default function MapPage() {
   });
 
 
-  const onMapLoad = useCallback((map: google.maps.Map) => {
-    setMap(map);
+  const onMapLoad = useCallback((mapInstance: google.maps.Map) => {
+    setMap(mapInstance);
   }, []);
 
 
@@ -70,26 +76,21 @@ export default function MapPage() {
   );
 
 
-  // Update map view when selected park changes
+  // Update map view when selected park changes (only if not actively tracking user)
   useEffect(() => {
-    if (map && selectedPark) {
+    if (map && selectedPark && !locationTracking) {
       if (selectedPark.zoom) {
         map.panTo({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
         map.setZoom(selectedPark.zoom);
         return;
       }
 
-
       const bounds = new window.google.maps.LatLngBounds();
-      // Add park location
       bounds.extend({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
 
-
-      // Add amenities
       filteredAmenities.forEach((a) => {
         bounds.extend({ lat: a.coordinates.lat, lng: a.coordinates.lng });
       });
-
 
       if (filteredAmenities.length > 0) {
         map.fitBounds(bounds);
@@ -98,7 +99,161 @@ export default function MapPage() {
         map.setZoom(16);
       }
     }
-  }, [map, selectedPark, filteredAmenities]);
+  }, [map, selectedPark, filteredAmenities, locationTracking]);
+
+
+  // Inject "Find My Location" button into the map once loaded
+  useEffect(() => {
+    if (!map || !isLoaded) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'find-my-location-btn';
+    btn.title = 'Find my location';
+    btn.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 8px 14px;
+      background: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a73e8;
+      transition: box-shadow 0.2s, background 0.2s;
+    `;
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="#1a73e8" fill-opacity="0.15" stroke="none"/>
+      </svg>
+      Find My Location
+    `;
+
+    btn.addEventListener('mouseenter', () => {
+      btn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+      btn.style.background = '#f0f7ff';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)';
+      btn.style.background = 'white';
+    });
+
+    btn.addEventListener('click', handleFindLocation);
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(btn);
+
+    return () => {
+      // Clean up the button and any active watch on unmount
+      map.controls[google.maps.ControlPosition.TOP_CENTER].clear();
+    };
+  }, [map, isLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  // Stop watching position when component unmounts
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, []);
+
+
+  function handleFindLocation() {
+    if (!('geolocation' in navigator)) {
+      setLocationError('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    // If already tracking, stop
+    if (locationTracking) {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
+      }
+      setLocationTracking(false);
+      setUserLocation(null);
+      setLocationError(null);
+
+      // Update button appearance to "inactive"
+      updateButtonState(false);
+      return;
+    }
+
+    setLocationError(null);
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setUserLocation(pos);
+        setLocationTracking(true);
+        setLocationError(null);
+
+        if (map) {
+          map.panTo(pos);
+          map.setZoom(16);
+        }
+
+        updateButtonState(true);
+      },
+      (err) => {
+        const msg =
+          err.code === err.PERMISSION_DENIED
+            ? 'Location permission denied.'
+            : err.code === err.POSITION_UNAVAILABLE
+            ? 'Location unavailable.'
+            : 'Could not get your location.';
+        setLocationError(msg);
+        setLocationTracking(false);
+        updateButtonState(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+
+    watchIdRef.current = watchId;
+  }
+
+  function updateButtonState(active: boolean) {
+    const btn = document.getElementById('find-my-location-btn') as HTMLButtonElement | null;
+    if (!btn) return;
+    if (active) {
+      btn.style.color = '#1a73e8';
+      btn.style.background = '#e8f0fe';
+      btn.style.boxShadow = '0 0 0 2px #1a73e8 inset, 0 2px 8px rgba(0,0,0,0.2)';
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3" fill="#1a73e8"/>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        </svg>
+        Tracking Location
+      `;
+    } else {
+      btn.style.color = '#1a73e8';
+      btn.style.background = 'white';
+      btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)';
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        </svg>
+        Find My Location
+      `;
+    }
+  }
 
 
   const apiKeyMissing = !import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -128,6 +283,14 @@ export default function MapPage() {
           </Alert>
         )}
 
+        {locationError && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Location Error</AlertTitle>
+            <AlertDescription>{locationError}</AlertDescription>
+          </Alert>
+        )}
+
 
         <div className="grid gap-6 lg:grid-cols-3 md:w-full">
           {/* Sidebar - Park List */}
@@ -137,7 +300,19 @@ export default function MapPage() {
               {parks.map((park) => (
                 <button
                   key={park.id}
-                  onClick={() => setSelectedPark(park)}
+                  onClick={() => {
+                    setSelectedPark(park);
+                    // Stop location tracking when user picks a park
+                    if (locationTracking) {
+                      if (watchIdRef.current !== null) {
+                        navigator.geolocation.clearWatch(watchIdRef.current);
+                        watchIdRef.current = null;
+                      }
+                      setLocationTracking(false);
+                      setUserLocation(null);
+                      updateButtonState(false);
+                    }
+                  }}
                   className={cn(
                     'w-full text-left p-4 rounded-xl border transition-all',
                     selectedPark.id === park.id
@@ -177,15 +352,11 @@ export default function MapPage() {
                       fullscreenControl: true,
                     }}
                   >
-                    {/* Park Marker - Removed as per request */}
-
-
                     {/* Amenities Markers */}
                     {filteredAmenities.map((amenity) => {
                       const info = amenityInfo[amenity.type];
                       const IconComponent = IconMap[info.icon] || MapPin;
                       const colorClass = amenityColorMap[info.color] || 'bg-primary text-primary-foreground';
-
 
                       return (
                         <OverlayView
@@ -200,10 +371,6 @@ export default function MapPage() {
                             )}>
                               <IconComponent className="h-3 sm:h-4 w-3 sm:w-4" />
                             </div>
-
-
-
-
                             <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                               <div className="bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md border">
                                 {amenity.name}
@@ -211,8 +378,40 @@ export default function MapPage() {
                             </div>
                           </div>
                         </OverlayView>
-                      )
+                      );
                     })}
+
+                    {/* User Location Dot — blue circle with white border, Google Maps style */}
+                    {userLocation && (
+                      <OverlayView
+                        position={userLocation}
+                        mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                      >
+                        <div
+                          style={{
+                            transform: 'translate(-50%, -50%)',
+                            width: 20,
+                            height: 20,
+                            borderRadius: '50%',
+                            background: '#4285F4',
+                            border: '3px solid white',
+                            boxShadow: '0 0 0 2px rgba(66,133,244,0.35), 0 2px 8px rgba(0,0,0,0.3)',
+                            position: 'relative',
+                          }}
+                        >
+                          {/* Pulsing ring animation */}
+                          <div
+                            style={{
+                              position: 'absolute',
+                              inset: -8,
+                              borderRadius: '50%',
+                              background: 'rgba(66,133,244,0.18)',
+                              animation: 'locationPulse 2s ease-out infinite',
+                            }}
+                          />
+                        </div>
+                      </OverlayView>
+                    )}
                   </GoogleMap>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -245,8 +444,6 @@ export default function MapPage() {
                   onClick={() => setActiveFilter(filter.type)}
                   className="shrink-0 text-xs sm:text-sm"
                 >
-
-
                   {filter.label}
                 </Button>
               ))}
@@ -268,8 +465,6 @@ export default function MapPage() {
                         className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
                       >
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                          {/* We really should have a proper icon mapping component.
-                              For now, just MapPin is safe or we assume the text description is enough */}
                           <MapPin className="h-5 w-5 text-primary" />
                         </div>
                         <div>
@@ -291,6 +486,15 @@ export default function MapPage() {
             </Card>
           </div>
         </div>
+
+        {/* Pulse animation keyframes injected once */}
+        <style>{`
+          @keyframes locationPulse {
+            0%   { transform: scale(0.8); opacity: 0.8; }
+            70%  { transform: scale(2.2); opacity: 0;   }
+            100% { transform: scale(2.2); opacity: 0;   }
+          }
+        `}</style>
       </div>
     </Layout>
   );

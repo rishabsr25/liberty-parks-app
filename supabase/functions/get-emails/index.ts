@@ -136,6 +136,25 @@ function extractMainContent(raw: string): { date: string; title: string; body: s
   return { date: parsedDate, title, body };
 }
 
+/**
+ * Returns true if the email is relevant to parks/recreation.
+ * Checks title + body against a list of park-related keywords.
+ */
+const PARK_KEYWORDS = [
+  "park", "parks", "trail", "trails", "playground", "pavilion",
+  "recreation", "field", "athletic", "splash pad", "splash",
+  "nature", "hiking", "greenway", "open space", "preserve",
+  "conservancy", "picnic", "shelter", "disc golf", "fitness station",
+  "dog park", "skate", "sports complex", "ballfield", "soccer",
+  "baseball", "basketball", "tennis", "pool", "aquatic",
+  "liberty township park", "liberty park",
+];
+
+function isParkRelated(title: string, body: string): boolean {
+  const text = (title + " " + body).toLowerCase();
+  return PARK_KEYWORDS.some((kw) => text.includes(kw));
+}
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -197,9 +216,17 @@ Deno.serve(async (req: Request) => {
         continue;
       }
 
+      const title = content.title || subject;
+
+      // Only include emails relevant to parks
+      if (!isParkRelated(title, content.body)) {
+        console.log(`Skipping non-park email: "${title}"`);
+        continue;
+      }
+
       results.push({
         id,
-        title: content.title || subject,
+        title,
         date: content.date,
         body: content.body,
       });

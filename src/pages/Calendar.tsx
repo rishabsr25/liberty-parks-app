@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, MapPin, Clock, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { events, ParkEvent, parks } from '@/data/mockData';
+import { ParkEvent, parks } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
-
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/supabase-client';
 const categoryColors: Record<string, string> = {
   sports: 'bg-sky/20 text-sky border-sky/30',
   community: 'bg-primary/20 text-primary border-primary/30',
@@ -31,8 +32,10 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedParkId, setSelectedParkId] = useState<string>('all');
-  const [eventList, setEventList] = useState<ParkEvent[]>(events);
+  const [eventList, setEventList] = useState<ParkEvent[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { isAdmin } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -41,6 +44,82 @@ export default function CalendarPage() {
     startTime: '10:00 AM',
     endTime: '11:00 AM',
   });
+
+  // Fetch events from Supabase
+  useEffect(() => {
+    async function fetchEvents() {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.from('events').select('*');
+        if (error) throw error;
+        
+        if (data) {
+          const parsedEvents: ParkEvent[] = data.map(row => {
+            // Attempt to parse description for our encoded location
+            let description = row.description || '';
+            let location = 'Liberty Township';
+            
+            try {
+              if (description.startsWith('{"')) {
+                const parsed = JSON.parse(description);
+                if (parsed.loc && parsed.desc !== undefined) {
+                  location = parsed.loc;
+                  description = parsed.desc;
+                }
+              }
+            } catch (e) {
+              // Not JSON, just use as standard description
+            }
+            
+            // Reconstruct time strings from timestamps if available, otherwise default
+            let startTime = '10:00 AM';
+            let endTime = '11:00 AM';
+            
+            if (row.start_time) {
+              startTime = new Date(row.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            if (row.end_time) {
+              endTime = new Date(row.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            // Convert DB date (YYYY-MM-DD string) to local Date at midnight
+            // To prevent off-by-one timezone issues, we can parse it carefully
+            const [year, month, day] = row.date.split('-').map(Number);
+            const localDate = new Date(year, month - 1, day);
+
+            return {
+              id: row.id,
+              title: row.title,
+              description: description,
+              date: localDate,
+              startTime: startTime,
+              endTime: endTime,
+              location: location,
+              category: row.category as ParkEvent['category'],
+            };
+          });
+          setEventList(parsedEvents);
+        }
+      } catch (err: any) {
+        console.error('Error fetching events:', err.message);
+        toast({
+          title: 'Error',
+          description: 'Failed to load events.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    // Only subscribe and fetch if supabase client properly initialised
+    if (supabase) {
+      fetchEvents();
+    } else {
+      setLoading(false);
+      setEventList([]);
+    }
+  }, [toast]);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -69,7 +148,7 @@ export default function CalendarPage() {
     return eventList.filter((event) => isSameDay(event.date, day));
   };
 
-  const handleAddEvent = () => {
+  const handleAddEvent = async () => {
     if (!newEvent.title || !newEvent.location) {
       toast({
         title: 'Error',
@@ -80,32 +159,93 @@ export default function CalendarPage() {
     }
 
     const eventDate = selectedDate || new Date();
-    const event: ParkEvent = {
-      id: `evt-${Date.now()}`,
-      title: newEvent.title,
-      description: newEvent.description,
-      date: eventDate,
-      startTime: newEvent.startTime,
-      endTime: newEvent.endTime,
-      location: newEvent.location,
-      category: newEvent.category,
-    };
+    
+    // Parse time to ISO strings for start_time and end_time
+    let startTimestamp = null;
+    let endTimestamp = null;
+    
+    try {
+      // Helper to convert "10:00 AM" or "14:30" to a full timestamp on the selected date
+      const createDateWithTime = (timeStr: string) => {
+        const d = new Date(eventDate);
+        const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+        if (match) {
+          let hours = parseInt(match[1]);
+          const minutes = parseInt(match[2]);
+          const ampm = match[3]?.toUpperCase();
+          
+          if (ampm === 'PM' && hours < 12) hours += 12;
+          if (ampm === 'AM' && hours === 12) hours = 0;
+          
+          d.setHours(hours, minutes, 0, 0);
+        }
+        return d.toISOString();
+      };
+      
+      if (newEvent.startTime) startTimestamp = createDateWithTime(newEvent.startTime);
+      if (newEvent.endTime) endTimestamp = createDateWithTime(newEvent.endTime);
+    } catch(e) {
+      console.warn("Could not perfectly parse time, using defaults.");
+    }
 
-    setEventList([...eventList, event]);
-    setIsDialogOpen(false);
-    setNewEvent({
-      title: '',
-      description: '',
-      location: '',
-      category: 'sports',
-      startTime: '10:00 AM',
-      endTime: '11:00 AM',
+    const formattedDate = format(eventDate, 'yyyy-MM-dd');
+    
+    // Encode location and description in JSON since DB has a geographical POINT for location
+    const encodedDesc = JSON.stringify({
+      loc: newEvent.location,
+      desc: newEvent.description
     });
 
-    toast({
-      title: 'Success',
-      description: 'Event added to calendar!',
-    });
+    try {
+      if (!supabase) throw new Error('Supabase client not initialized');
+      
+      const { data, error } = await supabase.from('events').insert([{
+        title: newEvent.title,
+        description: encodedDesc,
+        date: formattedDate,
+        start_time: startTimestamp,
+        end_time: endTimestamp,
+        category: newEvent.category
+      }]).select().single();
+      
+      if (error) throw error;
+      
+      // Update local state
+      const [year, month, day] = data.date.split('-').map(Number);
+      
+      const addedEvent: ParkEvent = {
+        id: data.id,
+        title: newEvent.title,
+        description: newEvent.description,
+        date: new Date(year, month - 1, day),
+        startTime: newEvent.startTime,
+        endTime: newEvent.endTime,
+        location: newEvent.location,
+        category: newEvent.category as ParkEvent['category'],
+      };
+
+      setEventList([...eventList, addedEvent]);
+      setIsDialogOpen(false);
+      setNewEvent({
+        title: '',
+        description: '',
+        location: '',
+        category: 'sports',
+        startTime: '10:00 AM',
+        endTime: '11:00 AM',
+      });
+
+      toast({
+        title: 'Success',
+        description: 'Event added to calendar!',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Error',
+        description: err.message || 'Failed to add event',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -135,91 +275,93 @@ export default function CalendarPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Event
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                  <DialogTitle>Add Event to {selectedDate ? format(selectedDate, 'MMMM d') : 'Calendar'}</DialogTitle>
-                  <DialogDescription>
-                    Create a new event for Liberty Township parks.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="title">Event Title *</Label>
-                    <Input
-                      id="title"
-                      placeholder="e.g., Community Volleyball Tournament"
-                      value={newEvent.title}
-                      onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Describe the event..."
-                      value={newEvent.description}
-                      onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="location">Location *</Label>
-                    <Input
-                      id="location"
-                      placeholder="e.g., Liberty Park - Sports Field A"
-                      value={newEvent.location}
-                      onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
+            {isAdmin && (
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Event
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Add Event to {selectedDate ? format(selectedDate, 'MMMM d') : 'Calendar'}</DialogTitle>
+                    <DialogDescription>
+                      Create a new event for Liberty Township parks.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="startTime">Start Time</Label>
+                      <Label htmlFor="title">Event Title *</Label>
                       <Input
-                        id="startTime"
-                        type="time"
-                        value={newEvent.startTime}
-                        onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                        id="title"
+                        placeholder="e.g., Community Volleyball Tournament"
+                        value={newEvent.title}
+                        onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="endTime">End Time</Label>
-                      <Input
-                        id="endTime"
-                        type="time"
-                        value={newEvent.endTime}
-                        onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea
+                        id="description"
+                        placeholder="Describe the event..."
+                        value={newEvent.description}
+                        onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
                       />
                     </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="location">Location *</Label>
+                      <Input
+                        id="location"
+                        placeholder="e.g., Liberty Park - Sports Field A"
+                        value={newEvent.location}
+                        onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="startTime">Start Time</Label>
+                        <Input
+                          id="startTime"
+                          type="time"
+                          value={newEvent.startTime}
+                          onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="endTime">End Time</Label>
+                        <Input
+                          id="endTime"
+                          type="time"
+                          value={newEvent.endTime}
+                          onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="category">Category</Label>
+                      <Select value={newEvent.category} onValueChange={(value: any) => setNewEvent({ ...newEvent, category: value })}>
+                        <SelectTrigger id="category">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="sports">Sports</SelectItem>
+                          <SelectItem value="community">Community</SelectItem>
+                          <SelectItem value="nature">Nature</SelectItem>
+                          <SelectItem value="fitness">Fitness</SelectItem>
+                          <SelectItem value="family">Family</SelectItem>
+                          <SelectItem value="seasonal">Seasonal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Select value={newEvent.category} onValueChange={(value: any) => setNewEvent({ ...newEvent, category: value })}>
-                      <SelectTrigger id="category">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sports">Sports</SelectItem>
-                        <SelectItem value="community">Community</SelectItem>
-                        <SelectItem value="nature">Nature</SelectItem>
-                        <SelectItem value="fitness">Fitness</SelectItem>
-                        <SelectItem value="family">Family</SelectItem>
-                        <SelectItem value="seasonal">Seasonal</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleAddEvent}>Add Event</Button>
                   </div>
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                  <Button onClick={handleAddEvent}>Add Event</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </div>
 
