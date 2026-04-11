@@ -350,6 +350,7 @@ export default function MapPage() {
                       streetViewControl: false,
                       mapTypeControl: false,
                       fullscreenControl: true,
+                      isFractionalZoomEnabled: true,
                     }}
                   >
                     {/* Amenities Markers */}

@@ -2,7 +2,6 @@
 import libertyPark from "@/assets/liberty-park.jpg";
 import havenerPark from "@/assets/havener-park.jpg";
 import bigBearPark from "@/assets/big-bear-park.jpg";
-import heroPark from "@/assets/hero-park.jpg";
 import hyattsPark from "@/assets/hyatts-park.jpg";
 import patriotPark from "@/assets/patriot-park.jpg";
 import smithPark from "@/assets/smith-park.jpg";
@@ -21,7 +20,19 @@ export interface Park {
 
 export interface Amenity {
   id: string;
-  type: 'bathroom' | 'bench' | 'trail' | 'parking' | 'playground' | 'picnic' | 'dog-park' | 'sports' | 'visitor-center' | 'greenspace' | 'nature' | 'water';
+  type:
+    | "bathroom"
+    | "bench"
+    | "trail"
+    | "parking"
+    | "playground"
+    | "picnic"
+    | "dog-park"
+    | "sports"
+    | "visitor-center"
+    | "greenspace"
+    | "nature"
+    | "water";
   name: string;
   coordinates: { lat: number; lng: number };
 }
@@ -34,7 +45,13 @@ export interface ParkEvent {
   startTime: string;
   endTime: string;
   location: string;
-  category: 'sports' | 'community' | 'nature' | 'fitness' | 'family' | 'seasonal';
+  category:
+    | "sports"
+    | "community"
+    | "nature"
+    | "fitness"
+    | "family"
+    | "seasonal";
 }
 
 export interface ReportCategory {
@@ -43,356 +60,270 @@ export interface ReportCategory {
   icon: string;
 }
 
-export interface VotingPoll {
-  id: string;
-  title: string;
-  description: string;
-  category: 'amenity' | 'event';
-  yearsUntilVote: number;
-  voteStartDate: Date;
-  voteEndDate: Date;
-  votes: { yes: number; no: number };
-  userVote?: 'yes' | 'no'; // Current user's vote if they've voted
-}
-
-export interface ParkReport {
-  id: string;
-  parkId: string;
-  category: string;
-  title: string;
-  description: string;
-  email?: string;
-  status: 'pending' | 'acknowledged' | 'in-progress' | 'resolved';
-  createdAt: Date;
-  image?: string;
-}
-
-export interface ParkAttributes {
-  runningTrails: number; // 0-5 scale
-  dogFriendly: number; // 0-5 scale
-  picnicFacilities: number; // 0-5 scale
-  parking: number; // 0-5 scale
-  playground: number; // 0-5 scale
-  waterAccess: number; // 0-5 scale
-  natureSensitivity: number; // 0-5 scale
-  sportsFields: number; // 0-5 scale
-  accessibility: number; // 0-5 scale
-}
-
-export interface ParkRecommendation {
-  parkId: string;
-  parkName: string;
-  matchPercentage: number;
-  description: string;
-}
-
-export interface Announcement {
-  id: string;
-  title: string;
-  content: string;
-  date: Date;
-  category: 'general' | 'alert' | 'maintenance' | 'event';
-  priority: 'low' | 'medium' | 'high';
-}
-
 // Parks Data
 export const parks: Park[] = [
   {
-    id: 'liberty-park',
-    name: 'Liberty Park',
-    description: 'Our flagship community park featuring sports fields, playgrounds, and walking trails.',
-    address: '2845 Home Rd, Powell, OH 43065',
-    coordinates: { lat: 40.192772, lng: -83.082629 },
-    zoom: 16,
+    id: "liberty-park",
+    name: "Liberty Park",
+    description:
+      "Our flagship community park featuring sports fields, playgrounds, and walking trails.",
+    address: "2845 Home Rd, Powell, OH 43065",
+    coordinates: { lat: 40.192465, lng: -83.082629 },
+    zoom: 16.7,
     image: libertyPark,
     amenities: [
-      { id: 'lp-bathroom-1', type: 'bathroom', name: 'Main Restrooms', coordinates: { lat: 40.191132, lng: -83.085027 } },
-      { id: 'lp-playground-1', type: 'playground', name: 'Kids Playground', coordinates: { lat: 40.191721, lng: -83.081695 } },
-      { id: 'lp-trail-1', type: 'trail', name: 'Nature Trail', coordinates: { lat: 40.190629, lng: -83.084203 } },
-      { id: 'lp-sports-1', type: 'sports', name: 'Soccer Fields', coordinates: { lat: 40.194506, lng: -83.082400 } },
-      { id: 'lp-sports-2', type: 'sports', name: 'Tennis Courts', coordinates: { lat: 40.192359, lng: -83.085972 } },
-      { id: 'lp-sports-3', type: 'sports', name: 'Basketball Courts', coordinates: { lat: 40.191977, lng: -83.085905 } },
-      { id: 'lp-sports-4', type: 'sports', name: 'Volleyball Courts', coordinates: { lat: 40.191595, lng: -83.085856 } },
+      {
+        id: "lp-bathroom-1",
+        type: "bathroom",
+        name: "Main Restrooms",
+        coordinates: { lat: 40.192586, lng: -83.085667 },
+      },
+      {
+        id: "lp-bathroom-2",
+        type: "bathroom",
+        name: "Seasonal Restrooms",
+        coordinates: { lat: 40.191473, lng: -83.081392 },
+      },
+      {
+        id: "lp-bathroom-3",
+        type: "bathroom",
+        name: "Seasonal Restrooms",
+        coordinates: { lat: 40.193614, lng: -83.081609 },
+      },
+      {
+        id: "lp-playground-1",
+        type: "playground",
+        name: "Kids Playground",
+        coordinates: { lat: 40.192741, lng: -83.085913 },
+      },
+      {
+        id: "lp-playground-2",
+        type: "playground",
+        name: "Kids Playground",
+        coordinates: { lat: 40.193771, lng: -83.081407 },
+      },
+      {
+        id: "lp-playground-3",
+        type: "playground",
+        name: "Every Kid's Playground",
+        coordinates: { lat: 40.191731, lng: -83.081905 },
+      },
+
+      {
+        id: "lp-trail-1",
+        type: "trail",
+        name: "Nature Trail",
+        coordinates: { lat: 40.190629, lng: -83.084203 },
+      },
+      {
+        id: "lp-sports-1",
+        type: "sports",
+        name: "Soccer Fields",
+        coordinates: { lat: 40.194506, lng: -83.082400 },
+      },
+      {
+        id: "lp-sports-2",
+        type: "sports",
+        name: "Tennis Courts",
+        coordinates: { lat: 40.192359, lng: -83.085972 },
+      },
+      {
+        id: "lp-sports-3",
+        type: "sports",
+        name: "Basketball Courts",
+        coordinates: { lat: 40.191977, lng: -83.085905 },
+      },
+      {
+        id: "lp-sports-4",
+        type: "sports",
+        name: "Volleyball Courts",
+        coordinates: { lat: 40.191595, lng: -83.085856 },
+      },
     ],
   },
   {
-    id: 'big-bear-park',
-    name: 'Big Bear Park',
-    description: 'A peaceful park perfect for picnics and family gatherings with beautiful natural scenery.',
-    address: '8794 Big Bear Ave, Powell, OH 43065',
+    id: "big-bear-park",
+    name: "Big Bear Park",
+    description:
+      "A peaceful park perfect for picnics and family gatherings with beautiful natural scenery.",
+    address: "8794 Big Bear Ave, Powell, OH 43065",
     coordinates: { lat: 40.162772, lng: -83.082947 },
     zoom: 17,
     image: bigBearPark,
     amenities: [
-        { id: 'pp-1', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.163460, lng: -83.082296 } },
-        { id: 'pp-2', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.162335, lng: -83.081340 } },
-        { id: 'pp-3', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.161811, lng: -83.082116 } }
+      {
+        id: "pp-1",
+        type: "sports",
+        name: "Baseball Diamond",
+        coordinates: { lat: 40.163460, lng: -83.082296 },
+      },
+      {
+        id: "pp-2",
+        type: "sports",
+        name: "Baseball Diamond",
+        coordinates: { lat: 40.162335, lng: -83.081340 },
+      },
+      {
+        id: "pp-3",
+        type: "sports",
+        name: "Baseball Diamond",
+        coordinates: { lat: 40.161811, lng: -83.082116 },
+      },
     ],
   },
   {
-    id: 'havener-park',
-    name: 'Havener Park',
-    description: 'Home to youth sports leagues with multiple soccer and baseball fields.',
-    address: '4085 Liberty Rd, Delaware, OH 43015',
+    id: "havener-park",
+    name: "Havener Park",
+    description:
+      "Home to youth sports leagues with multiple soccer and baseball fields.",
+    address: "4085 Liberty Rd, Delaware, OH 43015",
     coordinates: { lat: 40.243969, lng: -83.076998 },
     zoom: 16,
     image: havenerPark,
     amenities: [
-      { id: 'lef-sports-1', type: 'sports', name: 'Lacrosse Field', coordinates: { lat: 40.245381, lng: -83.081942 } },
-      { id: 'lef-sports-2', type: 'sports', name: 'Soccer Fields', coordinates: { lat: 40.245232, lng: -83.080373 } },
-      { id: 'lef-bathroom-1', type: 'visitor-center', name: 'Visitor Center', coordinates: { lat: 40.2412396, lng: -83.0761966 } },
-      { id: 'lef-parking-1', type: 'greenspace', name: 'Open Greenspace', coordinates: { lat: 40.244675, lng: -83.077376 } },
+      {
+        id: "lef-sports-1",
+        type: "sports",
+        name: "Lacrosse Field",
+        coordinates: { lat: 40.245381, lng: -83.081942 },
+      },
+      {
+        id: "lef-sports-2",
+        type: "sports",
+        name: "Soccer Fields",
+        coordinates: { lat: 40.245232, lng: -83.080373 },
+      },
+      {
+        id: "lef-bathroom-1",
+        type: "visitor-center",
+        name: "Visitor Center",
+        coordinates: { lat: 40.2412396, lng: -83.0761966 },
+      },
+      {
+        id: "lef-parking-1",
+        type: "greenspace",
+        name: "Open Greenspace",
+        coordinates: { lat: 40.244675, lng: -83.077376 },
+      },
     ],
   },
   {
-    id: 'hyatts-park',
-    name: 'Hyatts Park',
-    description: 'A dedicated off-leash dog park with separate areas for large and small dogs.',
-    address: '2500 Hyatts Road, Delaware, OH 43065',
+    id: "hyatts-park",
+    name: "Hyatts Park",
+    description:
+      "A dedicated off-leash dog park with separate areas for large and small dogs.",
+    address: "2500 Hyatts Road, Delaware, OH 43065",
     coordinates: { lat: 40.216461, lng: -83.0841297 },
     zoom: 18,
     image: hyattsPark,
     amenities: [
-      { id: 'kdp-dogpark-1', type: 'sports', name: 'Basketball Court', coordinates: { lat: 40.216332, lng: -83.084543 } },
-      { id: 'kdp-dogpark-2', type: 'sports', name: 'Baseball Field', coordinates: { lat: 40.216595, lng: -83.083624 } },
-      { id: 'kdp-dogpark-3', type: 'sports', name: 'Horseshoe Pit', coordinates: { lat: 40.216734, lng: -83.083984 } },
-      { id: 'kdp-dogpark-4', type: 'playground', name: 'Playground', coordinates: { lat: 40.216521, lng: -83.084284 } },
-    ]
+      {
+        id: "kdp-dogpark-1",
+        type: "sports",
+        name: "Basketball Court",
+        coordinates: { lat: 40.216332, lng: -83.084543 },
+      },
+      {
+        id: "kdp-dogpark-2",
+        type: "sports",
+        name: "Baseball Field",
+        coordinates: { lat: 40.216595, lng: -83.083624 },
+      },
+      {
+        id: "kdp-dogpark-3",
+        type: "sports",
+        name: "Horseshoe Pit",
+        coordinates: { lat: 40.216734, lng: -83.083984 },
+      },
+      {
+        id: "kdp-dogpark-4",
+        type: "playground",
+        name: "Playground",
+        coordinates: { lat: 40.216521, lng: -83.084284 },
+      },
+    ],
   },
   {
-    id: 'patriot-park',
-    name: 'Patriot Park - Bruce Miller Field',
-    description: 'Home to Bruce Miller Field, this 5-acre park features a baseball diamond and open space for recreation.',
-    address: '7765 Liberty Road North, Powell, OH 43065',
+    id: "patriot-park",
+    name: "Patriot Park - Bruce Miller Field",
+    description:
+      "Home to Bruce Miller Field, this 5-acre park features a baseball diamond and open space for recreation.",
+    address: "7765 Liberty Road North, Powell, OH 43065",
     coordinates: { lat: 40.188093, lng: -83.075738 }, // Estimated approx location based on address
     zoom: 17,
     image: patriotPark, // Placeholder
     amenities: [
-      { id: 'pp-1', type: 'sports', name: 'Baseball Diamond', coordinates: { lat: 40.188093, lng: -83.075738 } },
-    ]
+      {
+        id: "pp-1",
+        type: "sports",
+        name: "Baseball Diamond",
+        coordinates: { lat: 40.188093, lng: -83.075738 },
+      },
+    ],
   },
   {
-    id: 'smith-preserve',
-    name: 'Smith Preserve at Olentangy Falls',
-    description: 'A 41-acre natural park area along the scenic Olentangy River, home to an eagle\'s nest and an extensive rookery.',
-    address: 'Taggart Road, Powell, OH 43065',
+    id: "smith-preserve",
+    name: "Smith Preserve at Olentangy Falls",
+    description:
+      "A 41-acre natural park area along the scenic Olentangy River, home to an eagle's nest and an extensive rookery.",
+    address: "Taggart Road, Powell, OH 43065",
     coordinates: { lat: 40.213053, lng: -83.057835 },
     zoom: 17,
     image: smithPark, // Placeholder
     amenities: [
-      { id: 'sp-1', type: 'nature', name: 'Smith Preserve', coordinates: { lat: 40.212480, lng: -83.058873 } },
-    ]
+      {
+        id: "sp-1",
+        type: "nature",
+        name: "Smith Preserve",
+        coordinates: { lat: 40.212480, lng: -83.058873 },
+      },
+    ],
   },
   {
-    id: 'wedgewood-park',
-    name: 'Wedgewood Park',
-    description: 'A 10-acre community park located on Sawmill Road, offering open green spaces for neighborhood enjoyment.',
-    address: '10150 Sawmill Road, Powell, OH 43065',
+    id: "wedgewood-park",
+    name: "Wedgewood Park",
+    description:
+      "A 10-acre community park located on Sawmill Road, offering open green spaces for neighborhood enjoyment.",
+    address: "10150 Sawmill Road, Powell, OH 43065",
     coordinates: { lat: 40.150601, lng: -83.094563 }, // Estimated approx location
     zoom: 17,
     image: wedgewoodPark, // Placeholder
     amenities: [
-      { id: 'wp-1', type: 'greenspace', name: 'Open Greenspace', coordinates: { lat: 40.150601, lng: -83.094563 } },
-    ]
+      {
+        id: "wp-1",
+        type: "greenspace",
+        name: "Open Greenspace",
+        coordinates: { lat: 40.150601, lng: -83.094563 },
+      },
+    ],
   },
 ];
-
-// Events Data
-const today = new Date();
-const getDate = (daysFromNow: number) => {
-  const date = new Date(today);
-  date.setDate(date.getDate() + daysFromNow);
-  return date;
-};
-
-export const events: ParkEvent[] = [];
 
 // Report Categories
 export const reportCategories: ReportCategory[] = [
-  { id: 'maintenance', name: 'Maintenance Needed', icon: 'Wrench' },
-  { id: 'safety', name: 'Safety Concern', icon: 'AlertTriangle' },
-  { id: 'cleanliness', name: 'Cleanliness Issue', icon: 'Trash2' },
-  { id: 'equipment', name: 'Broken Equipment', icon: 'XCircle' },
-  { id: 'lighting', name: 'Lighting Problem', icon: 'Lightbulb' },
-  { id: 'other', name: 'Other', icon: 'HelpCircle' },
+  { id: "maintenance", name: "Maintenance Needed", icon: "Wrench" },
+  { id: "safety", name: "Safety Concern", icon: "AlertTriangle" },
+  { id: "cleanliness", name: "Cleanliness Issue", icon: "Trash2" },
+  { id: "equipment", name: "Broken Equipment", icon: "XCircle" },
+  { id: "lighting", name: "Lighting Problem", icon: "Lightbulb" },
+  { id: "other", name: "Other", icon: "HelpCircle" },
 ];
 
 // Amenity type labels and icons
-export const amenityInfo: Record<string, { label: string; icon: string; color: string }> = {
-  bathroom: { label: 'Restrooms', icon: 'Bath', color: 'sky' },
-  bench: { label: 'Benches', icon: 'Armchair', color: 'earth' },
-  trail: { label: 'Trails', icon: 'TreePine', color: 'forest' },
-  parking: { label: 'Parking', icon: 'Car', color: 'bark' },
-  playground: { label: 'Playground', icon: 'Baby', color: 'accent' },
-  picnic: { label: 'Picnic Area', icon: 'UtensilsCrossed', color: 'earth' },
-  'dog-park': { label: 'Dog Park', icon: 'Dog', color: 'moss' },
-  sports: { label: 'Sports', icon: 'Trophy', color: 'primary' },
-  'visitor-center': { label: 'Visitor Center', icon: 'Info', color: 'primary' },
-  greenspace: { label: 'Greenspace', icon: 'Leaf', color: 'moss' },
-  nature: { label: 'Nature', icon: 'TreePine', color: 'forest' },
-  water: { label: 'Water Feature', icon: 'Waves', color: 'sky' },
+export const amenityInfo: Record<
+  string,
+  { label: string; icon: string; color: string }
+> = {
+  bathroom: { label: "Restrooms", icon: "Bath", color: "sky" },
+  bench: { label: "Benches", icon: "Armchair", color: "earth" },
+  trail: { label: "Trails", icon: "TreePine", color: "forest" },
+  parking: { label: "Parking", icon: "Car", color: "bark" },
+  playground: { label: "Playground", icon: "Baby", color: "accent" },
+  picnic: { label: "Picnic Area", icon: "UtensilsCrossed", color: "earth" },
+  "dog-park": { label: "Dog Park", icon: "Dog", color: "moss" },
+  sports: { label: "Sports", icon: "Trophy", color: "primary" },
+  "visitor-center": { label: "Visitor Center", icon: "Info", color: "primary" },
+  greenspace: { label: "Greenspace", icon: "Leaf", color: "moss" },
+  nature: { label: "Nature", icon: "TreePine", color: "forest" },
+  water: { label: "Water Feature", icon: "Waves", color: "sky" },
 };
-
-// Voting Polls Data
-export const votingPolls: VotingPoll[] = [
-  {
-    id: '1',
-    title: 'Pickleball Courts at Liberty Park',
-    description: 'Should we add 4 dedicated pickleball courts at Liberty Park? This would provide a space for this rapidly growing sport in our community.',
-    category: 'amenity',
-    yearsUntilVote: 2025,
-    voteStartDate: new Date('2025-01-01'),
-    voteEndDate: new Date('2025-12-31'),
-    votes: { yes: 0, no: 0 },
-    userVote: undefined,
-  },
-  {
-    id: '2',
-    title: 'Dog Park Expansion at Big Bear Park',
-    description: 'Expand the dog park at Big Bear Park with an additional acre for more running space. Cost: $45,000.',
-    category: 'amenity',
-    yearsUntilVote: 2025,
-    voteStartDate: new Date('2025-01-01'),
-    voteEndDate: new Date('2025-12-31'),
-    votes: { yes: 0, no: 0 },
-    userVote: undefined,
-  },
-  {
-    id: '3',
-    title: 'Annual Farmers Market at Havener Park',
-    description: 'Host a weekly farmers market from June to October at Havener Park. Local vendors and community engagement.',
-    category: 'event',
-    yearsUntilVote: 2025,
-    voteStartDate: new Date('2025-01-01'),
-    voteEndDate: new Date('2025-12-31'),
-    votes: { yes: 0, no: 0 },
-    userVote: undefined,
-  },
-  {
-    id: '4',
-    title: 'Night Lights for Tennis Courts',
-    description: 'Add LED lighting to tennis courts at Hyatts Park for evening play. Cost: $120,000.',
-    category: 'amenity',
-    yearsUntilVote: 2025,
-    voteStartDate: new Date('2025-01-01'),
-    voteEndDate: new Date('2025-12-31'),
-    votes: { yes: 0, no: 0 },
-    userVote: undefined,
-  },
-];
-
-// Park Attributes (for AI recommendations)
-export const parkAttributes: Record<string, ParkAttributes> = {
-  'liberty-park': {
-    runningTrails: 5,
-    dogFriendly: 3,
-    picnicFacilities: 4,
-    parking: 5,
-    playground: 5,
-    waterAccess: 2,
-    natureSensitivity: 4,
-    sportsFields: 5,
-    accessibility: 4,
-  },
-  'havener-park': {
-    runningTrails: 3,
-    dogFriendly: 2,
-    picnicFacilities: 5,
-    parking: 4,
-    playground: 2,
-    waterAccess: 5,
-    natureSensitivity: 5,
-    sportsFields: 1,
-    accessibility: 3,
-  },
-  'hyatts-park': {
-    runningTrails: 2,
-    dogFriendly: 1,
-    picnicFacilities: 2,
-    parking: 4,
-    playground: 1,
-    waterAccess: 0,
-    natureSensitivity: 1,
-    sportsFields: 5,
-    accessibility: 4,
-  },
-  'big-bear-park': {
-    runningTrails: 1,
-    dogFriendly: 5,
-    picnicFacilities: 1,
-    parking: 3,
-    playground: 0,
-    waterAccess: 0,
-    natureSensitivity: 2,
-    sportsFields: 0,
-    accessibility: 3,
-  },
-};
-
-// Park Reports (issues submitted by users)
-export const parkReports: ParkReport[] = [
-  {
-    id: 'rpt-1',
-    parkId: 'liberty-park',
-    category: 'maintenance',
-    title: 'Broken Fence at South Entrance',
-    description: 'There is a section of the fence near the south entrance that has been damaged and is unsafe.',
-    email: 'user@example.com',
-    status: 'acknowledged',
-    createdAt: new Date('2025-12-20'),
-  },
-  {
-    id: 'rpt-2',
-    parkId: 'havener-park',
-    category: 'cleanliness',
-    title: 'Overflowing Trash Near Pavilion',
-    description: 'The trash can near the picnic pavilion is completely full and trash is overflowing.',
-    status: 'in-progress',
-    createdAt: new Date('2025-12-21'),
-  },
-  {
-    id: 'rpt-3',
-    parkId: 'big-bear-park',
-    category: 'safety',
-    title: 'Water Fountain Not Working',
-    description: 'The water fountain in the dog park is not dispensing water.',
-    status: 'pending',
-    createdAt: new Date('2025-12-22'),
-  },
-];
-
-// Announcements Data
-export const announcements: Announcement[] = [
-  {
-    id: 'ann-1',
-    title: 'Trail Maintenance at Liberty Park',
-    content: 'The north trail loop at Liberty Park will be closed for resurfacing from June 15th to June 20th. Please use the south trail loop during this time.',
-    date: new Date('2025-06-10'),
-    category: 'maintenance',
-    priority: 'medium',
-  },
-  {
-    id: 'ann-2',
-    title: 'Severe Weather Warning',
-    content: 'Due to predicted thunderstorms, all evening sports practices for tonight (May 25th) are cancelled. Stay safe!',
-    date: new Date('2025-05-25'),
-    category: 'alert',
-    priority: 'high',
-  },
-  {
-    id: 'ann-3',
-    title: 'Summer Concert Series Kickoff',
-    content: 'Join us for the first concert of the summer season featuring "The Local Roots" next Saturday at 7 PM in the Liberty Park Amphitheater.',
-    date: new Date('2025-06-01'),
-    category: 'event',
-    priority: 'low',
-  },
-  {
-    id: 'ann-4',
-    title: 'New Playground Equipment',
-    content: 'We are excited to announce the installation of new accessible playground equipment at Havener Park is now complete and open to the public!',
-    date: new Date('2025-05-15'),
-    category: 'general',
-    priority: 'low',
-  },
-];

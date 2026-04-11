@@ -165,6 +165,15 @@ export default function AboutPage() {
                     </a>
                   </div>
                   <div>
+                    <h3 className="font-semibold text-foreground mb-1">Email</h3>
+                    <a
+                      href="mailto:cbuehrer@libertytwp.org"
+                      className="text-primary hover:underline"
+                    >
+                      cbuehrer@libertytwp.org
+                    </a>
+                  </div>
+                  <div>
                     <h3 className="font-semibold text-foreground mb-1">Office Hours</h3>
                     <p className="text-muted-foreground">
                       Monday - Friday: 8:00 AM - 5:00 PM
