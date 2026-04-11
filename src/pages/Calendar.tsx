@@ -41,9 +41,18 @@ export default function CalendarPage() {
     description: '',
     location: '',
     category: 'sports' as const,
+    date: format(new Date(), 'yyyy-MM-dd'),
     startTime: '10:00 AM',
     endTime: '11:00 AM',
   });
+
+  useEffect(() => {
+    if (selectedDate) {
+      setNewEvent(prev => ({ ...prev, date: format(selectedDate, 'yyyy-MM-dd') }));
+    } else {
+      setNewEvent(prev => ({ ...prev, date: format(new Date(), 'yyyy-MM-dd') }));
+    }
+  }, [selectedDate]);
 
   // Fetch events from Supabase
   useEffect(() => {
@@ -149,7 +158,7 @@ export default function CalendarPage() {
   };
 
   const handleAddEvent = async () => {
-    if (!newEvent.title || !newEvent.location) {
+    if (!newEvent.title || !newEvent.location || !newEvent.date) {
       toast({
         title: 'Error',
         description: 'Please fill in all required fields.',
@@ -158,7 +167,8 @@ export default function CalendarPage() {
       return;
     }
 
-    const eventDate = selectedDate || new Date();
+    const [year, month, day] = newEvent.date.split('-').map(Number);
+    const eventDate = new Date(year, month - 1, day);
     
     // Parse time to ISO strings for start_time and end_time
     let startTimestamp = null;
@@ -231,6 +241,7 @@ export default function CalendarPage() {
         description: '',
         location: '',
         category: 'sports',
+        date: format(selectedDate || new Date(), 'yyyy-MM-dd'),
         startTime: '10:00 AM',
         endTime: '11:00 AM',
       });
@@ -291,6 +302,15 @@ export default function CalendarPage() {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="date">Date *</Label>
+                      <Input
+                        id="date"
+                        type="date"
+                        value={newEvent.date}
+                        onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                      />
+                    </div>
                     <div className="grid gap-2">
                       <Label htmlFor="title">Event Title *</Label>
                       <Input
