@@ -16,6 +16,7 @@ export interface Park {
   amenities: Amenity[];
   image?: string;
   zoom?: number;
+  bounds?: { north: number; south: number; east: number; west: number };
 }
 
 export interface Amenity {
@@ -159,6 +160,7 @@ export const parks: Park[] = [
         coordinates: { lat: 40.193313, lng: -83.081005 },
       },
     ],
+    bounds: { north: 40.2010, south: 40.1820, east: -83.0720, west: -83.0960 },
   },
   {
     id: "big-bear-park",
@@ -189,6 +191,7 @@ export const parks: Park[] = [
         coordinates: { lat: 40.161811, lng: -83.082116 },
       },
     ],
+    bounds: { north: 40.1680, south: 40.1565, east: -83.0760, west: -83.0900 },
   },
   {
     id: "havener-park",
@@ -237,6 +240,7 @@ export const parks: Park[] = [
         coordinates: { lat: 40.245048, lng: -83.081195 },
       },
     ],
+    bounds: { north: 40.2520, south: 40.2355, east: -83.0680, west: -83.0900 },
   },
   {
     id: "hyatts-park",
@@ -279,6 +283,7 @@ export const parks: Park[] = [
         coordinates: { lat: 40.216334, lng: -83.084526 },
       },
     ],
+    bounds: { north: 40.2200, south: 40.2128, east: -83.0790, west: -83.0900 },
   },
   {
     id: "patriot-park",
@@ -303,6 +308,7 @@ export const parks: Park[] = [
         coordinates: { lat: 40.187053, lng: -83.075983 },
       },
     ],
+    bounds: { north: 40.1920, south: 40.1835, east: -83.0700, west: -83.0815 },
   },
   {
     id: "smith-preserve",
@@ -321,6 +327,7 @@ export const parks: Park[] = [
         coordinates: { lat: 40.212480, lng: -83.058873 },
       },
     ],
+    bounds: { north: 40.2175, south: 40.2080, east: -83.0510, west: -83.0660 },
   },
   {
     id: "wedgewood-park",
@@ -339,6 +346,7 @@ export const parks: Park[] = [
         coordinates: { lat: 40.150601, lng: -83.094563 },
       },
     ],
+    bounds: { north: 40.1550, south: 40.1455, east: -83.0880, west: -83.1010 },
   },
 ];
 

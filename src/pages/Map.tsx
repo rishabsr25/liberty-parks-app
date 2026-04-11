@@ -50,6 +50,10 @@ export default function MapPage() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
+  // Trail overlay state
+  const [trailVisible, setTrailVisible] = useState(true);
+  const trailDataRef = useRef<google.maps.Data | null>(null);
+
   // User location state
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationTracking, setLocationTracking] = useState(false);
@@ -63,12 +67,45 @@ export default function MapPage() {
   });
 
 
+  const MIN_ZOOM = 16.5;
+
   const onMapLoad = useCallback((mapInstance: google.maps.Map) => {
     setMap(mapInstance);
+
+    // -- Enforce minimum zoom programmatically --
+    mapInstance.addListener('zoom_changed', () => {
+      const z = mapInstance.getZoom();
+      if (z !== undefined && z < MIN_ZOOM) {
+        mapInstance.setZoom(MIN_ZOOM);
+      }
+    });
+
+    // -- Trail GeoJSON overlay --
+    const dataLayer = new google.maps.Data();
+    dataLayer.loadGeoJson('/trail.geojson', undefined, () => {
+      // Loaded callback — nothing extra needed
+    });
+    dataLayer.setStyle((feature) => {
+      const isPolygon = feature.getGeometry()?.getType() === 'Polygon';
+      return {
+        strokeColor: '#C8BCA8',   // natural sandy-grey path color
+        strokeWeight: isPolygon ? 2 : 3,
+        strokeOpacity: 0.95,
+        fillColor: '#C8BCA8',
+        fillOpacity: isPolygon ? 0.12 : 0,
+        visible: true,
+      };
+    });
+    dataLayer.setMap(mapInstance);
+    trailDataRef.current = dataLayer;
   }, []);
 
 
   const onUnmount = useCallback(() => {
+    if (trailDataRef.current) {
+      trailDataRef.current.setMap(null);
+      trailDataRef.current = null;
+    }
     setMap(null);
   }, []);
 
@@ -104,10 +141,44 @@ export default function MapPage() {
   }, [map, selectedPark, filteredAmenities, locationTracking]);
 
 
-  // Inject "Find My Location" button into the map once loaded
+  // Lock map panning to the selected park's bounding box
+  useEffect(() => {
+    if (!map) return;
+    if (selectedPark.bounds) {
+      map.setOptions({
+        restriction: {
+          latLngBounds: selectedPark.bounds,
+          strictBounds: true,
+        },
+      });
+    } else {
+      map.setOptions({ restriction: null });
+    }
+  }, [map, selectedPark]);
+
+
+  // Toggle trail visibility when trailVisible state changes
+  useEffect(() => {
+    if (!trailDataRef.current) return;
+    trailDataRef.current.setStyle((feature) => {
+      const isPolygon = feature.getGeometry()?.getType() === 'Polygon';
+      return {
+        strokeColor: '#C8BCA8',
+        strokeWeight: isPolygon ? 2 : 3,
+        strokeOpacity: 0.95,
+        fillColor: '#C8BCA8',
+        fillOpacity: isPolygon ? 0.12 : 0,
+        visible: trailVisible,
+      };
+    });
+  }, [trailVisible]);
+
+
+  // Inject map control buttons (Find My Location + Toggle Trail)
   useEffect(() => {
     if (!map || !isLoaded) return;
 
+    // --- Find My Location button ---
     const btn = document.createElement('button');
     btn.id = 'find-my-location-btn';
     btn.title = 'Find my location';
@@ -136,7 +207,6 @@ export default function MapPage() {
       </svg>
       Find My Location
     `;
-
     btn.addEventListener('mouseenter', () => {
       btn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
       btn.style.background = '#f0f7ff';
@@ -145,12 +215,62 @@ export default function MapPage() {
       btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)';
       btn.style.background = 'white';
     });
-
     btn.addEventListener('click', handleFindLocation);
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(btn);
 
+    // --- Toggle Trail button ---
+    const trailBtn = document.createElement('button');
+    trailBtn.id = 'toggle-trail-btn';
+    trailBtn.title = 'Toggle trail overlay';
+    trailBtn.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      margin-left: 8px;
+      padding: 8px 14px;
+      background: #6b6560;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
+    `;
+    trailBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+           fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 17l4-8 4 4 4-6 4 10"/>
+      </svg>
+      Hide Trail
+    `;
+    trailBtn.addEventListener('mouseenter', () => {
+      trailBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.35)';
+    });
+    trailBtn.addEventListener('mouseleave', () => {
+      trailBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)';
+    });
+    trailBtn.addEventListener('click', () => {
+      setTrailVisible((prev) => {
+        const next = !prev;
+        trailBtn.innerHTML = next
+          ? `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+               fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+               <path d="M3 17l4-8 4 4 4-6 4 10"/>
+             </svg> Hide Trail`
+          : `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+               fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+               <path d="M3 17l4-8 4 4 4-6 4 10"/>
+             </svg> Show Trail`;
+        trailBtn.style.background = next ? '#6b6560' : '#555';
+        return next;
+      });
+    });
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(trailBtn);
+
     return () => {
-      // Clean up the button and any active watch on unmount
       map.controls[google.maps.ControlPosition.TOP_CENTER].clear();
     };
   }, [map, isLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -353,6 +473,7 @@ export default function MapPage() {
                       mapTypeControl: false,
                       fullscreenControl: true,
                       isFractionalZoomEnabled: true,
+                      minZoom: 16.5,
                     }}
                   >
                     {/* Amenities Markers */}
