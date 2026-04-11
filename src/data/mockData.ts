@@ -27,8 +27,8 @@ export interface Amenity {
     | "parking"
     | "playground"
     | "picnic"
-    | "dog-park"
     | "sports"
+    | "baseball"
     | "visitor-center"
     | "greenspace"
     | "nature"
@@ -52,12 +52,6 @@ export interface ParkEvent {
     | "fitness"
     | "family"
     | "seasonal";
-}
-
-export interface ReportCategory {
-  id: string;
-  name: string;
-  icon: string;
 }
 
 // Parks Data
@@ -153,19 +147,19 @@ export const parks: Park[] = [
     amenities: [
       {
         id: "pp-1",
-        type: "sports",
+        type: "baseball",
         name: "Baseball Diamond",
         coordinates: { lat: 40.163460, lng: -83.082296 },
       },
       {
         id: "pp-2",
-        type: "sports",
+        type: "baseball",
         name: "Baseball Diamond",
         coordinates: { lat: 40.162335, lng: -83.081340 },
       },
       {
         id: "pp-3",
-        type: "sports",
+        type: "baseball",
         name: "Baseball Diamond",
         coordinates: { lat: 40.161811, lng: -83.082116 },
       },
@@ -225,7 +219,7 @@ export const parks: Park[] = [
       },
       {
         id: "kdp-dogpark-2",
-        type: "sports",
+        type: "baseball",
         name: "Baseball Field",
         coordinates: { lat: 40.216595, lng: -83.083624 },
       },
@@ -255,7 +249,7 @@ export const parks: Park[] = [
     amenities: [
       {
         id: "pp-1",
-        type: "sports",
+        type: "baseball",
         name: "Baseball Diamond",
         coordinates: { lat: 40.188093, lng: -83.075738 },
       },
@@ -300,7 +294,7 @@ export const parks: Park[] = [
 ];
 
 // Report Categories
-export const reportCategories: ReportCategory[] = [
+export const reportCategories = [
   { id: "maintenance", name: "Maintenance Needed", icon: "Wrench" },
   { id: "safety", name: "Safety Concern", icon: "AlertTriangle" },
   { id: "cleanliness", name: "Cleanliness Issue", icon: "Trash2" },
@@ -320,8 +314,8 @@ export const amenityInfo: Record<
   parking: { label: "Parking", icon: "Car", color: "bark" },
   playground: { label: "Playground", icon: "Baby", color: "accent" },
   picnic: { label: "Picnic Area", icon: "UtensilsCrossed", color: "earth" },
-  "dog-park": { label: "Dog Park", icon: "Dog", color: "moss" },
   sports: { label: "Sports", icon: "Trophy", color: "primary" },
+  baseball: { label: "Baseball Diamond", icon: "CiBaseball", color: "earth" },
   "visitor-center": { label: "Visitor Center", icon: "Info", color: "primary" },
   greenspace: { label: "Greenspace", icon: "Leaf", color: "moss" },
   nature: { label: "Nature", icon: "TreePine", color: "forest" },

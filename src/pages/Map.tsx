@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy, Info, Leaf, Waves, LocateFixed } from 'lucide-react';
+import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, Waves, LocateFixed } from 'lucide-react';
+import { CiBaseball } from 'react-icons/ci';
 import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -16,13 +17,13 @@ const amenityFilters = [
   { type: 'parking', label: 'Parking' },
   { type: 'playground', label: 'Playground' },
   { type: 'trail', label: 'Trails' },
-  { type: 'dog-park', label: 'Dog Park' },
   { type: 'sports', label: 'Sports' },
+  { type: 'baseball', label: 'Baseball' },
 ];
 
 
 const IconMap: Record<string, any> = {
-  Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Dog, Trophy, Info, Leaf
+  Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball
 };
 
 
@@ -370,7 +371,7 @@ export default function MapPage() {
                               "flex h-6 sm:h-8 w-6 sm:w-8 items-center justify-center rounded-full border-2 shadow-sm transition-transform group-hover:scale-110",
                               colorClass
                             )}>
-                              <IconComponent className="h-3 sm:h-4 w-3 sm:w-4" />
+                              <IconComponent className={amenity.type === 'baseball' ? 'h-4 sm:h-5 w-4 sm:w-5' : 'h-3 sm:h-4 w-3 sm:w-4'} />
                             </div>
                             <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                               <div className="bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md border">
