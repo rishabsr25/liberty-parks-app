@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, Waves, LocateFixed } from 'lucide-react';
 import { CiBaseball } from 'react-icons/ci';
+import { MdOutlineSportsCricket } from 'react-icons/md';
 import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ const amenityFilters = [
 
 
 const IconMap: Record<string, any> = {
-  Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball
+  Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket
 };
 
 

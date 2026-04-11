@@ -29,6 +29,7 @@ export interface Amenity {
     | "picnic"
     | "sports"
     | "baseball"
+    | "cricket"
     | "visitor-center"
     | "greenspace"
     | "nature"
@@ -133,6 +134,30 @@ export const parks: Park[] = [
         name: "Volleyball Courts",
         coordinates: { lat: 40.191595, lng: -83.085856 },
       },
+      {
+        id: "lp-baseball-1",
+        type: "baseball",
+        name: "Baseball Diamond 1",
+        coordinates: { lat: 40.194102, lng: -83.081627 },
+      },
+      {
+        id: "lp-baseball-2",
+        type: "baseball",
+        name: "Baseball Diamond 2",
+        coordinates: { lat: 40.193917, lng: -83.080940 },
+      },
+      {
+        id: "lp-baseball-3",
+        type: "baseball",
+        name: "Baseball Diamond 3",
+        coordinates: { lat: 40.193172, lng: -83.081700 },
+      },
+      {
+        id: "lp-baseball-4",
+        type: "baseball",
+        name: "Baseball Diamond 4",
+        coordinates: { lat: 40.193313, lng: -83.081005 },
+      },
     ],
   },
   {
@@ -194,10 +219,22 @@ export const parks: Park[] = [
         coordinates: { lat: 40.2412396, lng: -83.0761966 },
       },
       {
-        id: "lef-parking-1",
+        id: "lef-greenspace-1",
         type: "greenspace",
         name: "Open Greenspace",
         coordinates: { lat: 40.244675, lng: -83.077376 },
+      },
+      {
+        id: "lef-parking-1",
+        type: "parking",
+        name: "Parking",
+        coordinates: { lat: 40.241722, lng: -83.075922 },
+      },
+      {
+        id: "lef-parking-2",
+        type: "parking",
+        name: "Parking",
+        coordinates: { lat: 40.245048, lng: -83.081195 },
       },
     ],
   },
@@ -208,32 +245,38 @@ export const parks: Park[] = [
       "A dedicated off-leash dog park with separate areas for large and small dogs.",
     address: "2500 Hyatts Road, Delaware, OH 43065",
     coordinates: { lat: 40.216461, lng: -83.0841297 },
-    zoom: 18,
+    zoom: 18.7,
     image: hyattsPark,
     amenities: [
       {
-        id: "kdp-dogpark-1",
+        id: "hp-basketball-1",
         type: "sports",
         name: "Basketball Court",
-        coordinates: { lat: 40.216332, lng: -83.084543 },
+        coordinates: { lat: 40.216428, lng: -83.083926 },
       },
       {
-        id: "kdp-dogpark-2",
+        id: "hp-baseball-1",
         type: "baseball",
         name: "Baseball Field",
         coordinates: { lat: 40.216595, lng: -83.083624 },
       },
       {
-        id: "kdp-dogpark-3",
+        id: "hp-horseshoe-1",
         type: "sports",
         name: "Horseshoe Pit",
         coordinates: { lat: 40.216734, lng: -83.083984 },
       },
       {
-        id: "kdp-dogpark-4",
+        id: "hp-playground-1",
         type: "playground",
         name: "Playground",
-        coordinates: { lat: 40.216521, lng: -83.084284 },
+        coordinates: { lat: 40.216205, lng: -83.083940 },
+      },
+      {
+        id: "hp-parking-1",
+        type: "parking",
+        name: "Parking",
+        coordinates: { lat: 40.216334, lng: -83.084526 },
       },
     ],
   },
@@ -243,8 +286,8 @@ export const parks: Park[] = [
     description:
       "Home to Bruce Miller Field, this 5-acre park features a baseball diamond and open space for recreation.",
     address: "7765 Liberty Road North, Powell, OH 43065",
-    coordinates: { lat: 40.188093, lng: -83.075738 }, // Estimated approx location based on address
-    zoom: 17,
+    coordinates: { lat: 40.187793, lng: -83.075738 }, // Estimated approx location based on address
+    zoom: 17.7,
     image: patriotPark, // Placeholder
     amenities: [
       {
@@ -252,6 +295,12 @@ export const parks: Park[] = [
         type: "baseball",
         name: "Baseball Diamond",
         coordinates: { lat: 40.188093, lng: -83.075738 },
+      },
+      {
+        id: "pp-2",
+        type: "parking",
+        name: "Parking",
+        coordinates: { lat: 40.187053, lng: -83.075983 },
       },
     ],
   },
@@ -280,7 +329,7 @@ export const parks: Park[] = [
       "A 10-acre community park located on Sawmill Road, offering open green spaces for neighborhood enjoyment.",
     address: "10150 Sawmill Road, Powell, OH 43065",
     coordinates: { lat: 40.150601, lng: -83.094563 }, // Estimated approx location
-    zoom: 17,
+    zoom: 17.6,
     image: wedgewoodPark, // Placeholder
     amenities: [
       {
@@ -316,6 +365,11 @@ export const amenityInfo: Record<
   picnic: { label: "Picnic Area", icon: "UtensilsCrossed", color: "earth" },
   sports: { label: "Sports", icon: "Trophy", color: "primary" },
   baseball: { label: "Baseball Diamond", icon: "CiBaseball", color: "earth" },
+  cricket: {
+    label: "Cricket Pitch",
+    icon: "MdOutlineSportsCricket",
+    color: "forest",
+  },
   "visitor-center": { label: "Visitor Center", icon: "Info", color: "primary" },
   greenspace: { label: "Greenspace", icon: "Leaf", color: "moss" },
   nature: { label: "Nature", icon: "TreePine", color: "forest" },
