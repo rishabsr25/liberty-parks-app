@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { MapPin, Filter, AlertTriangle, Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, Waves, LocateFixed } from 'lucide-react';
+import { MapPin, Filter, AlertTriangle, Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, Waves, LocateFixed, Volleyball } from 'lucide-react';
 import { CiBaseball } from 'react-icons/ci';
-import { MdOutlineSportsCricket } from 'react-icons/md';
+import { MdOutlineSportsCricket, MdOutlineSportsTennis } from 'react-icons/md';
+import { IoIosBasketball } from 'react-icons/io';
+import { GiFishingNet } from 'react-icons/gi';
 import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -20,22 +22,33 @@ const amenityFilters = [
   { type: 'trail', label: 'Trails' },
   { type: 'sports', label: 'Sports' },
   { type: 'baseball', label: 'Baseball' },
+  { type: 'basketball', label: 'Basketball' },
+  { type: 'volleyball', label: 'Volleyball' },
+  { type: 'tennis', label: 'Tennis' },
+  { type: 'lacrosse', label: 'Lacrosse' },
 ];
 
 
 const IconMap: Record<string, any> = {
-  Bath, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket
+  Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket, MdOutlineSportsTennis, IoIosBasketball, Volleyball, GiFishingNet
 };
 
 
 const amenityColorMap: Record<string, string> = {
   sky: 'bg-sky text-sky-foreground border-sky/30',
   earth: 'bg-earth text-earth-foreground border-earth/30',
+  'earth-white': 'bg-earth text-white border-earth/30',
   forest: 'bg-forest text-forest-foreground border-forest-light/30',
   bark: 'bg-bark text-bark-foreground border-bark/30',
   accent: 'bg-accent text-accent-foreground border-accent/30',
   moss: 'bg-moss text-moss-foreground border-moss/30',
   primary: 'bg-primary text-primary-foreground border-primary/30',
+  orange: 'bg-orange-500 text-orange-50 border-orange-500/30',
+  sand: 'bg-yellow-500 text-yellow-50 border-yellow-500/30',
+  lime: 'bg-lime-500 text-lime-50 border-lime-500/30',
+  white: 'bg-white text-zinc-900 border-zinc-200',
+  black: 'bg-zinc-900 text-white border-zinc-800',
+  purple: 'bg-purple-500 text-purple-50 border-purple-500/30',
 };
 
 
@@ -67,7 +80,7 @@ export default function MapPage() {
   });
 
 
-  const MIN_ZOOM = 16.5;
+  const MIN_ZOOM = 15;
 
   const onMapLoad = useCallback((mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -84,17 +97,6 @@ export default function MapPage() {
     const dataLayer = new google.maps.Data();
     dataLayer.loadGeoJson('/trail.geojson', undefined, () => {
       // Loaded callback — nothing extra needed
-    });
-    dataLayer.setStyle((feature) => {
-      const isPolygon = feature.getGeometry()?.getType() === 'Polygon';
-      return {
-        strokeColor: '#C8BCA8',   // natural sandy-grey path color
-        strokeWeight: isPolygon ? 2 : 3,
-        strokeOpacity: 0.95,
-        fillColor: '#C8BCA8',
-        fillOpacity: isPolygon ? 0.12 : 0,
-        visible: true,
-      };
     });
     dataLayer.setMap(mapInstance);
     trailDataRef.current = dataLayer;
@@ -115,36 +117,12 @@ export default function MapPage() {
   );
 
 
-  // Update map view when selected park changes (only if not actively tracking user)
+  // Update map boundaries and view when state changes
   useEffect(() => {
-    if (map && selectedPark && !locationTracking) {
-      if (selectedPark.zoom) {
-        map.panTo({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
-        map.setZoom(selectedPark.zoom);
-        return;
-      }
+    if (!map || !selectedPark) return;
 
-      const bounds = new window.google.maps.LatLngBounds();
-      bounds.extend({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
-
-      filteredAmenities.forEach((a) => {
-        bounds.extend({ lat: a.coordinates.lat, lng: a.coordinates.lng });
-      });
-
-      if (filteredAmenities.length > 0) {
-        map.fitBounds(bounds);
-      } else {
-        map.panTo({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
-        map.setZoom(16);
-      }
-    }
-  }, [map, selectedPark, filteredAmenities, locationTracking]);
-
-
-  // Lock map panning to the selected park's bounding box
-  useEffect(() => {
-    if (!map) return;
-    if (selectedPark.bounds) {
+    // 1. First lock map panning to the selected park's bounding box
+    if (selectedPark.bounds && !locationTracking) {
       map.setOptions({
         restriction: {
           latLngBounds: selectedPark.bounds,
@@ -154,24 +132,67 @@ export default function MapPage() {
     } else {
       map.setOptions({ restriction: null });
     }
-  }, [map, selectedPark]);
 
+    // 2. Map view sync (only if not actively tracking user)
+    if (locationTracking) return;
 
-  // Toggle trail visibility when trailVisible state changes
-  useEffect(() => {
-    if (!trailDataRef.current) return;
-    trailDataRef.current.setStyle((feature) => {
-      const isPolygon = feature.getGeometry()?.getType() === 'Polygon';
-      return {
-        strokeColor: '#C8BCA8',
-        strokeWeight: isPolygon ? 2 : 3,
-        strokeOpacity: 0.95,
-        fillColor: '#C8BCA8',
-        fillOpacity: isPolygon ? 0.12 : 0,
-        visible: trailVisible,
-      };
+    if (selectedPark.zoom) {
+      map.panTo({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
+      map.setZoom(selectedPark.zoom);
+      return;
+    }
+
+    const bounds = new window.google.maps.LatLngBounds();
+    bounds.extend({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
+
+    filteredAmenities.forEach((a) => {
+      bounds.extend({ lat: a.coordinates.lat, lng: a.coordinates.lng });
     });
-  }, [trailVisible]);
+
+    if (filteredAmenities.length > 0) {
+      map.fitBounds(bounds);
+    } else {
+      map.panTo({ lat: selectedPark.coordinates.lat, lng: selectedPark.coordinates.lng });
+      map.setZoom(16);
+    }
+  }, [map, selectedPark, filteredAmenities, locationTracking]);
+
+
+  // Dynamic trail styling (handles visibility and zoom-based scaling)
+  useEffect(() => {
+    if (!map || !trailDataRef.current) return;
+
+    const updateStyle = () => {
+      if (!trailDataRef.current) return;
+      const currentZoom = map.getZoom() || 17;
+      
+      trailDataRef.current.setStyle((feature) => {
+        const isPolygon = feature.getGeometry()?.getType() === 'Polygon';
+        
+        const baseWeight = isPolygon ? 2 : 3;
+        // Scale exponentially so physical size feels consistent at different zooms
+        let dynamicWeight = baseWeight * Math.pow(2, currentZoom - 17);
+        // Clamp bounds to keep lines visible but never overwhelmingly thick
+        dynamicWeight = Math.max(1, Math.min(dynamicWeight, 6));
+
+        return {
+          strokeColor: '#C8BCA8',
+          strokeWeight: dynamicWeight,
+          strokeOpacity: 0.95,
+          fillColor: '#C8BCA8',
+          fillOpacity: isPolygon ? 0.12 : 0,
+          visible: trailVisible,
+        };
+      });
+    };
+
+    updateStyle();
+    const listener = map.addListener('zoom_changed', updateStyle);
+
+    return () => {
+      google.maps.event.removeListener(listener);
+    };
+  }, [map, trailVisible]);
 
 
   // Inject map control buttons (Find My Location + Toggle Trail)
@@ -473,7 +494,7 @@ export default function MapPage() {
                       mapTypeControl: false,
                       fullscreenControl: true,
                       isFractionalZoomEnabled: true,
-                      minZoom: 16.5,
+                      minZoom: 15,
                     }}
                   >
                     {/* Amenities Markers */}
@@ -493,7 +514,7 @@ export default function MapPage() {
                               "flex h-6 sm:h-8 w-6 sm:w-8 items-center justify-center rounded-full border-2 shadow-sm transition-transform group-hover:scale-110",
                               colorClass
                             )}>
-                              <IconComponent className={amenity.type === 'baseball' ? 'h-4 sm:h-5 w-4 sm:w-5' : 'h-3 sm:h-4 w-3 sm:w-4'} />
+                              <IconComponent className={['baseball', 'basketball', 'tennis', 'cricket', 'volleyball', 'lacrosse'].includes(amenity.type) ? 'h-4 sm:h-5 w-4 sm:w-5' : 'h-3 sm:h-4 w-3 sm:w-4'} />
                             </div>
                             <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                               <div className="bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md border">

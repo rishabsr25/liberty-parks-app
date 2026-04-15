@@ -30,7 +30,11 @@ export interface Amenity {
     | "picnic"
     | "sports"
     | "baseball"
+    | "basketball"
+    | "volleyball"
+    | "tennis"
     | "cricket"
+    | "lacrosse"
     | "visitor-center"
     | "greenspace"
     | "nature"
@@ -106,12 +110,6 @@ export const parks: Park[] = [
       },
 
       {
-        id: "lp-trail-1",
-        type: "trail",
-        name: "Nature Trail",
-        coordinates: { lat: 40.190629, lng: -83.084203 },
-      },
-      {
         id: "lp-sports-1",
         type: "sports",
         name: "Soccer Fields",
@@ -119,19 +117,19 @@ export const parks: Park[] = [
       },
       {
         id: "lp-sports-2",
-        type: "sports",
+        type: "tennis",
         name: "Tennis Courts",
         coordinates: { lat: 40.192359, lng: -83.085972 },
       },
       {
         id: "lp-sports-3",
-        type: "sports",
+        type: "basketball",
         name: "Basketball Courts",
         coordinates: { lat: 40.191977, lng: -83.085905 },
       },
       {
         id: "lp-sports-4",
-        type: "sports",
+        type: "volleyball",
         name: "Volleyball Courts",
         coordinates: { lat: 40.191595, lng: -83.085856 },
       },
@@ -159,6 +157,30 @@ export const parks: Park[] = [
         name: "Baseball Diamond 4",
         coordinates: { lat: 40.193313, lng: -83.081005 },
       },
+      {
+        id: "lp-parking-1",
+        type: "parking",
+        name: "Parking",
+        coordinates: { lat: 40.192074, lng: -83.085319 },
+      },
+      {
+        id: "lp-parking-2",
+        type: "parking",
+        name: "Parking",
+        coordinates: { lat: 40.193700, lng: -83.083023 },
+      },
+      {
+        id: "lp-parking-3",
+        type: "parking",
+        name: "Parking",
+        coordinates: { lat: 40.190958, lng: -83.082064 },
+      },
+      {
+        id: "lp-cricket-1",
+        type: "cricket",
+        name: "Cricket Pitch",
+        coordinates: { lat: 40.186689, lng: -83.082493 },
+      },
     ],
     bounds: { north: 40.2010, south: 40.1820, east: -83.0720, west: -83.0960 },
   },
@@ -168,27 +190,39 @@ export const parks: Park[] = [
     description:
       "A peaceful park perfect for picnics and family gatherings with beautiful natural scenery.",
     address: "8794 Big Bear Ave, Powell, OH 43065",
-    coordinates: { lat: 40.162772, lng: -83.082947 },
+    coordinates: { lat: 40.162772, lng: -83.084047 },
     zoom: 17,
     image: bigBearPark,
     amenities: [
       {
-        id: "pp-1",
+        id: "bb-1",
         type: "baseball",
         name: "Baseball Diamond",
         coordinates: { lat: 40.163460, lng: -83.082296 },
       },
       {
-        id: "pp-2",
+        id: "bb-2",
         type: "baseball",
         name: "Baseball Diamond",
         coordinates: { lat: 40.162335, lng: -83.081340 },
       },
       {
-        id: "pp-3",
+        id: "bb-3",
         type: "baseball",
         name: "Baseball Diamond",
         coordinates: { lat: 40.161811, lng: -83.082116 },
+      },
+      {
+        id: "bb-4",
+        type: "baseball",
+        name: "Baseball Diamond",
+        coordinates: { lat: 40.163761, lng: -83.085963 },
+      },
+      {
+        id: "bb-5",
+        type: "parking",
+        name: "Parking",
+        coordinates: { lat: 40.163036, lng: -83.087281 },
       },
     ],
     bounds: { north: 40.1680, south: 40.1565, east: -83.0760, west: -83.0900 },
@@ -199,13 +233,13 @@ export const parks: Park[] = [
     description:
       "Home to youth sports leagues with multiple soccer and baseball fields.",
     address: "4085 Liberty Rd, Delaware, OH 43015",
-    coordinates: { lat: 40.243969, lng: -83.076998 },
+    coordinates: { lat: 40.243269, lng: -83.076998 },
     zoom: 16,
     image: havenerPark,
     amenities: [
       {
         id: "lef-sports-1",
-        type: "sports",
+        type: "lacrosse",
         name: "Lacrosse Field",
         coordinates: { lat: 40.245381, lng: -83.081942 },
       },
@@ -240,7 +274,7 @@ export const parks: Park[] = [
         coordinates: { lat: 40.245048, lng: -83.081195 },
       },
     ],
-    bounds: { north: 40.2520, south: 40.2355, east: -83.0680, west: -83.0900 },
+    bounds: { north: 40.2720, south: 40.2155, east: -83.0480, west: -83.1100 },
   },
   {
     id: "hyatts-park",
@@ -254,7 +288,7 @@ export const parks: Park[] = [
     amenities: [
       {
         id: "hp-basketball-1",
-        type: "sports",
+        type: "basketball",
         name: "Basketball Court",
         coordinates: { lat: 40.216428, lng: -83.083926 },
       },
@@ -365,18 +399,42 @@ export const amenityInfo: Record<
   string,
   { label: string; icon: string; color: string }
 > = {
-  bathroom: { label: "Restrooms", icon: "Bath", color: "sky" },
+  bathroom: { label: "Restrooms", icon: "Toilet", color: "sky" },
   bench: { label: "Benches", icon: "Armchair", color: "earth" },
   trail: { label: "Trails", icon: "TreePine", color: "forest" },
-  parking: { label: "Parking", icon: "Car", color: "bark" },
+  parking: { label: "Parking", icon: "Car", color: "black" },
   playground: { label: "Playground", icon: "Baby", color: "accent" },
   picnic: { label: "Picnic Area", icon: "UtensilsCrossed", color: "earth" },
   sports: { label: "Sports", icon: "Trophy", color: "primary" },
-  baseball: { label: "Baseball Diamond", icon: "CiBaseball", color: "earth" },
+  baseball: {
+    label: "Baseball Diamond",
+    icon: "CiBaseball",
+    color: "earth-white",
+  },
+  basketball: {
+    label: "Basketball Court",
+    icon: "IoIosBasketball",
+    color: "orange",
+  },
+  volleyball: {
+    label: "Volleyball Court",
+    icon: "Volleyball",
+    color: "sand",
+  },
+  tennis: {
+    label: "Tennis Court",
+    icon: "MdOutlineSportsTennis",
+    color: "lime",
+  },
   cricket: {
     label: "Cricket Pitch",
     icon: "MdOutlineSportsCricket",
-    color: "forest",
+    color: "white",
+  },
+  lacrosse: {
+    label: "Lacrosse Field",
+    icon: "GiFishingNet",
+    color: "purple",
   },
   "visitor-center": { label: "Visitor Center", icon: "Info", color: "primary" },
   greenspace: { label: "Greenspace", icon: "Leaf", color: "moss" },
