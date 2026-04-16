@@ -35,6 +35,7 @@ export interface Amenity {
     | "tennis"
     | "cricket"
     | "lacrosse"
+    | "soccer"
     | "visitor-center"
     | "greenspace"
     | "nature"
@@ -111,7 +112,7 @@ export const parks: Park[] = [
 
       {
         id: "lp-sports-1",
-        type: "sports",
+        type: "soccer",
         name: "Soccer Fields",
         coordinates: { lat: 40.194506, lng: -83.082400 },
       },
@@ -245,7 +246,7 @@ export const parks: Park[] = [
       },
       {
         id: "lef-sports-2",
-        type: "sports",
+        type: "soccer",
         name: "Soccer Fields",
         coordinates: { lat: 40.245232, lng: -83.080373 },
       },
@@ -435,6 +436,11 @@ export const amenityInfo: Record<
     label: "Lacrosse Field",
     icon: "GiFishingNet",
     color: "purple",
+  },
+  soccer: {
+    label: "Soccer Field",
+    icon: "GiSoccerBall",
+    color: "black",
   },
   "visitor-center": { label: "Visitor Center", icon: "Info", color: "primary" },
   greenspace: { label: "Greenspace", icon: "Leaf", color: "moss" },

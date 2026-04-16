@@ -183,9 +183,14 @@ export default function PrivacyPolicyPage() {
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                       App Support
                     </p>
-                    <a href="mailto:nelthejan@gmail.com" className="text-primary hover:underline text-sm">
-                      nelthejan@gmail.com
-                    </a>
+                    <div className="flex flex-col gap-1">
+                      <a href="mailto:rishabsr25@gmail.com" className="text-primary hover:underline text-sm">
+                        rishabsr25@gmail.com
+                      </a>
+                      <a href="mailto:nelthejan@gmail.com" className="text-primary hover:underline text-sm">
+                        nelthejan@gmail.com
+                      </a>
+                    </div>
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">

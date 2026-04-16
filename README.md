@@ -39,7 +39,9 @@ A mobile-optimized Progressive Web App (PWA) providing:
 
 ### 🗺️ Interactive Maps
 - GPS-enabled navigation
-- Find bathrooms, water fountains, trails, parking, benches
+- Custom thematic markers and category filters for specific sports (Baseball, Basketball, Volleyball, Tennis, Lacrosse, Cricket) alongside standard amenities (Parking, Trails, Bathrooms)
+- Dynamic zoom-responsive trail scaling to maintain visual proportion
+- Smooth boundary recentering to track user layout selection flawlessly
 - Trail difficulty ratings and distances
 - Real-time location tracking
 - Accessibility information
@@ -75,6 +77,7 @@ A mobile-optimized Progressive Web App (PWA) providing:
 - **Big Bear Park** (5 acres) - Trail connections
 - **Havener Park** (93 acres) - Soccer fields, trails
 - **Smith Preserve at Olentangy Falls** (41 acres) - Nature preserve
+- **Patriot Park** (8.4 acres) - Dedicated public greenspace and community gathering
 
 ---
 
@@ -191,16 +194,12 @@ src/
 
 This project is currently maintained by Rishab Sriram and Thejan Nelahonne as part of a partnership with Liberty Township. 
 
-### Reporting Issues
-- Use the Park Watch feature for park-related issues
-- Use GitHub Issues for app bugs or feature requests
+### Repository Status
+This is a closed-source project developed specifically for Liberty Township. **We do not accept pull requests or external code contributions.** The codebase is maintained exclusively by the core team.
 
-### Development Guidelines
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Added some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### Reporting Issues
+- Use the Park Watch feature within the app for park-related issues
+- Use GitHub Issues strictly for reporting application bugs
 
 ---
 

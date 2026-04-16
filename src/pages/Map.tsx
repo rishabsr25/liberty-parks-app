@@ -3,7 +3,7 @@ import { MapPin, Filter, AlertTriangle, Toilet, Armchair, TreePine, Car, Baby, U
 import { CiBaseball } from 'react-icons/ci';
 import { MdOutlineSportsCricket, MdOutlineSportsTennis } from 'react-icons/md';
 import { IoIosBasketball } from 'react-icons/io';
-import { GiFishingNet } from 'react-icons/gi';
+import { GiFishingNet, GiSoccerBall } from 'react-icons/gi';
 import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -26,11 +26,12 @@ const amenityFilters = [
   { type: 'volleyball', label: 'Volleyball' },
   { type: 'tennis', label: 'Tennis' },
   { type: 'lacrosse', label: 'Lacrosse' },
+  { type: 'soccer', label: 'Soccer' },
 ];
 
 
 const IconMap: Record<string, any> = {
-  Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket, MdOutlineSportsTennis, IoIosBasketball, Volleyball, GiFishingNet
+  Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket, MdOutlineSportsTennis, IoIosBasketball, Volleyball, GiFishingNet, GiSoccerBall
 };
 
 
@@ -514,7 +515,7 @@ export default function MapPage() {
                               "flex h-6 sm:h-8 w-6 sm:w-8 items-center justify-center rounded-full border-2 shadow-sm transition-transform group-hover:scale-110",
                               colorClass
                             )}>
-                              <IconComponent className={['baseball', 'basketball', 'tennis', 'cricket', 'volleyball', 'lacrosse'].includes(amenity.type) ? 'h-4 sm:h-5 w-4 sm:w-5' : 'h-3 sm:h-4 w-3 sm:w-4'} />
+                              <IconComponent className={['baseball', 'basketball', 'tennis', 'cricket', 'volleyball', 'lacrosse', 'soccer'].includes(amenity.type) ? 'h-4 sm:h-5 w-4 sm:w-5' : 'h-3 sm:h-4 w-3 sm:w-4'} />
                             </div>
                             <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                               <div className="bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md border">
