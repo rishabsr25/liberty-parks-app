@@ -436,9 +436,9 @@ export default function MapPage() {
         )}
 
 
-        <div className="grid gap-6 lg:grid-cols-3 md:w-full">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 w-full">
           {/* Sidebar - Park List */}
-          <div className="space-y-4 w-[63%] md:w-full">
+          <div className="space-y-4 w-full min-w-0">
             <h2 className="font-heading text-lg font-semibold text-foreground">Select a Park</h2>
             <div className="space-y-2">
               {parks.map((park) => (
@@ -479,8 +479,8 @@ export default function MapPage() {
 
 
           {/* Main Map Area */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="overflow-hidden w-[63%] md:w-full">
+          <div className="lg:col-span-2 space-y-6 w-full min-w-0">
+            <Card className="overflow-hidden w-full">
               <div className="relative w-full h-[70vh] min-h-[100px] bg-muted">
                 {isLoaded ? (
                   <GoogleMap
@@ -580,7 +580,7 @@ export default function MapPage() {
 
 
             {/* Filters */}
-            <div className="flex items-center gap-2 pb-2 w-[62%] md:w-full overflow-x-auto">
+            <div className="flex items-center gap-2 pb-2 w-full overflow-x-auto">
               <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
               {amenityFilters.map((filter) => (
                 <Button
@@ -597,7 +597,7 @@ export default function MapPage() {
 
 
             {/* Amenities List */}
-            <Card className="w-[63%] md:w-full">
+            <Card className="w-full">
               <CardHeader>
                 <CardTitle className="text-lg">Amenities at {selectedPark.name}</CardTitle>
               </CardHeader>
