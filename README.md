@@ -232,9 +232,9 @@ For licensing inquiries, contact: rishabsr25@gmail.com or nelthejan@gmail.com
 **School:** Olentangy Liberty High School, Class of 2027
 
 
-**Township Contact:**  
+**Township Contact:**  Cathy Buehrer
 Liberty Township Parks Department  
-[Township website/contact info]
+[[Township website/contact info]](https://www.libertytwp.org/)
 
 ---
 
