@@ -111,83 +111,83 @@ A mobile-optimized Progressive Web App (PWA) providing:
 ### ✅ Phase 1: Development (August 2025 – April 2026)
 
 **Project Origin**
-- Identified a real coordination problem between runners, dog walkers, and park users at Liberty Park
-- Won a local hackathon with the initial concept
-- Pitched directly to Liberty Township trustees and received official backing
+- [x] Identified a real coordination problem between runners, dog walkers, and park users at Liberty Park
+- [x] Won a local hackathon with the initial concept
+- [x] Pitched directly to Liberty Township trustees and received official backing
 
 **Technical Architecture**
-- Built a production-grade Progressive Web App (PWA) on Vercel with Supabase backend
-- Developed 17,500+ lines of clean, production-quality code
-- Integrated Gmail API for seamless event management by township staff
-- Implemented offline mode for park areas with limited connectivity
-- Built push notification system for township announcements and event reminders
+- [x] Built a production-grade Progressive Web App (PWA) on Vercel with Supabase backend
+- [x] Developed 17,500+ lines of clean, production-quality code
+- [x] Integrated Gmail API for seamless event management by township staff
+- [x] Implemented offline mode for park areas with limited connectivity
+- [x] Built push notification system for township announcements and event reminders
 
 **Core Features Shipped**
-- Interactive maps covering all Liberty Township parks including Liberty Park and Havener Park
-- Accurate trail map overlays built from official Franklin County GIS data — correcting inaccuracies in Google Maps
-- Events calendar with real-time updates managed directly by township staff
-- Park Watch — community reporting feature for park conditions and incidents
-- Park Recommender — uses vector embeddings and cosine similarity to match users with the best park based on their preferences and activity type
-- Announcements system for township-wide communications
-- Push notifications for events and park updates
-- Privacy policy page and full legal documentation
+- [x] Interactive maps covering all Liberty Township parks including Liberty Park and Havener Park
+- [x] Accurate trail map overlays built from official Franklin County GIS data — correcting inaccuracies in Google Maps
+- [x] Events calendar with real-time updates managed directly by township staff
+- [x] Park Watch — community reporting feature for park conditions and incidents
+- [x] Park Recommender — uses vector embeddings and cosine similarity to match users with the best park based on their preferences and activity type
+- [x] Announcements system for township-wide communications
+- [x] Push notifications for events and park updates
+- [x] Privacy policy page and full legal documentation
 
 **Official Recognition**
-- Officially adopted by Liberty Township government
-- Featured on Liberty Township's official Facebook page
-- Supported by Township Administrator Cathy Buehrer and Parks Supervisor Michael Landon
-- Serving 35,000+ Liberty Township residents
+- [x] Officially adopted by Liberty Township government
+- [x] Featured on Liberty Township's official Facebook page
+- [x] Supported by Township Administrator Cathy Buehrer and Parks Supervisor Michael Landon
+- [x] Serving 35,000+ Liberty Township residents
 
 ### 🔄 Phase 2: Beta Launch (April – May 2026)
 
 **Beta Testing**
-- Initial beta rollout at Liberty Park with target cohort of 50-100 users
-- Structured feedback collection through in-app reporting and direct user surveys
-- Iterative bug fixes and UI improvements based on real user behavior
+- [ ] Initial beta rollout at Liberty Park with target cohort of 50-100 users
+- [ ] Structured feedback collection through in-app reporting and direct user surveys
+- [ ] Iterative bug fixes and UI improvements based on real user behavior
 
 **Features in Development**
-- Photo upload capability for Park Watch — allowing park rangers and authorized staff to document and share park conditions directly in the app
-- Event location maps — precise pin drops showing users exactly where events are happening within each park
-- Fire department emergency locator integration — embedding official emergency marker coordinates provided by Liberty Township Fire Department throughout all park locations
+- [ ] Photo upload capability for Park Watch — allowing park rangers and authorized staff to document and share park conditions directly in the app
+- [ ] Event location maps — precise pin drops showing users exactly where events are happening within each park
+- [ ] Fire department emergency locator integration — embedding official emergency marker coordinates provided by Liberty Township Fire Department throughout all park locations
 
 **Metrics Target**
-- 50-100 active beta users
-- 10+ events posted by township staff
-- Fire department integration live before soft launch
+- [ ] 50-100 active beta users
+- [ ] 10+ events posted by township staff
+- [ ] Fire department integration live before soft launch
 
 ### 🚀 Phase 3: Soft Launch (May – June 2026)
 
 **Township Promotion**
-- Coordinated marketing push with Township Administrator Cathy Buehrer
-- Township-guaranteed visibility to 5,000+ Liberty Township residents through official channels including newsletter, website, and social media
-- Parks Supervisor Michael Landon actively managing events calendar
+- [ ] Coordinated marketing push with Township Administrator Cathy Buehrer
+- [ ] Township-guaranteed visibility to 5,000+ Liberty Township residents through official channels including newsletter, website, and social media
+- [ ] Parks Supervisor Michael Landon actively managing events calendar
 
 **Growth Initiatives**
-- School partnerships with local high schools for user acquisition
-- Press outreach to Columbus Dispatch and local media for feature coverage
-- Word of mouth campaign through cross country and athletics programs — the original inspiration for the app
+- [ ] School partnerships with local high schools for user acquisition
+- [ ] Press outreach to Columbus Dispatch and local media for feature coverage
+- [ ] Word of mouth campaign through cross country and athletics programs — the original inspiration for the app
 
 **Metrics Target**
-- 500+ monthly active users
-- 50+ events posted
-- Press coverage secured
+- [ ] 500+ monthly active users
+- [ ] 50+ events posted
+- [ ] Press coverage secured
 
 ### 📈 Phase 4: Full Launch (Summer – Fall 2026)
 
 **Scale**
-- Full marketing campaign leveraging township support and press coverage
-- Target: 2,000+ monthly active users
-- Sustained engagement through regular events, park updates, and seasonal content
+- [ ] Full marketing campaign leveraging township support and press coverage
+- [ ] Target: 2,000+ monthly active users
+- [ ] Sustained engagement through regular events, park updates, and seasonal content
 
 **Regional Expansion**
-- Expansion conversations initiated with Delaware Township and City of Powell
-- White-label architecture allowing full rebranding and customization for each new municipality
-- Shared infrastructure model to reduce onboarding cost for neighboring communities
+- [ ] Expansion conversations initiated with Delaware Township and City of Powell
+- [ ] White-label architecture allowing full rebranding and customization for each new municipality
+- [ ] Shared infrastructure model to reduce onboarding cost for neighboring communities
 
 **Long Term Vision**
-- Scale to serve all of northern Franklin County and Delaware County
-- Establish a replicable model for civic tech parks apps across Ohio
-- Open source core architecture for other communities to build on
+- [ ] Scale to serve all of northern Franklin County and Delaware County
+- [ ] Establish a replicable model for civic tech parks apps across Ohio
+- [ ] Open source core architecture for other communities to build on
 
 ---
 
