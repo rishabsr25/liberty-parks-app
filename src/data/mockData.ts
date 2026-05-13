@@ -67,7 +67,7 @@ export const parks: Park[] = [
     id: "liberty-park",
     name: "Liberty Park",
     description:
-      "Our flagship community park featuring sports fields, playgrounds, and walking trails.",
+      "Our flagship community park featuring over 115 acres of sport fields, playgrounds, wooded and open walking trails, picnic spots, and a fishing pond.",
     address: "2845 Home Rd, Powell, OH 43065",
     coordinates: { lat: 40.192465, lng: -83.082629 },
     zoom: 16.7,
@@ -232,7 +232,7 @@ export const parks: Park[] = [
     id: "havener-park",
     name: "Havener Park",
     description:
-      "Home to youth sports leagues with multiple soccer and baseball fields.",
+      "With over 94 acres of greenspace, Havener is home to youth soccer and lacrosse fields and a wooded, nature walk which connects to Deer Haven Park and the Nature Center.",
     address: "4085 Liberty Rd, Delaware, OH 43015",
     coordinates: { lat: 40.243269, lng: -83.076998 },
     zoom: 16,
@@ -253,7 +253,7 @@ export const parks: Park[] = [
       {
         id: "lef-bathroom-1",
         type: "visitor-center",
-        name: "Visitor Center",
+        name: "Deer Haven Park Nature Center",
         coordinates: { lat: 40.2412396, lng: -83.0761966 },
       },
       {
@@ -324,7 +324,7 @@ export const parks: Park[] = [
     id: "patriot-park",
     name: "Patriot Park - Bruce Miller Field",
     description:
-      "Home to Bruce Miller Field, this 5-acre park features a baseball diamond and open space for recreation.",
+      "This 5-acre community park is home to the \"Bruce Miller Memorial\" baseball field and open space for recreation.",
     address: "7765 Liberty Road North, Powell, OH 43065",
     coordinates: { lat: 40.187793, lng: -83.075738 }, // Estimated approx location based on address
     zoom: 17.7,
@@ -349,7 +349,7 @@ export const parks: Park[] = [
     id: "smith-preserve",
     name: "Smith Preserve at Olentangy Falls",
     description:
-      "A 41-acre natural park area along the scenic Olentangy River, home to an eagle's nest and an extensive rookery.",
+      "This hidden park gem is 41 acres of undeveloped woodland and prairie, making it the perfect spot to view a blue heron rookery with over 50 nests. If you are lucky, you might even see our resident bald eagle working on its nest!",
     address: "Taggart Road, Powell, OH 43065",
     coordinates: { lat: 40.213053, lng: -83.057835 },
     zoom: 17,
@@ -368,7 +368,7 @@ export const parks: Park[] = [
     id: "wedgewood-park",
     name: "Wedgewood Park",
     description:
-      "A 10-acre community park located on Sawmill Road, offering open green spaces for neighborhood enjoyment.",
+      "A 10-acre community park located on Sawmill Road, offering open greenspace and a short walking trail.",
     address: "10150 Sawmill Road, Powell, OH 43065",
     coordinates: { lat: 40.150601, lng: -83.094563 }, // Estimated approx location
     zoom: 17.6,
@@ -442,7 +442,7 @@ export const amenityInfo: Record<
     icon: "GiSoccerBall",
     color: "black",
   },
-  "visitor-center": { label: "Visitor Center", icon: "Info", color: "primary" },
+  "visitor-center": { label: "Deer Haven Park Nature Center", icon: "Info", color: "primary" },
   greenspace: { label: "Greenspace", icon: "Leaf", color: "moss" },
   nature: { label: "Nature", icon: "TreePine", color: "forest" },
   water: { label: "Water Feature", icon: "Waves", color: "sky" },

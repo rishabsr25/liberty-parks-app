@@ -14,7 +14,7 @@ const sections = [
       },
       {
         subtitle: 'Eligibility',
-        text: 'The App is intended for residents, visitors, and stakeholders of Liberty Township, Ohio. By using the App you represent that you are at least 13 years of age. Users under the age of 18 should use the App only with the guidance of a parent or guardian.',
+        text: 'The App is intended for residents, visitors, and stakeholders of Liberty Township, in Powell, Ohio. By using the App you represent that you are at least 13 years of age. Users under the age of 18 should use the App only with the guidance of a parent or guardian.',
       },
     ],
   },

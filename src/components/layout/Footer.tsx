@@ -19,7 +19,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Discover, explore, and enjoy the beautiful parks of Liberty Township, Ohio.
+              Discover, explore, and enjoy the beautiful parks of Liberty Township, in Powell, Ohio.
             </p>
           </div>
 

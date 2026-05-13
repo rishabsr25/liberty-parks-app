@@ -21,7 +21,7 @@ const navLinks = [
   { href: '/voting', label: 'Voting' },
   { href: '/announcements', label: 'Announcements' },
   { href: '/ai-helper', label: 'Park Selector' },
-  { href: '/report', label: 'Report' },
+  { href: '/report', label: 'Share a Concern' },
   { href: '/about', label: 'About' },
 ];
 

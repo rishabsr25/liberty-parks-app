@@ -120,7 +120,7 @@ export default function PrivacyPolicyPage() {
             <Card className="bg-primary/5 border-primary/20">
               <CardContent className="p-6 text-sm text-muted-foreground leading-relaxed">
                 This Privacy Policy applies to the Liberty Township Parks web application
-                (the&nbsp;"App") operated by Liberty Township, Ohio. By using the App you agree to
+                (the&nbsp;"App") operated by Liberty Township, in Powell, Ohio. By using the App you agree to
                 the collection and use of information in accordance with this policy. If you do not
                 agree, please discontinue use of the App.
               </CardContent>

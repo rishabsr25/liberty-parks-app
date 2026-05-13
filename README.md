@@ -206,7 +206,7 @@ This is a closed-source project developed specifically for Liberty Township. **W
 
 ## 📄 License
 
-This project is proprietary software developed for Liberty Township, Ohio. All rights reserved.
+This project is proprietary software developed for Liberty Township, in Powell, Ohio. All rights reserved.
 
 For licensing inquiries, contact: rishabsr25@gmail.com or nelthejan@gmail.com
 

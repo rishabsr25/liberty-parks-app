@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import heroPark from "@/assets/hero-park.jpg";
 
 const stats = [
-  { icon: TreePine, value: '7', label: 'Parks' },
+  { icon: TreePine, value: '8', label: 'Parks' },
   { icon: Users, value: '35K+', label: 'Residents' },
   { icon: Heart, value: '100+', label: 'Events/Year' },
 ];
@@ -26,7 +26,7 @@ const Hero = () => {
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 backdrop-blur-sm px-4 py-1.5 text-sm text-primary-foreground">
             <TreePine className="h-4 w-4" />
-            <span>Liberty Township, Ohio</span>
+            <span>Liberty Township, in Powell, Ohio</span>
           </div>
 
           <h1 className="mb-6 text-4xl font-bold tracking-tight text-primary-foreground md:text-5xl lg:text-6xl">

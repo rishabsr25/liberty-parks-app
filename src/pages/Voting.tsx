@@ -362,7 +362,7 @@ export default function VotingPage() {
               Community Voting
             </h1>
             <p className="text-muted-foreground text-sm md:text-base">
-              Have your say in shaping Liberty Township parks.
+              Your opinion matters. Check back often to share your input and help shape a better park system for everyone.
             </p>
           </div>
 

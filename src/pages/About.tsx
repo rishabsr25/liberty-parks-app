@@ -7,10 +7,10 @@ import libertyParkSign from "@/assets/liberty-park-sign.jpg";
 import patriot5k from "@/assets/patriot-5k.png";
 
 const stats = [
-  { icon: TreePine, value: '7', label: 'Community Parks' },
+  { icon: TreePine, value: '8', label: 'Community Parks' },
   { icon: Users, value: '35,000+', label: 'Residents Served' },
   { icon: Calendar, value: '100+', label: 'Annual Events' },
-  { icon: Award, value: '20+', label: 'Years of Service' },
+  { icon: Award, value: '50+', label: 'Years of Service' },
 ];
 
 const parkHighlights = [
@@ -46,8 +46,8 @@ export default function AboutPage() {
               About Liberty Township's Parks
             </h1>
             <p className="text-lg text-muted-foreground">
-              For over 15 years, we've been dedicated to providing beautiful, safe, and accessible
-              parks for the residents of Liberty Township, Ohio. Our mission is to enhance the
+              For decades, we've been dedicated to providing beautiful, safe, and accessible
+              parks for the residents of Liberty Township and Powell, Ohio. Our mission is to enhance the
               quality of life in our community through exceptional outdoor spaces.
             </p>
           </div>
