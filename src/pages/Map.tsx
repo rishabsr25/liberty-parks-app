@@ -3,7 +3,9 @@ import { MapPin, Filter, AlertTriangle, Toilet, Armchair, TreePine, Car, Baby, U
 import { CiBaseball } from 'react-icons/ci';
 import { MdOutlineSportsCricket, MdOutlineSportsTennis } from 'react-icons/md';
 import { IoIosBasketball } from 'react-icons/io';
-import { GiFishingNet, GiSoccerBall } from 'react-icons/gi';
+import { GiFishingNet, GiSoccerBall, GiFishingPole } from 'react-icons/gi';
+import { FaPersonShelter } from 'react-icons/fa6';
+import { TbPlayHandball, TbPicnicTable } from 'react-icons/tb';
 import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -27,11 +29,15 @@ const amenityFilters = [
   { type: 'tennis', label: 'Tennis' },
   { type: 'lacrosse', label: 'Lacrosse' },
   { type: 'soccer', label: 'Soccer' },
+  { type: 'shelter', label: 'Shelters' },
+  { type: 'fishing', label: 'Fishing' },
+  { type: 'handball', label: 'Handball' },
+  { type: 'picnic-area', label: 'Picnic Area' },
 ];
 
 
 const IconMap: Record<string, any> = {
-  Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket, MdOutlineSportsTennis, IoIosBasketball, Volleyball, GiFishingNet, GiSoccerBall
+  Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket, MdOutlineSportsTennis, IoIosBasketball, Volleyball, GiFishingNet, GiSoccerBall, FaPersonShelter, GiFishingPole, TbPlayHandball, TbPicnicTable
 };
 
 
@@ -50,6 +56,11 @@ const amenityColorMap: Record<string, string> = {
   white: 'bg-white text-zinc-900 border-zinc-200',
   black: 'bg-zinc-900 text-white border-zinc-800',
   purple: 'bg-purple-500 text-purple-50 border-purple-500/30',
+  shelter: 'bg-[#994636] text-white border-[#994636]/30',
+  baseball: 'bg-[#F4F4ED] text-red-600 border-red-200',
+  'ocean-blue': 'bg-blue-900 text-white border-blue-900/30',
+  red: 'bg-red-600 text-white border-red-600/30',
+  yellow: 'bg-yellow-400 text-yellow-950 border-yellow-400/30',
 };
 
 
@@ -446,6 +457,7 @@ export default function MapPage() {
                   key={park.id}
                   onClick={() => {
                     setSelectedPark(park);
+                    setActiveFilter('all');
                     // Stop location tracking when user picks a park
                     if (locationTracking) {
                       if (watchIdRef.current !== null) {
@@ -515,7 +527,7 @@ export default function MapPage() {
                               "flex h-6 sm:h-8 w-6 sm:w-8 items-center justify-center rounded-full border-2 shadow-sm transition-transform group-hover:scale-110",
                               colorClass
                             )}>
-                              <IconComponent className={['baseball', 'basketball', 'tennis', 'cricket', 'volleyball', 'lacrosse', 'soccer'].includes(amenity.type) ? 'h-4 sm:h-5 w-4 sm:w-5' : 'h-3 sm:h-4 w-3 sm:w-4'} />
+                              <IconComponent className={['baseball', 'basketball', 'tennis', 'cricket', 'volleyball', 'lacrosse', 'soccer', 'handball', 'picnic-area'].includes(amenity.type) ? 'h-4 sm:h-5 w-4 sm:w-5' : 'h-3 sm:h-4 w-3 sm:w-4'} />
                             </div>
                             <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                               <div className="bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md border">
@@ -582,7 +594,7 @@ export default function MapPage() {
             {/* Filters */}
             <div className="flex items-center gap-2 pb-2 w-full overflow-x-auto">
               <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
-              {amenityFilters.map((filter) => (
+              {amenityFilters.filter(f => f.type === 'all' || selectedPark.amenities.some(a => a.type === f.type)).map((filter) => (
                 <Button
                   key={filter.type}
                   variant={activeFilter === filter.type ? 'default' : 'outline'}

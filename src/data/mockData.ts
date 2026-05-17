@@ -39,6 +39,10 @@ export interface Amenity {
     | "visitor-center"
     | "greenspace"
     | "nature"
+    | "shelter"
+    | "fishing"
+    | "handball"
+    | "picnic-area"
     | "water";
   name: string;
   coordinates: { lat: number; lng: number };
@@ -182,6 +186,42 @@ export const parks: Park[] = [
         name: "Cricket Pitch",
         coordinates: { lat: 40.186689, lng: -83.082493 },
       },
+      {
+        id: "lp-shelter-1",
+        type: "shelter",
+        name: "Reservable Shelter 1",
+        coordinates: { lat: 40.193218, lng: -83.084994 },
+      },
+      {
+        id: "lp-shelter-2",
+        type: "shelter",
+        name: "Reservable Shelter 2",
+        coordinates: { lat: 40.193242, lng: -83.085514 },
+      },
+      {
+        id: "lp-shelter-3",
+        type: "shelter",
+        name: "Reservable Shelter 3",
+        coordinates: { lat: 40.193251, lng: -83.085974 },
+      },
+      {
+        id: "lp-shelter-4",
+        type: "shelter",
+        name: "Reservable Shelter 4",
+        coordinates: { lat: 40.191763, lng: -83.085895 },
+      },
+      {
+        id: "lp-fishing-1",
+        type: "fishing",
+        name: "Fishing Pond",
+        coordinates: { lat: 40.192189, lng: -83.081065 },
+      },
+      {
+        id: "lp-handball-1",
+        type: "handball",
+        name: "Handball Wall",
+        coordinates: { lat: 40.192023, lng: -83.086313 },
+      },
     ],
     bounds: { north: 40.2010, south: 40.1820, east: -83.0720, west: -83.0960 },
   },
@@ -189,7 +229,7 @@ export const parks: Park[] = [
     id: "big-bear-park",
     name: "Big Bear Park",
     description:
-      "A peaceful park perfect for picnics and family gatherings with beautiful natural scenery.",
+      "A peaceful park with beautiful scenery, perfect for picnics, family gatherings, and home to our newest Little League ballfield.",
     address: "8794 Big Bear Ave, Powell, OH 43065",
     coordinates: { lat: 40.162772, lng: -83.084047 },
     zoom: 17,
@@ -281,7 +321,7 @@ export const parks: Park[] = [
     id: "hyatts-park",
     name: "Hyatts Park",
     description:
-      "A dedicated off-leash dog park with separate areas for large and small dogs.",
+      "This small neighborhood park is the perfect picnic spot, with a playground, horseshoe pits and picnic area. It also hosts Little League ballgames.",
     address: "2500 Hyatts Road, Delaware, OH 43065",
     coordinates: { lat: 40.216461, lng: -83.0841297 },
     zoom: 18.7,
@@ -317,6 +357,12 @@ export const parks: Park[] = [
         name: "Parking",
         coordinates: { lat: 40.216334, lng: -83.084526 },
       },
+      {
+        id: "hp-shelter-1",
+        type: "shelter",
+        name: "Reservable Shelter",
+        coordinates: { lat: 40.216324, lng: -83.084185 },
+      },
     ],
     bounds: { north: 40.2200, south: 40.2128, east: -83.0790, west: -83.0900 },
   },
@@ -324,7 +370,7 @@ export const parks: Park[] = [
     id: "patriot-park",
     name: "Patriot Park - Bruce Miller Field",
     description:
-      "This 5-acre community park is home to the \"Bruce Miller Memorial\" baseball field and open space for recreation.",
+      'This 5-acre community park is home to the "Bruce Miller Memorial" baseball field and open space for recreation.',
     address: "7765 Liberty Road North, Powell, OH 43065",
     coordinates: { lat: 40.187793, lng: -83.075738 }, // Estimated approx location based on address
     zoom: 17.7,
@@ -358,7 +404,7 @@ export const parks: Park[] = [
       {
         id: "sp-1",
         type: "nature",
-        name: "Smith Preserve",
+        name: "Nature Preserve Area",
         coordinates: { lat: 40.212480, lng: -83.058873 },
       },
     ],
@@ -376,8 +422,8 @@ export const parks: Park[] = [
     amenities: [
       {
         id: "wp-1",
-        type: "greenspace",
-        name: "Open Greenspace",
+        type: "picnic-area",
+        name: "Picnic Area",
         coordinates: { lat: 40.150601, lng: -83.094563 },
       },
     ],
@@ -406,11 +452,16 @@ export const amenityInfo: Record<
   parking: { label: "Parking", icon: "Car", color: "black" },
   playground: { label: "Playground", icon: "Baby", color: "accent" },
   picnic: { label: "Picnic Area", icon: "UtensilsCrossed", color: "earth" },
+  "picnic-area": {
+    label: "Picnic Area",
+    icon: "TbPicnicTable",
+    color: "yellow",
+  },
   sports: { label: "Sports", icon: "Trophy", color: "primary" },
   baseball: {
     label: "Baseball Diamond",
     icon: "CiBaseball",
-    color: "earth-white",
+    color: "baseball",
   },
   basketball: {
     label: "Basketball Court",
@@ -442,8 +493,19 @@ export const amenityInfo: Record<
     icon: "GiSoccerBall",
     color: "black",
   },
-  "visitor-center": { label: "Deer Haven Park Nature Center", icon: "Info", color: "primary" },
+  "visitor-center": {
+    label: "Deer Haven Park Nature Center",
+    icon: "Info",
+    color: "primary",
+  },
   greenspace: { label: "Greenspace", icon: "Leaf", color: "moss" },
   nature: { label: "Nature", icon: "TreePine", color: "forest" },
+  shelter: { label: "Shelter", icon: "FaPersonShelter", color: "shelter" },
+  fishing: {
+    label: "Fishing Pond",
+    icon: "GiFishingPole",
+    color: "ocean-blue",
+  },
+  handball: { label: "Handball Wall", icon: "TbPlayHandball", color: "red" },
   water: { label: "Water Feature", icon: "Waves", color: "sky" },
 };
