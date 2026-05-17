@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Send, CheckCircle, Wrench, AlertTriangle, Trash2, XCircle, Lightbulb, HelpCircle,} from 'lucide-react';
+import { Send, CheckCircle, Wrench, AlertTriangle, Trash2, XCircle, Lightbulb, HelpCircle, Camera, Image as ImageIcon } from 'lucide-react';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { reportCategories } from '@/data/mockData';
+import { reportCategories } from '@/data/parkData';
 import { supabase } from '@/supabase-client';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -33,6 +33,7 @@ interface Report {
   type_of_issue: 'maintenance' | 'safety' | 'cleanliness' | 'equipment' | 'lighting' | 'other';
   park_id: string;
   email: string | null;
+  image_url?: string | null;
   status: 'pending' | 'dismissed' | 'in_progress' | 'resolved';
 }
 
@@ -58,6 +59,8 @@ export default function ReportPage() {
     description: '',
     email: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const fetchReports = async () => {
     if (!supabase) return;
@@ -149,6 +152,35 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 
   try {
+    setIsUploading(true);
+    let imageUrl = null;
+
+    if (imageFile) {
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('report-images')
+        .upload(fileName, imageFile);
+
+      if (uploadError) {
+        console.error('Image upload error:', uploadError);
+        toast({
+          title: 'Image Upload Failed',
+          description: uploadError.message,
+          variant: 'destructive',
+        });
+        setIsUploading(false);
+        return;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('report-images')
+        .getPublicUrl(fileName);
+        
+      imageUrl = publicUrlData.publicUrl;
+    }
+
   const res = await fetch(
     `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-report`,
     {
@@ -163,6 +195,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         brief_description: formData.title,
         detailed_description: formData.description,
         email: formData.email || null,
+        image_url: imageUrl,
       }),
     }
   );
@@ -178,16 +211,16 @@ const handleSubmit = async (e: React.FormEvent) => {
     });
     return;
   }
-} catch (err) {
-  console.error("Submit report error:", err);
-  toast({
-    title: "Error",
-    description: "Failed to submit report",
-    variant: "destructive",
-  });
-  return;
-}
-
+  } catch (err) {
+    console.error("Submit report error:", err);
+    toast({
+      title: "Error",
+      description: "Failed to submit report",
+      variant: "destructive",
+    });
+  } finally {
+    setIsUploading(false);
+  }
 
   toast({
     title: 'Report Submitted',
@@ -195,6 +228,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   });
 
   setIsSubmitted(true);
+  setImageFile(null);
   fetchReports();
 };
 
@@ -203,6 +237,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   const handleReset = () => {
     setIsSubmitted(false);
     setSelectedCategory('');
+    setImageFile(null);
     setFormData({
       park: '',
       category: '',
@@ -346,6 +381,49 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </div>
 
 
+                  {/* Photo Upload */}
+                  <div className="space-y-2">
+                    <Label>Attach a Photo (optional)</Label>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full flex-1 gap-2"
+                        onClick={() => document.getElementById('photo-upload')?.click()}
+                      >
+                        <Camera className="h-4 w-4" />
+                        {imageFile ? 'Change Photo' : 'Take or Upload Photo'}
+                      </Button>
+                      <input
+                        id="photo-upload"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setImageFile(e.target.files[0]);
+                          }
+                        }}
+                      />
+                    </div>
+                    {imageFile && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                        <ImageIcon className="h-4 w-4" />
+                        <span className="truncate">{imageFile.name}</span>
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-auto p-1 ml-auto text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                          onClick={() => setImageFile(null)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Email (optional) */}
                   <div className="space-y-2">
                     <Label htmlFor="email">Email (optional)</Label>
@@ -362,9 +440,9 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </div>
 
 
-                  <Button type="submit" className="w-full gap-2" disabled={!selectedCategory || !formData.park}>
+                  <Button type="submit" className="w-full gap-2" disabled={!selectedCategory || !formData.park || isUploading}>
                     <Send className="h-4 w-4" />
-                    Submit Report
+                    {isUploading ? 'Uploading & Submitting...' : 'Submit Report'}
                   </Button>
                 </form>
               </CardContent>
@@ -398,6 +476,15 @@ const handleSubmit = async (e: React.FormEvent) => {
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{report.detailed_description}</p>
+                    {report.image_url && (
+                      <div className="mb-3 relative h-32 w-full overflow-hidden rounded-md border">
+                        <img 
+                          src={report.image_url} 
+                          alt="Report attachment" 
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <Badge className={cn('text-xs', statusColors[report.status])}>
                         {report.status.charAt(0).toUpperCase() + report.status.slice(1)}

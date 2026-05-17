@@ -130,6 +130,7 @@ Deno.serve(async (req) => {
     brief_description,
     detailed_description,
     email: body.email || null,
+    image_url: body.image_url || null,
     status: "pending", // default status
     created_at: new Date().toISOString(),
   })

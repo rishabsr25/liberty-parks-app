@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trees, MapPin, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { parks as allParks, Park, amenityInfo } from "@/data/mockData";
+import { parks as allParks, Park, amenityInfo } from "@/data/parkData";
 import { useSearchParams } from "react-router-dom";
 import {
     Dialog,
