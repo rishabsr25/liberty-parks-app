@@ -43,6 +43,7 @@ export interface Amenity {
     | "fishing"
     | "handball"
     | "picnic-area"
+    | "ymca"
     | "water";
   name: string;
   coordinates: { lat: number; lng: number };
@@ -180,12 +181,7 @@ export const parks: Park[] = [
         name: "Parking",
         coordinates: { lat: 40.190958, lng: -83.082064 },
       },
-      {
-        id: "lp-cricket-1",
-        type: "cricket",
-        name: "Cricket Pitch",
-        coordinates: { lat: 40.186689, lng: -83.082493 },
-      },
+
       {
         id: "lp-shelter-1",
         type: "shelter",
@@ -223,7 +219,38 @@ export const parks: Park[] = [
         coordinates: { lat: 40.192023, lng: -83.086313 },
       },
     ],
-    bounds: { north: 40.2010, south: 40.1820, east: -83.0720, west: -83.0960 },
+    bounds: { north: 40.2010, south: 40.1900, east: -83.0720, west: -83.0960 },
+  },
+  {
+    id: "south-liberty-park",
+    name: "South Liberty Park",
+    description:
+      "This 51 acre soccer park also includes an open trail connecting Downtown Powell and the YMCA, which is home to the new public Blue Jackets Foundation Outdoor Street Hockey Rink.",
+    address: "2845 Home Rd, Powell, OH 43065",
+    coordinates: { lat: 40.187126, lng: -83.082230 },
+    zoom: 17,
+    image: libertyPark,
+    amenities: [
+      {
+        id: "slp-cricket-1",
+        type: "cricket",
+        name: "Cricket Pitch",
+        coordinates: { lat: 40.186689, lng: -83.082493 },
+      },
+      {
+        id: "slp-soccer-1",
+        type: "soccer",
+        name: "Soccer Fields",
+        coordinates: { lat: 40.187568, lng: -83.083093 },
+      },
+      {
+        id: "slp-ymca-1",
+        type: "ymca",
+        name: "YMCA",
+        coordinates: { lat: 40.186428, lng: -83.078969 },
+      },
+    ],
+    bounds: { north: 40.1900, south: 40.1840, east: -83.0780, west: -83.0880 },
   },
   {
     id: "big-bear-park",
@@ -313,6 +340,12 @@ export const parks: Park[] = [
         type: "parking",
         name: "Parking",
         coordinates: { lat: 40.245048, lng: -83.081195 },
+      },
+      {
+        id: "lef-trail-1",
+        type: "trail",
+        name: "Wooded Trails",
+        coordinates: { lat: 40.243617, lng: -83.075620 },
       },
     ],
     bounds: { north: 40.2720, south: 40.2155, east: -83.0480, west: -83.1100 },
@@ -452,11 +485,8 @@ export const amenityInfo: Record<
   parking: { label: "Parking", icon: "Car", color: "black" },
   playground: { label: "Playground", icon: "Baby", color: "accent" },
   picnic: { label: "Picnic Area", icon: "UtensilsCrossed", color: "earth" },
-  "picnic-area": {
-    label: "Picnic Area",
-    icon: "TbPicnicTable",
-    color: "yellow",
-  },
+  "picnic-area": { label: "Picnic Area", icon: "TbPicnicTable", color: "yellow" },
+  ymca: { label: "YMCA", icon: "Dumbbell", color: "ymca-blue" },
   sports: { label: "Sports", icon: "Trophy", color: "primary" },
   baseball: {
     label: "Baseball Diamond",

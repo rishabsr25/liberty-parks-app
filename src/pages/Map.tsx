@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { MapPin, Filter, AlertTriangle, Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, Waves, LocateFixed, Volleyball } from 'lucide-react';
+import { MapPin, Filter, AlertTriangle, Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, Waves, LocateFixed, Volleyball, Dumbbell } from 'lucide-react';
 import { CiBaseball } from 'react-icons/ci';
 import { MdOutlineSportsCricket, MdOutlineSportsTennis } from 'react-icons/md';
 import { IoIosBasketball } from 'react-icons/io';
@@ -33,11 +33,13 @@ const amenityFilters = [
   { type: 'fishing', label: 'Fishing' },
   { type: 'handball', label: 'Handball' },
   { type: 'picnic-area', label: 'Picnic Area' },
+  { type: 'cricket', label: 'Cricket' },
+  { type: 'ymca', label: 'YMCA' },
 ];
 
 
 const IconMap: Record<string, any> = {
-  Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket, MdOutlineSportsTennis, IoIosBasketball, Volleyball, GiFishingNet, GiSoccerBall, FaPersonShelter, GiFishingPole, TbPlayHandball, TbPicnicTable
+  Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, CiBaseball, MdOutlineSportsCricket, MdOutlineSportsTennis, IoIosBasketball, Volleyball, GiFishingNet, GiSoccerBall, FaPersonShelter, GiFishingPole, TbPlayHandball, TbPicnicTable, Dumbbell
 };
 
 
@@ -61,6 +63,7 @@ const amenityColorMap: Record<string, string> = {
   'ocean-blue': 'bg-blue-900 text-white border-blue-900/30',
   red: 'bg-red-600 text-white border-red-600/30',
   yellow: 'bg-yellow-400 text-yellow-950 border-yellow-400/30',
+  'ymca-blue': 'bg-blue-600 text-white border-blue-600/30',
 };
 
 
@@ -133,17 +136,14 @@ export default function MapPage() {
   useEffect(() => {
     if (!map || !selectedPark) return;
 
-    // 1. First lock map panning to the selected park's bounding box
-    if (selectedPark.bounds && !locationTracking) {
-      map.setOptions({
-        restriction: {
-          latLngBounds: selectedPark.bounds,
-          strictBounds: true,
-        },
-      });
-    } else {
-      map.setOptions({ restriction: null });
-    }
+    // 1. Enforce township-wide map boundary restriction so users don't pan out of the city
+    const TOWNSHIP_BOUNDS = { north: 40.3000, south: 40.1000, east: -83.0000, west: -83.2000 };
+    map.setOptions({
+      restriction: {
+        latLngBounds: TOWNSHIP_BOUNDS,
+        strictBounds: false,
+      },
+    });
 
     // 2. Map view sync (only if not actively tracking user)
     if (locationTracking) return;
@@ -411,6 +411,30 @@ export default function MapPage() {
   }
 
 
+  const handleDragEnd = useCallback(() => {
+    if (!map) return;
+    const center = map.getCenter();
+    if (!center) return;
+    
+    const lat = center.lat();
+    const lng = center.lng();
+
+    for (const park of parks) {
+      if (park.bounds && park.id !== selectedPark.id) {
+        if (
+          lat >= park.bounds.south &&
+          lat <= park.bounds.north &&
+          lng >= park.bounds.west &&
+          lng <= park.bounds.east
+        ) {
+          setSelectedPark(park);
+          setActiveFilter('all');
+          break;
+        }
+      }
+    }
+  }, [map, selectedPark]);
+
   const apiKeyMissing = !import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 
@@ -501,6 +525,7 @@ export default function MapPage() {
                     zoom={15}
                     onLoad={onMapLoad}
                     onUnmount={onUnmount}
+                    onDragEnd={handleDragEnd}
                     options={{
                       mapTypeId: 'satellite',
                       streetViewControl: false,
