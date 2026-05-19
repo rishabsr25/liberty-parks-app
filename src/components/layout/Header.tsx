@@ -88,8 +88,8 @@ export function Header() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button className="gap-2" onClick={() => navigate('/signin')}>
-                  <LogIn className="h-4 w-4" />
+                <Button size="sm" className="gap-2 text-xs" onClick={() => navigate('/signin')}>
+                  <LogIn className="h-3 w-3" />
                   Sign In
                 </Button>
               )}
@@ -150,13 +150,14 @@ export function Header() {
                   </div>
                 ) : (
                   <Button
-                    className="w-full mt-4 gap-2"
+                    size="sm"
+                    className="w-full mt-4 gap-2 text-xs"
                     onClick={() => {
                       navigate('/signin');
                       setIsMenuOpen(false);
                     }}
                   >
-                    <LogIn className="h-4 w-4" />
+                    <LogIn className="h-3 w-3" />
                     Sign In
                   </Button>
                 )}

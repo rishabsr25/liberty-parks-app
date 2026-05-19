@@ -29,6 +29,11 @@ const parkHighlights = [
     description: 'A dedicated off-leash dog park with separate areas for large and small dogs.',
     features: ['Large Dog Area', 'Small Dog Area', 'Water Stations', 'Shaded Seating'],
   },
+  {
+    name: 'South Liberty Park',
+    description: 'This 51 acre soccer park also includes an open trail connecting to Downtown Powell and the YMCA, which is home to the new public Blue Jackets Foundation Outdoor Street Hockey Rink.',
+    features: ['Soccer Fields', 'Cricket Pitch', 'YMCA Rec Center'],
+  },
 ];
 
 export default function AboutPage() {

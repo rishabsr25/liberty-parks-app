@@ -639,6 +639,15 @@ export default function MapPage() {
                 <CardTitle className="text-lg">Amenities at {selectedPark.name}</CardTitle>
               </CardHeader>
               <CardContent>
+                {selectedPark.id === 'big-bear-park' && (
+                  <Alert className="mb-4">
+                    <Info className="h-4 w-4" />
+                    <AlertTitle>Disclaimer</AlertTitle>
+                    <AlertDescription>
+                      The 3 extra baseball fields shown near this location do not actually belong to Big Bear Park.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {filteredAmenities.map((amenity) => {
                     const info = amenityInfo[amenity.type];

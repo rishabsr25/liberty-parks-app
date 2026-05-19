@@ -160,6 +160,17 @@ const parks: Park[] = [
       { type: 'nature', name: 'Wildlife Viewing' },
       { type: 'parking', name: 'Parking' }
     ]
+  },
+  {
+    id: 'south-liberty',
+    name: 'South Liberty Park',
+    description: 'This 51 acre soccer park also includes an open trail connecting to Downtown Powell and the YMCA, which is home to the new public Blue Jackets Foundation Outdoor Street Hockey Rink.',
+    address: '2845 Home Rd, Powell, OH 43065',
+    amenities: [
+      { type: 'sports', name: 'Soccer Fields' },
+      { type: 'sports', name: 'Cricket Pitch' },
+      { type: 'sports', name: 'YMCA Rec Center' }
+    ]
   }
 ];
 
@@ -172,7 +183,8 @@ const parkAttributes: Record<string, ParkAttributes> = {
   hyatts: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 5, playground: 4, sportsFields: 4, natureSensitivity: 2, waterAccess: 0, parking: 4, accessibility: 4, bikingTrails: 2, openSpace: 4, shelters: 5 },
   patriot: { runningTrails: 4, dogFriendly: 5, picnicFacilities: 3, playground: 1, sportsFields: 6, natureSensitivity: 0, waterAccess: 1, parking: 3, accessibility: 3, bikingTrails: 0, openSpace: 4, shelters: 2 },
   wedgewood: { runningTrails: 2, dogFriendly: 4, picnicFacilities: 2, playground: 5, sportsFields: 3, natureSensitivity: 2, waterAccess: 0, parking: 3, accessibility: 4, bikingTrails: 2, openSpace: 4, shelters: 1 },
-  'smith-preserve': { runningTrails: 5, dogFriendly: 4, picnicFacilities: 1, playground: 0, sportsFields: 0, natureSensitivity: 5, waterAccess: 3, parking: 3, accessibility: 2, bikingTrails: 4, openSpace: 3, shelters: 0 }
+  'smith-preserve': { runningTrails: 5, dogFriendly: 4, picnicFacilities: 1, playground: 0, sportsFields: 0, natureSensitivity: 5, waterAccess: 3, parking: 3, accessibility: 2, bikingTrails: 4, openSpace: 3, shelters: 0 },
+  'south-liberty': { runningTrails: 2, dogFriendly: 3, picnicFacilities: 2, playground: 0, sportsFields: 5, natureSensitivity: 2, waterAccess: 0, parking: 4, accessibility: 5, bikingTrails: 3, openSpace: 5, shelters: 1 }
 };
 
 /* -------------------------------------------------------------------------- */
@@ -694,7 +706,7 @@ export default function AIParkHelperPage() {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2">
                 <p>
-                  Our Park Selector analyzes your interests and matches them against Liberty Township's 7 parks. Each park is scored based on its amenities and suitability for your activities.
+                  Our Park Selector analyzes your interests and matches them against Liberty Township's 8 parks. Each park is scored based on its amenities and suitability for your activities.
                 </p>
                 <p>
                   We consider factors like running trails, dog-friendliness, picnic areas, sports fields, water access, and more to give you personalized recommendations.
@@ -713,7 +725,7 @@ export default function AIParkHelperPage() {
               },
               {
                 title: 'Comprehensive',
-                description: 'We analyze all 7 parks in Liberty Township to find the best match for you.',
+                description: 'We analyze all 8 parks in Liberty Township to find the best match for you.',
               },
               {
                 title: 'Detailed',

@@ -225,7 +225,7 @@ export const parks: Park[] = [
     id: "south-liberty-park",
     name: "South Liberty Park",
     description:
-      "This 51 acre soccer park also includes an open trail connecting Downtown Powell and the YMCA, which is home to the new public Blue Jackets Foundation Outdoor Street Hockey Rink.",
+      "This 51 acre soccer park also includes an open trail connecting to Downtown Powell and the YMCA, which is home to the new public Blue Jackets Foundation Outdoor Street Hockey Rink.",
     address: "2845 Home Rd, Powell, OH 43065",
     coordinates: { lat: 40.187126, lng: -83.082230 },
     zoom: 17,
@@ -246,7 +246,7 @@ export const parks: Park[] = [
       {
         id: "slp-ymca-1",
         type: "ymca",
-        name: "YMCA",
+        name: "YMCA Rec Center",
         coordinates: { lat: 40.186428, lng: -83.078969 },
       },
     ],
