@@ -50,14 +50,14 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex md:items-center md:gap-3">
-          <nav className="flex items-center gap-0.75">
+        <div className="hidden md:flex md:items-center md:gap-2 min-w-0 flex-shrink">
+          <nav className="flex items-center flex-wrap" style={{ fontSize: 'clamp(0.65rem, 1.1vw, 0.875rem)' }}>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  'px-3 py-1.5 text-sm font-medium transition-colors rounded-md',
+                  'px-2 py-1.5 font-medium transition-colors rounded-md whitespace-nowrap',
                   location.pathname === link.href
                     ? 'text-primary bg-primary/10'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -73,9 +73,9 @@ export function Header() {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2">
-                      <User className="h-4 w-4" />
-                      {user.email}
+                    <Button variant="outline" size="sm" className="gap-2 text-xs max-w-[180px]">
+                      <User className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{user.email}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
