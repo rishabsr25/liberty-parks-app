@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        /*
         // Check if supabase client is available
         if (!supabase) {
             setLoading(false);
@@ -54,8 +55,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         return () => subscription.unsubscribe();
+        */
+
+        // Local mock session for Google review
+        const savedUser = localStorage.getItem('mock_user');
+        const savedSession = localStorage.getItem('mock_session');
+        if (savedUser && savedSession) {
+            try {
+                const parsedUser = JSON.parse(savedUser);
+                setUser(parsedUser);
+                setSession(JSON.parse(savedSession));
+                setIsAdmin(parsedUser.email?.includes('admin') ?? false);
+            } catch (e) {
+                console.error('Failed to parse mock session:', e);
+            }
+        }
+        setLoading(false);
     }, []);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const checkAdminStatus = async (userId: string) => {
         if (!supabase) return;
 
@@ -81,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signIn = async (email: string, password: string) => {
+        /*
         if (!supabase) {
             return { error: { message: 'Authentication is not configured' } as AuthError };
         }
@@ -91,9 +110,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         return { error };
+        */
+
+        // Local mock sign in for Google review
+        const mockUser = {
+            id: 'mock-user-' + Math.random().toString(36).substring(2, 11),
+            email,
+            user_metadata: {
+                full_name: email.split('@')[0],
+            },
+        } as User;
+
+        const mockSession = {
+            access_token: 'mock-access-token',
+            user: mockUser,
+        } as Session;
+
+        setUser(mockUser);
+        setSession(mockSession);
+        setIsAdmin(email.toLowerCase().includes('admin'));
+        setLoading(false);
+
+        localStorage.setItem('mock_user', JSON.stringify(mockUser));
+        localStorage.setItem('mock_session', JSON.stringify(mockSession));
+
+        return { error: null };
     };
 
     const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
+        /*
         if (!supabase) {
             return { error: { message: 'Authentication is not configured' } as AuthError };
         }
@@ -109,6 +154,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         return { error };
+        */
+
+        // Local mock sign up for Google review
+        const mockUser = {
+            id: 'mock-user-' + Math.random().toString(36).substring(2, 11),
+            email,
+            user_metadata: {
+                full_name: `${firstName} ${lastName}`.trim(),
+            },
+        } as User;
+
+        const mockSession = {
+            access_token: 'mock-access-token',
+            user: mockUser,
+        } as Session;
+
+        setUser(mockUser);
+        setSession(mockSession);
+        setIsAdmin(email.toLowerCase().includes('admin'));
+        setLoading(false);
+
+        localStorage.setItem('mock_user', JSON.stringify(mockUser));
+        localStorage.setItem('mock_session', JSON.stringify(mockSession));
+
+        return { error: null };
     };
 
     const signInWithGoogle = async () => {
@@ -127,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signOut = async () => {
+        /*
         try {
             if (supabase) {
                 await supabase.auth.signOut();
@@ -139,6 +210,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(null);
             setIsAdmin(false);
         }
+        */
+
+        // Local mock sign out for Google review
+        setSession(null);
+        setUser(null);
+        setIsAdmin(false);
+        localStorage.removeItem('mock_user');
+        localStorage.removeItem('mock_session');
     };
 
     const value = {

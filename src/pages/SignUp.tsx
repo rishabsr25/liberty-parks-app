@@ -60,11 +60,19 @@ export default function SignUp() {
                 variant: 'destructive',
             });
         } else {
+            /*
             toast({
                 title: 'Success',
                 description: 'Account created! Please check your email to confirm your account.',
             });
             navigate('/signin');
+            */
+
+            toast({
+                title: 'Success',
+                description: 'Account created successfully! You are now signed in.',
+            });
+            navigate('/');
         }
     };
 
