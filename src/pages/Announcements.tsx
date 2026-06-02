@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Info, Loader2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
-// const EDGE_FUNCTION_URL =
-//   `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-emails`;
+const EDGE_FUNCTION_URL =
+  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-emails`;
 
 interface Announcement {
   id: string;
@@ -17,11 +17,9 @@ interface Announcement {
 export default function Announcements() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    /*
     async function fetchAnnouncements() {
       try {
         const res = await fetch(EDGE_FUNCTION_URL, {
@@ -48,11 +46,6 @@ export default function Announcements() {
     }
 
     fetchAnnouncements();
-    */
-
-    // Disabled during Google review
-    setAnnouncements([]);
-    setLoading(false);
   }, []);
 
   return (
@@ -88,7 +81,7 @@ export default function Announcements() {
         {!loading && !error && announcements.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
             <Info className="h-12 w-12 mx-auto mb-4 opacity-20" />
-            <p>There are no announcements at this time.</p>
+            <p>No announcements at this time.</p>
           </div>
         )}
 
