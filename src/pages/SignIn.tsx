@@ -12,7 +12,7 @@ export default function SignIn() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const { signIn, signInWithGoogle } = useAuth();
+    const { signIn, /* signInWithGoogle */ } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -47,7 +47,7 @@ export default function SignIn() {
         }
     };
 
-    const handleGoogleSignIn = async () => {
+    /* const handleGoogleSignIn = async () => {
         setLoading(true);
         const { error } = await signInWithGoogle();
         setLoading(false);
@@ -59,7 +59,7 @@ export default function SignIn() {
                 variant: 'destructive',
             });
         }
-    };
+    }; */
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
@@ -108,7 +108,7 @@ export default function SignIn() {
                         </Button>
                     </form>
 
-                    <div className="relative">
+                    {/* <div className="relative">
                         <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t" />
                         </div>
@@ -143,7 +143,7 @@ export default function SignIn() {
                             />
                         </svg>
                         Sign in with Google
-                    </Button>
+                    </Button> */}
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-2">
                     <div className="text-sm text-center text-muted-foreground">

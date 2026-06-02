@@ -15,7 +15,7 @@ export default function SignUp() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const { signUp, signInWithGoogle } = useAuth();
+    const { signUp, /* signInWithGoogle */ } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -68,7 +68,7 @@ export default function SignUp() {
         }
     };
 
-    const handleGoogleSignUp = async () => {
+    /* const handleGoogleSignUp = async () => {
         setLoading(true);
         const { error } = await signInWithGoogle();
         setLoading(false);
@@ -80,7 +80,7 @@ export default function SignUp() {
                 variant: 'destructive',
             });
         }
-    };
+    }; */
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
@@ -167,7 +167,7 @@ export default function SignUp() {
                         </Button>
                     </form>
 
-                    <div className="relative">
+                    {/* <div className="relative">
                         <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t" />
                         </div>
@@ -202,7 +202,7 @@ export default function SignUp() {
                             />
                         </svg>
                         Sign up with Google
-                    </Button>
+                    </Button> */}
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-2">
                     <div className="text-sm text-center text-muted-foreground">
