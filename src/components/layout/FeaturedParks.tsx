@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Map, Calendar, Vote, Sparkles, AlertCircle } from 'lucide-react';
+import { ArrowRight, Map, Calendar, Vote, AlertCircle } from 'lucide-react';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 const features = [
   {
@@ -24,7 +25,7 @@ const features = [
     href: '/voting',
   },
   {
-    icon: Sparkles,
+    icon: FaMagnifyingGlass,
     title: 'Park Selector',
     description: 'Get personalized park recommendations based on your preferences and interests. Discover the perfect park for you.',
     color: 'bg-accent/20 text-accent',

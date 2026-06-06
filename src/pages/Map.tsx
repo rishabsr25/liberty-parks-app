@@ -644,7 +644,7 @@ export default function MapPage() {
                     <Info className="h-4 w-4" />
                     <AlertTitle>Disclaimer</AlertTitle>
                     <AlertDescription>
-                      The 3 extra baseball fields shown near this location do not actually belong to Big Bear Park.
+                      The 3 extra baseball fields shown near Scioto Ridge Elementary School do not actually belong to Big Bear Park, but have been listed here as they are open for everyone during the summer.
                     </AlertDescription>
                   </Alert>
                 )}

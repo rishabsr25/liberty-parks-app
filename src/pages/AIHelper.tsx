@@ -1,6 +1,6 @@
 // Import necessary libraries and components
 import { useState } from 'react';
-import { Sparkles, MapPin, TrendingUp } from 'lucide-react';
+import { MapPin, TrendingUp } from 'lucide-react';
 import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -551,8 +551,7 @@ export default function AIParkHelperPage() {
     <Layout>
       <div className="container py-8 max-w-6xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-2 flex items-center gap-2">
-            <Sparkles className="h-8 w-8" />
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-2">
             Park Selector
           </h1>
           <p className="text-muted-foreground">
@@ -578,9 +577,7 @@ export default function AIParkHelperPage() {
                   <Button
                     onClick={handleSearch}
                     disabled={isSearching}
-                    className="gap-2"
                   >
-                    <Sparkles className="h-4 w-4" />
                     {isSearching ? 'Analyzing...' : 'Find Parks'}
                   </Button>
                 </div>

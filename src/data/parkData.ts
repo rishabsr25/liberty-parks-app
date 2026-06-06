@@ -265,19 +265,19 @@ export const parks: Park[] = [
       {
         id: "bb-1",
         type: "baseball",
-        name: "Baseball Diamond",
+        name: "Baseball Diamond (SRES)",
         coordinates: { lat: 40.163460, lng: -83.082296 },
       },
       {
         id: "bb-2",
         type: "baseball",
-        name: "Baseball Diamond",
+        name: "Baseball Diamond (SRES)",
         coordinates: { lat: 40.162335, lng: -83.081340 },
       },
       {
         id: "bb-3",
         type: "baseball",
-        name: "Baseball Diamond",
+        name: "Baseball Diamond (SRES)",
         coordinates: { lat: 40.161811, lng: -83.082116 },
       },
       {
@@ -333,12 +333,6 @@ export const parks: Park[] = [
         id: "lef-parking-1",
         type: "parking",
         name: "Parking",
-        coordinates: { lat: 40.241722, lng: -83.075922 },
-      },
-      {
-        id: "lef-parking-2",
-        type: "parking",
-        name: "Parking",
         coordinates: { lat: 40.245048, lng: -83.081195 },
       },
       {
@@ -383,6 +377,12 @@ export const parks: Park[] = [
         type: "playground",
         name: "Playground",
         coordinates: { lat: 40.216205, lng: -83.083940 },
+      },
+      {
+        id: "hp-picnic-1",
+        type: "picnic-area",
+        name: "Picnic Area",
+        coordinates: { lat: 40.216261, lng: -83.083703 },
       },
       {
         id: "hp-parking-1",

@@ -41,8 +41,8 @@ const Hero = () => {
 
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Button asChild size="lg" className="gap-2">
-              <Link to="/map">
-                Try the Demo
+              <Link to="/voting">
+                Have Your Say
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
