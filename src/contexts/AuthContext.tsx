@@ -111,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user_metadata: {
                 full_name: email.split('@')[0],
             },
-        } as User;
+        } as unknown as User;
 
         const mockSession = {
             access_token: 'mock-access-token',
@@ -150,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user_metadata: {
                 full_name: `${firstName} ${lastName}`.trim(),
             },
-        } as User;
+        } as unknown as User;
 
         const mockSession = {
             access_token: 'mock-access-token',
@@ -226,7 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user_metadata: {
                 full_name: email.split('@')[0],
             },
-        } as User;
+        } as unknown as User;
 
         const mockSession = {
             access_token: 'mock-access-token-verified',

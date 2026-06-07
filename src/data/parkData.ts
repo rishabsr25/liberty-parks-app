@@ -290,7 +290,7 @@ export const parks: Park[] = [
         id: "bb-5",
         type: "parking",
         name: "Parking",
-        coordinates: { lat: 40.163036, lng: -83.087281 },
+        coordinates: { lat: 40.162966, lng: -83.086204 },
       },
     ],
     bounds: { north: 40.1680, south: 40.1565, east: -83.0760, west: -83.0900 },
