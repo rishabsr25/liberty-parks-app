@@ -106,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Local mock sign in for Google review
         const mockUser = {
-            id: 'mock-user-' + Math.random().toString(36).substring(2, 11),
+            id: 'mock-user-' + crypto.randomUUID(),
             email,
             user_metadata: {
                 full_name: email.split('@')[0],
@@ -145,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Local mock sign up for Google review
         const mockUser = {
-            id: 'mock-user-' + Math.random().toString(36).substring(2, 11),
+            id: 'mock-user-' + crypto.randomUUID(),
             email,
             user_metadata: {
                 full_name: `${firstName} ${lastName}`.trim(),
