@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trees, MapPin, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { parks as allParks, Park, amenityInfo } from "@/data/parkData";
+import { parks as allParks, Park, amenityInfo, groupAmenitiesByType, getAmenityListLabel } from "@/data/parkData";
 import { useSearchParams } from "react-router-dom";
 import {
     Dialog,
@@ -145,12 +145,12 @@ const Parks = () => {
                                     <div>
                                         <h3 className="text-xl font-semibold mb-4">Amenities</h3>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                            {selectedPark.amenities.map(amenity => {
-                                                const info = amenityInfo[amenity.type];
+                                            {groupAmenitiesByType(selectedPark.amenities).map(item => {
+                                                const info = amenityInfo[item.type];
                                                 return (
-                                                    <div key={amenity.id} className="flex flex-col items-center justify-center p-3 rounded-xl bg-secondary/50 border border-secondary text-center gap-2">
-                                                        <span className="text-sm font-medium text-foreground">{amenity.name}</span>
-                                                        <Badge variant="outline" className="text-xs">{info?.label || amenity.type}</Badge>
+                                                    <div key={item.type} className="flex flex-col items-center justify-center p-3 rounded-xl bg-secondary/50 border border-secondary text-center gap-2">
+                                                        <span className="text-sm font-medium text-foreground">{getAmenityListLabel(item, info)}</span>
+                                                        <Badge variant="outline" className="text-xs">{info?.label || item.type}</Badge>
                                                     </div>
                                                 )
                                             })}

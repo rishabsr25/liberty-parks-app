@@ -218,6 +218,12 @@ export const parks: Park[] = [
         name: "Handball Wall",
         coordinates: { lat: 40.192023, lng: -83.086313 },
       },
+      {
+        id: "lp-trail-1",
+        type: "trail",
+        name: "Walking Trails",
+        coordinates: { lat: 40.190611, lng: -83.085177 },
+      },
     ],
     bounds: { north: 40.2010, south: 40.1900, east: -83.0720, west: -83.0960 },
   },
@@ -248,6 +254,12 @@ export const parks: Park[] = [
         type: "ymca",
         name: "YMCA Rec Center",
         coordinates: { lat: 40.186428, lng: -83.078969 },
+      },
+      {
+        id: "slp-trail-1",
+        type: "trail",
+        name: "Walking Trail",
+        coordinates: { lat: 40.188028, lng: -83.084543 },
       },
     ],
     bounds: { north: 40.1900, south: 40.1840, east: -83.0780, west: -83.0880 },
@@ -291,6 +303,12 @@ export const parks: Park[] = [
         type: "parking",
         name: "Parking",
         coordinates: { lat: 40.162966, lng: -83.086204 },
+      },
+      {
+        id: "bb-trail-1",
+        type: "trail",
+        name: "Walking Trail",
+        coordinates: { lat: 40.163640, lng: -83.085393 },
       },
     ],
     bounds: { north: 40.1680, south: 40.1565, east: -83.0760, west: -83.0900 },
@@ -459,6 +477,12 @@ export const parks: Park[] = [
         name: "Picnic Area",
         coordinates: { lat: 40.150601, lng: -83.094563 },
       },
+      {
+        id: "wp-trail-1",
+        type: "trail",
+        name: "Walking Trail",
+        coordinates: { lat: 40.150672, lng: -83.095554 },
+      },
     ],
     bounds: { north: 40.1550, south: 40.1455, east: -83.0880, west: -83.1010 },
   },
@@ -539,3 +563,34 @@ export const amenityInfo: Record<
   handball: { label: "Handball Wall", icon: "TbPlayHandball", color: "red" },
   water: { label: "Water Feature", icon: "Waves", color: "sky" },
 };
+
+export type AmenityListItem = {
+  type: Amenity["type"];
+  count: number;
+  representative: Amenity;
+};
+
+/** One list row per amenity type; map still uses every Amenity entry for pins. */
+export function groupAmenitiesByType(amenities: Amenity[]): AmenityListItem[] {
+  const groups = new Map<Amenity["type"], Amenity[]>();
+  for (const amenity of amenities) {
+    const existing = groups.get(amenity.type);
+    if (existing) existing.push(amenity);
+    else groups.set(amenity.type, [amenity]);
+  }
+  return Array.from(groups.entries()).map(([type, items]) => ({
+    type,
+    count: items.length,
+    representative: items[0],
+  }));
+}
+
+export function getAmenityListLabel(
+  item: AmenityListItem,
+  info?: { label: string }
+): string {
+  if (item.count === 1) return item.representative.name;
+  const label = info?.label || item.type;
+  if (item.type === "parking") return `${label} (${item.count} areas)`;
+  return `${label} (${item.count})`;
+}
