@@ -11,7 +11,7 @@ import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { parks, amenityInfo } from '@/data/parkData';
+import { parks, amenityInfo, groupAmenitiesByType, getAmenityListLabel } from '@/data/parkData';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -130,6 +130,8 @@ export default function MapPage() {
   const filteredAmenities = selectedPark.amenities.filter(
     (amenity) => activeFilter === 'all' || amenity.type === activeFilter
   );
+
+  const listAmenities = groupAmenitiesByType(filteredAmenities);
 
 
   // Update map boundaries and view when state changes
@@ -649,27 +651,30 @@ export default function MapPage() {
                   </Alert>
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {filteredAmenities.map((amenity) => {
-                    const info = amenityInfo[amenity.type];
+                  {listAmenities.map((item) => {
+                    const info = amenityInfo[item.type];
+                    const IconComponent = IconMap[info?.icon] || MapPin;
                     return (
                       <div
-                        key={amenity.id}
+                        key={item.type}
                         className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
                       >
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                          <MapPin className="h-5 w-5 text-primary" />
+                          <IconComponent className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <p className="font-medium text-foreground text-sm">{amenity.name}</p>
+                          <p className="font-medium text-foreground text-sm">
+                            {getAmenityListLabel(item, info)}
+                          </p>
                           <Badge variant="secondary" className="mt-1 text-xs">
-                            {info?.label || amenity.type}
+                            {info?.label || item.type}
                           </Badge>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                {filteredAmenities.length === 0 && (
+                {listAmenities.length === 0 && (
                   <p className="text-center text-muted-foreground py-8">
                     No amenities match the selected filter.
                   </p>
