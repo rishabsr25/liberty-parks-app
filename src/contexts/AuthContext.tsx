@@ -9,7 +9,7 @@ interface AuthContextType {
     loading: boolean;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
     signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ session: Session | null; error: AuthError | null }>;
-    signInWithGoogle: () => Promise<{ error: AuthError | null }>;
+    signInWithGoogleMock: () => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
     verifyOtp: (email: string, token: string) => Promise<{ session: Session | null; error: AuthError | null }>;
 }
@@ -168,19 +168,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { session: mockSession, error: null };
     };
 
-    const signInWithGoogle = async () => {
-        if (!supabase) {
-            return { error: { message: 'Authentication is not configured' } as AuthError };
-        }
-
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: `${window.location.origin}/`,
+    const signInWithGoogleMock = async () => {
+        // Local mock sign in for Google review
+        const mockUser = {
+            id: 'mock-google-user-' + crypto.randomUUID(),
+            email: 'google.user@example.com',
+            user_metadata: {
+                full_name: 'Google User',
             },
-        });
+        } as unknown as User;
 
-        return { error };
+        const mockSession = {
+            access_token: 'mock-access-token-google',
+            user: mockUser,
+        } as Session;
+
+        setUser(mockUser);
+        setSession(mockSession);
+        setIsAdmin(false);
+        setLoading(false);
+
+        localStorage.setItem('mock_user', JSON.stringify(mockUser));
+        localStorage.setItem('mock_session', JSON.stringify(mockSession));
+
+        return { error: null };
     };
 
     const signOut = async () => {
@@ -251,7 +262,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         signIn,
         signUp,
-        signInWithGoogle,
+        signInWithGoogleMock,
         signOut,
         verifyOtp,
     };
