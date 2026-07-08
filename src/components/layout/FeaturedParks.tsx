@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Map, Calendar, Vote, AlertCircle, Megaphone } from 'lucide-react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { CALENDAR_ENABLED } from '@/config/features';
+import { CALENDAR_ENABLED, PARK_SELECTOR_ENABLED } from '@/config/features';
 
 const features = [
   {
@@ -40,6 +40,7 @@ const features = [
     description: 'Get personalized park recommendations based on your preferences and interests. Discover the perfect park for you.',
     color: 'bg-accent/20 text-accent',
     href: '/ai-helper',
+    requiresParkSelector: true,
   },
   {
     icon: AlertCircle,
@@ -51,6 +52,7 @@ const features = [
 ].filter((feature) => {
   if (feature.requiresCalendar) return CALENDAR_ENABLED;
   if (feature.showWhenCalendarDisabled) return !CALENDAR_ENABLED;
+  if (feature.requiresParkSelector) return PARK_SELECTOR_ENABLED;
   return true;
 });
 

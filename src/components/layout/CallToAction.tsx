@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PARK_SELECTOR_ENABLED } from '@/config/features';
 
 const CallToAction = () => {
   return (
@@ -20,9 +21,15 @@ const CallToAction = () => {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link to="/ai-helper">Get Park Recommendations</Link>
-            </Button>
+            {PARK_SELECTOR_ENABLED ? (
+              <Button asChild size="lg" variant="outline">
+                <Link to="/ai-helper">Get Park Recommendations</Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg" variant="outline">
+                <Link to="/parks">Explore Our Parks</Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>

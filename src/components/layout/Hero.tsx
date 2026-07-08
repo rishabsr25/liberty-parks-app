@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, TreePine, Users, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CALENDAR_ENABLED } from '@/config/features';
+import { CALENDAR_ENABLED, PARK_SELECTOR_ENABLED } from '@/config/features';
 import heroPark from "@/assets/hero-park.jpg";
 
 const stats = [
@@ -36,7 +36,8 @@ const Hero = () => {
           </h1>
 
           <p className="mb-8 text-lg text-primary-foreground/90 md:text-xl">
-            Plan your visit, explore our parks, report issues, vote on improvements, and get AI-powered park recommendations.
+            Plan your visit, explore our parks, report issues, vote on improvements
+            {PARK_SELECTOR_ENABLED ? ', and get AI-powered park recommendations' : ''}.
             Your complete guide to the best outdoor experiences in our community.
           </p>
 
