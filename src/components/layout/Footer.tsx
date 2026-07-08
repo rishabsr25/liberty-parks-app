@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TreePine, Mail } from 'lucide-react';
+import { CALENDAR_ENABLED } from '@/config/features';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -30,9 +31,15 @@ export function Footer() {
               <Link to="/map" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Interactive Map
               </Link>
-              <Link to="/calendar" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Event Calendar
-              </Link>
+              {CALENDAR_ENABLED ? (
+                <Link to="/calendar" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Event Calendar
+                </Link>
+              ) : (
+                <Link to="/announcements" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Announcements
+                </Link>
+              )}
               <Link to="/report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Report an Issue
               </Link>

@@ -2,9 +2,9 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trees, MapPin, X } from "lucide-react";
+import { Trees, MapPin, X, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
-import { parks as allParks, Park, amenityInfo, groupAmenitiesByType, getAmenityListLabel } from "@/data/parkData";
+import { parks as allParks, Park, amenityInfo, groupAmenitiesByType, getAmenityListLabel, SHELTER_RESERVATION_URL, parkHasReservableShelters } from "@/data/parkData";
 import { useSearchParams } from "react-router-dom";
 import {
     Dialog,
@@ -92,9 +92,28 @@ const Parks = () => {
                                             {park.description}
                                         </p>
 
-                                        <Button className="w-full mt-auto">
-                                            Learn More
-                                        </Button>
+                                        <div className="flex flex-col gap-2 mt-auto">
+                                            <Button className="w-full">
+                                                Learn More
+                                            </Button>
+                                            {parkHasReservableShelters(park) && (
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full"
+                                                    asChild
+                                                >
+                                                    <a
+                                                        href={SHELTER_RESERVATION_URL}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        Reserve a Shelter
+                                                        <ExternalLink className="w-4 h-4 ml-2" />
+                                                    </a>
+                                                </Button>
+                                            )}
+                                        </div>
                                     </CardContent>
                                 </Card>
                             ))}
@@ -156,6 +175,26 @@ const Parks = () => {
                                             })}
                                         </div>
                                     </div>
+
+                                    {/* Shelter Reservation */}
+                                    {parkHasReservableShelters(selectedPark) && (
+                                        <div>
+                                            <h3 className="text-xl font-semibold mb-3">Reserve a Shelter</h3>
+                                            <p className="text-muted-foreground mb-4">
+                                                Book a picnic shelter at {selectedPark.name} through Liberty Township&apos;s online reservation system.
+                                            </p>
+                                            <Button asChild>
+                                                <a
+                                                    href={SHELTER_RESERVATION_URL}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    Reserve a Shelter
+                                                    <ExternalLink className="w-4 h-4 ml-2" />
+                                                </a>
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         )}

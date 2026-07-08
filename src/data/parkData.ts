@@ -7,6 +7,20 @@ import patriotPark from "@/assets/patriot-park.jpg";
 import smithPark from "@/assets/smith-park.jpg";
 import wedgewoodPark from "@/assets/wedgewood-park.jpg";
 
+export const SHELTER_RESERVATION_URL =
+  "https://libertypark.recdesk.com/Community/Home";
+
+const PARKS_WITHOUT_SHELTERS = new Set([
+  "patriot-park",
+  "smith-preserve",
+  "wedgewood-park",
+  "south-liberty-park",
+]);
+
+export function parkHasReservableShelters(park: Park): boolean {
+  return !PARKS_WITHOUT_SHELTERS.has(park.id);
+}
+
 export interface Park {
   id: string;
   name: string;
