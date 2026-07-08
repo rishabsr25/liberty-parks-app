@@ -347,7 +347,13 @@ export const parks: Park[] = [
         id: "lef-sports-2",
         type: "soccer",
         name: "Soccer Fields",
-        coordinates: { lat: 40.245232, lng: -83.080373 },
+        coordinates: { lat: 40.243771, lng: -83.080360 },
+      },
+      {
+        id: "lef-sports-3",
+        type: "soccer",
+        name: "Soccer Fields",
+        coordinates: { lat: 40.244550, lng: -83.081984 },
       },
       {
         id: "lef-bathroom-1",
