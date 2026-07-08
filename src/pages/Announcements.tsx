@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info, Loader2, CalendarOff } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { CALENDAR_ENABLED } from "@/config/features";
 
 const EDGE_FUNCTION_URL =
   `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-emails`;
@@ -62,7 +63,8 @@ export default function Announcements() {
           </p>
         </div>
 
-        <Alert className="mb-8 border-primary/30 bg-primary/5">
+        {!CALENDAR_ENABLED && (
+          <Alert className="mb-8 border-primary/30 bg-primary/5">
           <CalendarOff className="h-4 w-4" />
           <AlertTitle>Event calendar temporarily retired</AlertTitle>
           <AlertDescription className="space-y-2">
@@ -84,6 +86,7 @@ export default function Announcements() {
             </p>
           </AlertDescription>
         </Alert>
+        )}
 
         {/* Loading state */}
         {loading && (

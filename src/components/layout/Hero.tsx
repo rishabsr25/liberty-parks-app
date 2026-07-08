@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, TreePine, Users, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CALENDAR_ENABLED } from '@/config/features';
 import heroPark from "@/assets/hero-park.jpg";
 
 const stats = [
@@ -47,7 +48,9 @@ const Hero = () => {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/announcements">View Announcements</Link>
+              <Link to={CALENDAR_ENABLED ? '/calendar' : '/announcements'}>
+                {CALENDAR_ENABLED ? 'View Events' : 'View Announcements'}
+              </Link>
             </Button>
           </div>
         </div>

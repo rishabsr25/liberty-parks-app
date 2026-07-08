@@ -12,17 +12,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import { CALENDAR_ENABLED } from '@/config/features';
 
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/parks', label: 'Our Parks' },
   { href: '/map', label: 'Map' },
+  { href: '/calendar', label: 'Calendar', requiresCalendar: true },
   { href: '/voting', label: 'Voting' },
   { href: '/announcements', label: 'Announcements' },
   { href: '/ai-helper', label: 'Park Selector' },
   { href: '/report', label: 'Share a Concern' },
   { href: '/about', label: 'About' },
-];
+].filter((link) => CALENDAR_ENABLED || !link.requiresCalendar);
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

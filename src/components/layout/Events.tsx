@@ -1,7 +1,17 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { CALENDAR_ENABLED } from '@/config/features';
 
 const eventFeatures = [
+  {
+    emoji: '📅',
+    title: 'Event Calendar',
+    description: 'View daily and seasonal events happening across Liberty Township parks. Each event includes the exact location within the park, time, and description. You can also add your own organized events to the calendar!',
+    href: '/calendar',
+    gradient: 'from-sky/20 to-primary/20',
+    cta: 'Explore Calendar',
+    requiresCalendar: true,
+  },
   {
     emoji: '🗳️',
     title: 'Community Voting',
@@ -10,7 +20,7 @@ const eventFeatures = [
     gradient: 'from-earth/20 to-primary/20',
     cta: 'Vote Now',
   },
-];
+].filter((feature) => CALENDAR_ENABLED || !feature.requiresCalendar);
 
 const Events = () => {
   return (
