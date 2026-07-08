@@ -17,7 +17,6 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/parks', label: 'Our Parks' },
   { href: '/map', label: 'Map' },
-  { href: '/calendar', label: 'Calendar' },
   { href: '/voting', label: 'Voting' },
   { href: '/announcements', label: 'Announcements' },
   { href: '/ai-helper', label: 'Park Selector' },

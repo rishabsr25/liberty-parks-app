@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Map, Calendar, Vote, AlertCircle } from 'lucide-react';
+import { ArrowRight, Map, Vote, AlertCircle, Megaphone } from 'lucide-react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 const features = [
@@ -11,11 +11,11 @@ const features = [
     href: '/map',
   },
   {
-    icon: Calendar,
-    title: 'Event Calendar',
-    description: 'Stay updated on daily and seasonal park events, from yoga sessions to community festivals. Add your own events!',
+    icon: Megaphone,
+    title: 'Announcements',
+    description: 'Stay updated on official news, seasonal programs, and important notices from Liberty Township Parks.',
     color: 'bg-sky/20 text-sky',
-    href: '/calendar',
+    href: '/announcements',
   },
   {
     icon: Vote,

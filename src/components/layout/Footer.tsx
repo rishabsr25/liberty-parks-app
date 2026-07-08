@@ -30,8 +30,8 @@ export function Footer() {
               <Link to="/map" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Interactive Map
               </Link>
-              <Link to="/calendar" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Event Calendar
+              <Link to="/announcements" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Announcements
               </Link>
               <Link to="/report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Report an Issue

@@ -35,7 +35,7 @@ const Hero = () => {
           </h1>
 
           <p className="mb-8 text-lg text-primary-foreground/90 md:text-xl">
-            Plan your visit, explore events, report issues, vote on improvements, and get AI-powered park recommendations.
+            Plan your visit, explore our parks, report issues, vote on improvements, and get AI-powered park recommendations.
             Your complete guide to the best outdoor experiences in our community.
           </p>
 
@@ -47,7 +47,7 @@ const Hero = () => {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/calendar">View Events</Link>
+              <Link to="/announcements">View Announcements</Link>
             </Button>
           </div>
         </div>

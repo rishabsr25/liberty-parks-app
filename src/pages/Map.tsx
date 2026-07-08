@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { MapPin, Filter, AlertTriangle, Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, Waves, LocateFixed, Volleyball, Dumbbell } from 'lucide-react';
+import { MapPin, Filter, AlertTriangle, Toilet, Armchair, TreePine, Car, Baby, UtensilsCrossed, Trophy, Info, Leaf, Waves, LocateFixed, Volleyball, Dumbbell, ExternalLink } from 'lucide-react';
 import { CiBaseball } from 'react-icons/ci';
 import { MdOutlineSportsCricket, MdOutlineSportsTennis } from 'react-icons/md';
 import { IoIosBasketball } from 'react-icons/io';
@@ -11,7 +11,7 @@ import { Layout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { parks, amenityInfo, groupAmenitiesByType, getAmenityListLabel } from '@/data/parkData';
+import { parks, amenityInfo, groupAmenitiesByType, getAmenityListLabel, SHELTER_RESERVATION_URL, parkHasReservableShelters } from '@/data/parkData';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -634,6 +634,20 @@ export default function MapPage() {
               ))}
             </div>
 
+
+            {parkHasReservableShelters(selectedPark) && (
+              <Button className="w-full" asChild>
+                <a
+                  href={SHELTER_RESERVATION_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaPersonShelter className="h-4 w-4 mr-2" />
+                  Reserve a Shelter
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </a>
+              </Button>
+            )}
 
             {/* Amenities List */}
             <Card className="w-full">

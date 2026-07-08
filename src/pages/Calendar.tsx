@@ -1,543 +1,101 @@
-import { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, MapPin, Clock, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { CalendarOff, Megaphone, Map, Trees } from 'lucide-react';
 import { Layout } from '@/components/layout';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ParkEvent, parks } from '@/data/parkData';
-import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/supabase-client';
-const categoryColors: Record<string, string> = {
-  sports: 'bg-sky/20 text-sky border-sky/30',
-  community: 'bg-primary/20 text-primary border-primary/30',
-  nature: 'bg-forest-light/20 text-forest border-forest-light/30',
-  fitness: 'bg-accent/20 text-accent border-accent/30',
-  family: 'bg-earth/20 text-earth border-earth/30',
-  seasonal: 'bg-moss/20 text-moss border-moss/30',
-};
-
-const categories = ['all', 'sports', 'community', 'nature', 'fitness', 'family', 'seasonal'];
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function CalendarPage() {
-  const { toast } = useToast();
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedParkId, setSelectedParkId] = useState<string>('all');
-  const [eventList, setEventList] = useState<ParkEvent[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { isAdmin } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    description: '',
-    location: '',
-    category: 'sports' as const,
-    date: format(new Date(), 'yyyy-MM-dd'),
-    startTime: '10:00 AM',
-    endTime: '11:00 AM',
-  });
-
-  useEffect(() => {
-    if (selectedDate) {
-      setNewEvent(prev => ({ ...prev, date: format(selectedDate, 'yyyy-MM-dd') }));
-    } else {
-      setNewEvent(prev => ({ ...prev, date: format(new Date(), 'yyyy-MM-dd') }));
-    }
-  }, [selectedDate]);
-
-  // Fetch events from Supabase
-  useEffect(() => {
-    async function fetchEvents() {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase.from('events').select('*');
-        if (error) throw error;
-        
-        if (data) {
-          const parsedEvents: ParkEvent[] = data.map(row => {
-            // Attempt to parse description for our encoded location
-            let description = row.description || '';
-            let location = 'Liberty Township';
-            
-            try {
-              if (description.startsWith('{"')) {
-                const parsed = JSON.parse(description);
-                if (parsed.loc && parsed.desc !== undefined) {
-                  location = parsed.loc;
-                  description = parsed.desc;
-                }
-              }
-            } catch (e) {
-              // Not JSON, just use as standard description
-            }
-            
-            // Reconstruct time strings from timestamps if available, otherwise default
-            let startTime = '10:00 AM';
-            let endTime = '11:00 AM';
-            
-            if (row.start_time) {
-              startTime = new Date(row.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-            if (row.end_time) {
-              endTime = new Date(row.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-
-            // Convert DB date (YYYY-MM-DD string) to local Date at midnight
-            // To prevent off-by-one timezone issues, we can parse it carefully
-            const [year, month, day] = row.date.split('-').map(Number);
-            const localDate = new Date(year, month - 1, day);
-
-            return {
-              id: row.id,
-              title: row.title,
-              description: description,
-              date: localDate,
-              startTime: startTime,
-              endTime: endTime,
-              location: location,
-              category: row.category as ParkEvent['category'],
-            };
-          });
-          setEventList(parsedEvents);
-        }
-      } catch (err: any) {
-        console.error('Error fetching events:', err.message);
-        toast({
-          title: 'Error',
-          description: 'Failed to load events.',
-          variant: 'destructive',
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    // Only subscribe and fetch if supabase client properly initialised
-    if (supabase) {
-      fetchEvents();
-    } else {
-      setLoading(false);
-      setEventList([]);
-    }
-  }, [toast]);
-
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
-
-  const startDayOfWeek = monthStart.getDay();
-  const paddingDays = Array(startDayOfWeek).fill(null);
-
-  const filteredEvents = eventList.filter((event) => {
-    const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
-    const matchesDate = !selectedDate || isSameDay(event.date, selectedDate);
-
-    let matchesPark = true;
-    if (selectedParkId !== 'all') {
-      const selectedPark = parks.find(p => p.id === selectedParkId);
-      if (selectedPark) {
-        // Check if event location contains park name (case insensitive for safety, though data matches)
-        matchesPark = event.location.toLowerCase().includes(selectedPark.name.toLowerCase());
-      }
-    }
-
-    return matchesCategory && matchesDate && matchesPark;
-  });
-
-  const getEventsForDay = (day: Date) => {
-    return eventList.filter((event) => isSameDay(event.date, day));
-  };
-
-  const handleAddEvent = async () => {
-    if (!newEvent.title || !newEvent.location || !newEvent.date) {
-      toast({
-        title: 'Error',
-        description: 'Please fill in all required fields.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    const [year, month, day] = newEvent.date.split('-').map(Number);
-    const eventDate = new Date(year, month - 1, day);
-    
-    // Parse time to ISO strings for start_time and end_time
-    let startTimestamp = null;
-    let endTimestamp = null;
-    
-    try {
-      // Helper to convert "10:00 AM" or "14:30" to a full timestamp on the selected date
-      const createDateWithTime = (timeStr: string) => {
-        const d = new Date(eventDate);
-        const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
-        if (match) {
-          let hours = parseInt(match[1]);
-          const minutes = parseInt(match[2]);
-          const ampm = match[3]?.toUpperCase();
-          
-          if (ampm === 'PM' && hours < 12) hours += 12;
-          if (ampm === 'AM' && hours === 12) hours = 0;
-          
-          d.setHours(hours, minutes, 0, 0);
-        }
-        return d.toISOString();
-      };
-      
-      if (newEvent.startTime) startTimestamp = createDateWithTime(newEvent.startTime);
-      if (newEvent.endTime) endTimestamp = createDateWithTime(newEvent.endTime);
-    } catch(e) {
-      console.warn("Could not perfectly parse time, using defaults.");
-    }
-
-    const formattedDate = format(eventDate, 'yyyy-MM-dd');
-    
-    // Encode location and description in JSON since DB has a geographical POINT for location
-    const encodedDesc = JSON.stringify({
-      loc: newEvent.location,
-      desc: newEvent.description
-    });
-
-    try {
-      if (!supabase) throw new Error('Supabase client not initialized');
-      
-      const { data, error } = await supabase.from('events').insert([{
-        title: newEvent.title,
-        description: encodedDesc,
-        date: formattedDate,
-        start_time: startTimestamp,
-        end_time: endTimestamp,
-        category: newEvent.category
-      }]).select().single();
-      
-      if (error) throw error;
-      
-      // Update local state
-      const [year, month, day] = data.date.split('-').map(Number);
-      
-      const addedEvent: ParkEvent = {
-        id: data.id,
-        title: newEvent.title,
-        description: newEvent.description,
-        date: new Date(year, month - 1, day),
-        startTime: newEvent.startTime,
-        endTime: newEvent.endTime,
-        location: newEvent.location,
-        category: newEvent.category as ParkEvent['category'],
-      };
-
-      setEventList([...eventList, addedEvent]);
-      setIsDialogOpen(false);
-      setNewEvent({
-        title: '',
-        description: '',
-        location: '',
-        category: 'sports',
-        date: format(selectedDate || new Date(), 'yyyy-MM-dd'),
-        startTime: '10:00 AM',
-        endTime: '11:00 AM',
-      });
-
-      toast({
-        title: 'Success',
-        description: 'Event added to calendar!',
-      });
-    } catch (err: any) {
-      toast({
-        title: 'Error',
-        description: err.message || 'Failed to add event',
-        variant: 'destructive',
-      });
-    }
-  };
-
   return (
     <Layout>
-      <div className="container py-8">
-        {/* Page Header */}
-        <div className="mb-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-2">
-              Event Calendar
-            </h1>
-            <p className="text-muted-foreground">
-              Discover upcoming events and activities at Liberty Township parks. Click on a date and add your own event!
-            </p>
+      <div className="container py-12 max-w-3xl">
+        <div className="mb-8 text-center">
+          <div className="inline-flex items-center justify-center h-14 w-14 rounded-full bg-muted mb-4">
+            <CalendarOff className="h-7 w-7 text-muted-foreground" />
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
-            <Select value={selectedParkId} onValueChange={setSelectedParkId}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Parks" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Parks</SelectItem>
-                {parks.map((park) => (
-                  <SelectItem key={park.id} value={park.id}>
-                    {park.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {isAdmin && (
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Event
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[500px]">
-                  <DialogHeader>
-                    <DialogTitle>Add Event to {selectedDate ? format(selectedDate, 'MMMM d') : 'Calendar'}</DialogTitle>
-                    <DialogDescription>
-                      Create a new event for Liberty Township parks.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="date">Date *</Label>
-                      <Input
-                        id="date"
-                        type="date"
-                        value={newEvent.date}
-                        onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="title">Event Title *</Label>
-                      <Input
-                        id="title"
-                        placeholder="e.g., Community Volleyball Tournament"
-                        value={newEvent.title}
-                        onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        placeholder="Describe the event..."
-                        value={newEvent.description}
-                        onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="location">Location *</Label>
-                      <Input
-                        id="location"
-                        placeholder="e.g., Liberty Park - Sports Field A"
-                        value={newEvent.location}
-                        onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="startTime">Start Time</Label>
-                        <Input
-                          id="startTime"
-                          type="time"
-                          value={newEvent.startTime}
-                          onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="endTime">End Time</Label>
-                        <Input
-                          id="endTime"
-                          type="time"
-                          value={newEvent.endTime}
-                          onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="category">Category</Label>
-                      <Select value={newEvent.category} onValueChange={(value: any) => setNewEvent({ ...newEvent, category: value })}>
-                        <SelectTrigger id="category">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="sports">Sports</SelectItem>
-                          <SelectItem value="community">Community</SelectItem>
-                          <SelectItem value="nature">Nature</SelectItem>
-                          <SelectItem value="fitness">Fitness</SelectItem>
-                          <SelectItem value="family">Family</SelectItem>
-                          <SelectItem value="seasonal">Seasonal</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleAddEvent}>Add Event</Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl mb-3">
+            Event Calendar Temporarily Retired
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            The community event calendar is paused while we improve the experience.
+          </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Calendar */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader className="flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="text-xl">
-                  {format(currentMonth, 'MMMM yyyy')}
-                </CardTitle>
-                <div className="flex gap-1">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {/* Day headers */}
-                <div className="grid grid-cols-7 mb-2">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                    <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
-                      {day}
-                    </div>
-                  ))}
-                </div>
+        <Alert className="mb-8">
+          <Megaphone className="h-4 w-4" />
+          <AlertTitle>What this means for you</AlertTitle>
+          <AlertDescription>
+            You can no longer browse upcoming park events, add community events, or view the
+            monthly calendar in the app. Existing event data is being preserved, and the calendar
+            will return once updates are complete.
+          </AlertDescription>
+        </Alert>
 
-                {/* Calendar grid */}
-                <div className="grid grid-cols-7 gap-1">
-                  {paddingDays.map((_, index) => (
-                    <div key={`padding-${index}`} className="aspect-square" />
-                  ))}
-                  {daysInMonth.map((day) => {
-                    const dayEvents = getEventsForDay(day);
-                    const isToday = isSameDay(day, new Date());
-                    const isSelected = selectedDate && isSameDay(day, selectedDate);
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Why we&apos;re making this change</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
+            <p>
+              We launched the event calendar to help residents discover programs, festivals, and
+              gatherings across Liberty Township parks. After seeing how the feature was used, we
+              decided to temporarily retire it so we can refine event listings, improve how
+              submissions are reviewed, and make sure dates and locations stay accurate over time.
+            </p>
+            <p>
+              This is not a permanent removal. We are actively working on a better calendar
+              experience and will bring it back when it meets the standard our community deserves.
+            </p>
+          </CardContent>
+        </Card>
 
-                    return (
-                      <button
-                        key={day.toISOString()}
-                        onClick={() => setSelectedDate(isSelected ? null : day)}
-                        className={cn(
-                          'aspect-square p-1 rounded-lg transition-colors relative',
-                          isToday && 'bg-primary/10',
-                          isSelected && 'bg-primary text-primary-foreground',
-                          !isSelected && 'hover:bg-muted'
-                        )}
-                      >
-                        <span className={cn(
-                          'text-sm font-medium',
-                          !isSameMonth(day, currentMonth) && 'text-muted-foreground/50'
-                        )}>
-                          {format(day, 'd')}
-                        </span>
-                        {dayEvents.length > 0 && (
-                          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
-                            {dayEvents.slice(0, 3).map((event, i) => (
-                              <div
-                                key={event.id}
-                                className={cn(
-                                  'h-1.5 w-1.5 rounded-full',
-                                  isSelected ? 'bg-primary-foreground' : 'bg-primary'
-                                )}
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Where to find park news in the meantime</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-muted-foreground leading-relaxed">
+            <p>
+              Important updates, seasonal programs, and township announcements will still be
+              shared through other parts of the app:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <strong className="text-foreground">Announcements</strong> — official news and
+                notices from Liberty Township Parks
+              </li>
+              <li>
+                <strong className="text-foreground">Our Parks</strong> — park details, amenities,
+                and shelter reservations
+              </li>
+              <li>
+                <strong className="text-foreground">Interactive Map</strong> — explore locations
+                and amenities across all parks
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
 
-            {/* Filters */}
-            <div className="flex flex-col gap-4 mt-6">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Filter by Category</Label>
-                <div className="flex flex-wrap gap-2">
-                  {categories.map((category) => (
-                    <Button
-                      key={category}
-                      variant={selectedCategory === category ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setSelectedCategory(category)}
-                      className="capitalize"
-                    >
-                      {category === 'all' ? 'All Events' : category}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Events List */}
-          <div className="space-y-4">
-            <h2 className="font-heading text-lg font-semibold text-foreground">
-              {selectedDate ? `Events on ${format(selectedDate, 'MMM d')}` : 'Upcoming Events'}
-            </h2>
-            <div className="space-y-3">
-              {filteredEvents.slice(0, 6).map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-              {filteredEvents.length === 0 && (
-                <p className="text-center text-muted-foreground py-8">
-                  No events found for the selected filters.
-                </p>
-              )}
-            </div>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button asChild>
+            <Link to="/announcements">
+              <Megaphone className="h-4 w-4 mr-2" />
+              View Announcements
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/parks">
+              <Trees className="h-4 w-4 mr-2" />
+              Explore Parks
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/map">
+              <Map className="h-4 w-4 mr-2" />
+              Open Map
+            </Link>
+          </Button>
         </div>
       </div>
     </Layout>
-  );
-}
-
-function EventCard({ event }: { event: ParkEvent }) {
-  return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-medium text-foreground leading-tight">{event.title}</h3>
-          <Badge className={cn('shrink-0 capitalize', categoryColors[event.category])}>
-            {event.category}
-          </Badge>
-        </div>
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-          {event.description}
-        </p>
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <CalendarIcon className="h-3.5 w-3.5" />
-            <span>{format(event.date, 'EEEE, MMM d')}</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Clock className="h-3.5 w-3.5" />
-            <span>{event.startTime} - {event.endTime}</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5" />
-            <span>{event.location}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   );
 }
