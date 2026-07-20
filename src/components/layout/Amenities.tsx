@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PARK_SELECTOR_ENABLED } from '@/config/features';
 
 const amenities = [
   {
@@ -19,6 +20,7 @@ const amenities = [
     buttonText: 'Get Recommendations',
     gradient: 'from-accent/20 to-primary/20',
     reverse: true,
+    requiresParkSelector: true,
   },
   {
     emoji: '⚠️',
@@ -29,7 +31,7 @@ const amenities = [
     gradient: 'from-red/20 to-primary/20',
     reverse: false,
   },
-];
+].filter((amenity) => PARK_SELECTOR_ENABLED || !amenity.requiresParkSelector);
 
 const Amenities = () => {
   return (

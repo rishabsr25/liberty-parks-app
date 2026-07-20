@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Info, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Info, Loader2, CalendarOff } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { CALENDAR_ENABLED } from "@/config/features";
 
 const EDGE_FUNCTION_URL =
   `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-emails`;
@@ -59,6 +62,31 @@ export default function Announcements() {
             Stay updated with the latest news and announcements for Liberty Township Parks.
           </p>
         </div>
+
+        {!CALENDAR_ENABLED && (
+          <Alert className="mb-8 border-primary/30 bg-primary/5">
+          <CalendarOff className="h-4 w-4" />
+          <AlertTitle>Event calendar temporarily retired</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              The in-app event calendar has been temporarily retired while we improve how events
+              are listed, reviewed, and kept up to date across Liberty Township parks.
+            </p>
+            <p>
+              Past event information is being preserved, and we will post here when the calendar
+              returns.               In the meantime, use this page for official announcements, or visit{" "}
+              <Link to="/parks" className="font-medium text-primary underline-offset-4 hover:underline">
+                Our Parks
+              </Link>{" "}
+              and the{" "}
+              <Link to="/map" className="font-medium text-primary underline-offset-4 hover:underline">
+                Interactive Map
+              </Link>{" "}
+              to plan your visit.
+            </p>
+          </AlertDescription>
+        </Alert>
+        )}
 
         {/* Loading state */}
         {loading && (

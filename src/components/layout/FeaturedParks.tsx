@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Map, Calendar, Vote, AlertCircle } from 'lucide-react';
+import { ArrowRight, Map, Calendar, Vote, AlertCircle, Megaphone } from 'lucide-react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { CALENDAR_ENABLED, PARK_SELECTOR_ENABLED } from '@/config/features';
 
 const features = [
   {
@@ -16,6 +17,15 @@ const features = [
     description: 'Stay updated on daily and seasonal park events, from yoga sessions to community festivals. Add your own events!',
     color: 'bg-sky/20 text-sky',
     href: '/calendar',
+    requiresCalendar: true,
+  },
+  {
+    icon: Megaphone,
+    title: 'Announcements',
+    description: 'Stay updated on official news, seasonal programs, and important notices from Liberty Township Parks.',
+    color: 'bg-sky/20 text-sky',
+    href: '/announcements',
+    showWhenCalendarDisabled: true,
   },
   {
     icon: Vote,
@@ -30,6 +40,7 @@ const features = [
     description: 'Get personalized park recommendations based on your preferences and interests. Discover the perfect park for you.',
     color: 'bg-accent/20 text-accent',
     href: '/ai-helper',
+    requiresParkSelector: true,
   },
   {
     icon: AlertCircle,
@@ -38,7 +49,12 @@ const features = [
     color: 'bg-red-200 text-red-600',
     href: '/report',
   },
-];
+].filter((feature) => {
+  if (feature.requiresCalendar) return CALENDAR_ENABLED;
+  if (feature.showWhenCalendarDisabled) return !CALENDAR_ENABLED;
+  if (feature.requiresParkSelector) return PARK_SELECTOR_ENABLED;
+  return true;
+});
 
 const FeaturedParks = () => {
   return (
