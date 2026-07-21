@@ -54,13 +54,6 @@ export function Footer() {
             <h3 className="font-heading font-semibold text-foreground">Contact</h3>
             <div className="space-y-2">
               <a
-                href="mailto:rishabsr25@gmail.com"
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Mail className="h-4 w-4" />
-                rishabsr25@gmail.com
-              </a>
-              <a
                 href="mailto:nelthejan@gmail.com"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
