@@ -208,7 +208,7 @@ This is a closed-source project developed specifically for Liberty Township. **W
 
 This project is proprietary software developed for Liberty Township, in Powell, Ohio. All rights reserved.
 
-For licensing inquiries, contact: rishabsr25@gmail.com or nelthejan@gmail.com
+For licensing inquiries, contact: nelthejan@gmail.com
 
 ---
 
@@ -225,7 +225,6 @@ For licensing inquiries, contact: rishabsr25@gmail.com or nelthejan@gmail.com
 ## 📞 Contact
 
 **CTO:** Rishab Sriram  
-**Email:** rishabsr25@gmail.com  
 **School:** Olentangy Liberty High School, Class of 2027
 
 **CFO:** Thejan Nelahonne

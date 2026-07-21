@@ -193,9 +193,6 @@ export default function TermsOfServicePage() {
                       App Support
                     </p>
                     <div className="flex flex-col gap-1">
-                      <a href="mailto:rishabsr25@gmail.com" className="text-primary hover:underline text-sm">
-                        rishabsr25@gmail.com
-                      </a>
                       <a href="mailto:nelthejan@gmail.com" className="text-primary hover:underline text-sm">
                         nelthejan@gmail.com
                       </a>

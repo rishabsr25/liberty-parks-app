@@ -154,15 +154,6 @@ export default function AboutPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
                     <a
-                      href="mailto:rishabsr25@gmail.com"
-                      className="text-primary hover:underline"
-                    >
-                      rishabsr25@gmail.com
-                    </a>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <a
                       href="mailto:nelthejan@gmail.com"
                       className="text-primary hover:underline"
                     >
