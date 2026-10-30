@@ -36,7 +36,7 @@ interface Poll {
   id: string; // uuid
   title: string;
   description: string;
-  category: 'amenity' | 'event';
+  classification: 'amenity' | 'event';
   tier: 'small' | 'medium' | 'big';
   type: 'yes_no' | 'multiple_choice';
   endtime: string; // ISO string
@@ -73,7 +73,7 @@ export default function VotingPage() {
   const [editingPoll, setEditingPoll] = useState<PollWithData | null>(null);
   // Form State
   const [formData, setFormData] = useState<Partial<Poll>>({
-    title: '', description: '', category: 'amenity', tier: 'small', type: 'yes_no', endtime: ''
+    title: '', description: '', classification: 'amenity', tier: 'small', type: 'yes_no', endtime: ''
   });
   const [choicesInput, setChoicesInput] = useState<string>(''); // Line separated
 
@@ -85,13 +85,13 @@ export default function VotingPage() {
   useEffect(() => {
     if (!isDialogOpen) {
       setEditingPoll(null);
-      setFormData({ title: '', description: '', category: 'amenity', tier: 'small', type: 'yes_no', endtime: '' });
+      setFormData({ title: '', description: '', classification: 'amenity', tier: 'small', type: 'yes_no', endtime: '' });
       setChoicesInput('');
     } else if (editingPoll) {
       setFormData({
         title: editingPoll.title,
         description: editingPoll.description,
-        category: editingPoll.category,
+        classification: editingPoll.classification,
         tier: editingPoll.tier,
         type: editingPoll.type,
         endtime: new Date(editingPoll.endtime).toISOString().slice(0, 16) // Format for datetime-local
@@ -241,7 +241,7 @@ export default function VotingPage() {
       const pollPayload = {
         title: formData.title,
         description: formData.description,
-        category: formData.category,
+        classification: formData.classification,
         tier: formData.tier,
         type: formData.type,
         endtime: new Date(formData.endtime).toISOString(),
@@ -392,7 +392,7 @@ export default function VotingPage() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="outline" className="capitalize">
-                          {poll.category}
+                          {poll.classification}
                         </Badge>
                         <Badge variant="secondary" className={status.color}>
                           {status.label}
@@ -564,7 +564,7 @@ export default function VotingPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label>Category</Label>
-                  <Select value={formData.category} onValueChange={(val: any) => setFormData({ ...formData, category: val })}>
+                  <Select value={formData.classification} onValueChange={(val: any) => setFormData({ ...formData, classification: val })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="amenity">Amenity</SelectItem>
